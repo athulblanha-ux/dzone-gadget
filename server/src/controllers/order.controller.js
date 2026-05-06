@@ -1,0 +1,147 @@
+const Order = require('../models/Order');
+const Product = require('../models/Product');
+const Coupon = require('../models/Coupon');
+const ShippingRule = require('../models/ShippingRule');
+const { asyncHandler } = require('../middleware/errorHandler');
+const { sendEmail } = require('../utils/email');
+const { generateInvoicePDF } = require('../utils/invoice');
+
+exports.createOrder = asyncHandler(async (req, res) => {
+  const { items, shippingAddress, paymentMethod, couponCode, notes } = req.body;
+  if (!items || items.length === 0) return res.status(400).json({ success: false, message: 'No items in order.' });
+
+  let subtotal = 0;
+  const enrichedItems = [];
+
+  for (const item of items) {
+    const product = await Product.findById(item.product);
+    if (!product || !product.isActive) return res.status(400).json({ success: false, message: `Product not found.` });
+    if (product.stock < item.quantity) return res.status(400).json({ success: false, message: `Insufficient stock for ${product.name}.` });
+
+    const price = product.isOnSale && product.salePrice ? product.salePrice : product.price;
+    subtotal += price * item.quantity;
+    enrichedItems.push({ product: product._id, name: product.name, image: product.images?.[0]?.url || '', price, quantity: item.quantity, variant: item.variant || {}, gstRate: product.gstRate || 18 });
+  }
+
+  // Calculate dynamic shipping fee
+  let shippingRule;
+  if (shippingAddress && shippingAddress.state) {
+    shippingRule = await ShippingRule.findOne({ state: new RegExp(`^${shippingAddress.state}$`, 'i') });
+  }
+  if (!shippingRule) {
+    shippingRule = await ShippingRule.findOne({ state: new RegExp('^default$', 'i') });
+  }
+
+  let shippingFee = 49; // ultimate fallback
+  if (shippingRule) {
+    shippingFee = subtotal >= shippingRule.freeShippingThreshold ? 0 : shippingRule.baseFee;
+  }
+
+  let discountAmount = 0;
+  let couponData;
+
+  if (couponCode) {
+    const coupon = await Coupon.findOne({ code: couponCode.toUpperCase() });
+    if (coupon) {
+      const validation = coupon.isValid(req.user._id, subtotal);
+      if (!validation.valid) return res.status(400).json({ success: false, message: validation.message });
+      discountAmount = coupon.calculateDiscount(subtotal);
+      couponData = { code: coupon.code, discountType: coupon.type, discountValue: coupon.value };
+      coupon.usedCount += 1;
+      coupon.usedBy.push(req.user._id);
+      await coupon.save();
+    }
+  }
+
+  const gstAmount = Math.round(enrichedItems.reduce((acc, item) => {
+    const base = item.price / (1 + item.gstRate / 100);
+    return acc + (item.price - base) * item.quantity;
+  }, 0) * 100) / 100;
+
+  const total = subtotal + shippingFee - discountAmount;
+
+  const order = await Order.create({
+    user: req.user._id, items: enrichedItems, shippingAddress, paymentMethod,
+    subtotal, shippingFee, discountAmount, gstAmount, total, coupon: couponData, notes,
+    statusHistory: [{ status: 'placed', message: 'Order placed successfully.' }],
+  });
+
+  for (const item of enrichedItems) {
+    await Product.findByIdAndUpdate(item.product, { $inc: { stock: -item.quantity, totalSold: item.quantity } });
+  }
+
+  try { await sendEmail({ to: req.user.email, subject: `✅ Order Confirmed — ${order.orderNumber}`, template: 'orderConfirmed', data: { name: req.user.name, order } }); } catch (_) {}
+  res.status(201).json({ success: true, order });
+});
+
+exports.getMyOrders = asyncHandler(async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const [orders, total] = await Promise.all([
+    Order.find({ user: req.user._id }).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit).lean(),
+    Order.countDocuments({ user: req.user._id }),
+  ]);
+  res.json({ success: true, orders, pagination: { page, limit, total, pages: Math.ceil(total / limit) } });
+});
+
+exports.getOrder = asyncHandler(async (req, res) => {
+  const order = await Order.findById(req.params.id).populate('user', 'name email');
+  if (!order) return res.status(404).json({ success: false, message: 'Order not found.' });
+  if (order.user._id.toString() !== req.user._id.toString() && req.user.role === 'user') return res.status(403).json({ success: false, message: 'Access denied.' });
+  res.json({ success: true, order });
+});
+
+exports.getAllOrders = asyncHandler(async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 20;
+  const filter = {};
+  if (req.query.status) filter.status = req.query.status;
+  if (req.query.paymentStatus) filter.paymentStatus = req.query.paymentStatus;
+  const [orders, total] = await Promise.all([
+    Order.find(filter).populate('user', 'name email phone').sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit).lean(),
+    Order.countDocuments(filter),
+  ]);
+  res.json({ success: true, orders, pagination: { page, limit, total, pages: Math.ceil(total / limit) } });
+});
+
+exports.updateOrderStatus = asyncHandler(async (req, res) => {
+  const { status, message, trackingNumber, trackingUrl, courierPartner } = req.body;
+  const order = await Order.findById(req.params.id).populate('user', 'name email');
+  if (!order) return res.status(404).json({ success: false, message: 'Order not found.' });
+
+  order.status = status;
+  order.statusHistory.push({ status, message: message || `Order ${status}.` });
+  if (trackingNumber) order.trackingNumber = trackingNumber;
+  if (trackingUrl) order.trackingUrl = trackingUrl;
+  if (courierPartner) order.courierPartner = courierPartner;
+  if (status === 'cancelled') {
+    order.cancelledAt = new Date();
+    for (const item of order.items) await Product.findByIdAndUpdate(item.product, { $inc: { stock: item.quantity, totalSold: -item.quantity } });
+  }
+  await order.save();
+  try { await sendEmail({ to: order.user.email, subject: `📦 Order Update — ${order.orderNumber}`, template: 'orderStatusUpdate', data: { name: order.user.name, order, status } }); } catch (_) {}
+  res.json({ success: true, order });
+});
+
+exports.cancelOrder = asyncHandler(async (req, res) => {
+  const order = await Order.findOne({ _id: req.params.id, user: req.user._id });
+  if (!order) return res.status(404).json({ success: false, message: 'Order not found.' });
+  if (!['placed', 'confirmed'].includes(order.status)) return res.status(400).json({ success: false, message: 'Order cannot be cancelled at this stage.' });
+
+  order.status = 'cancelled';
+  order.cancelReason = req.body.reason || 'Cancelled by customer';
+  order.cancelledAt = new Date();
+  order.statusHistory.push({ status: 'cancelled', message: order.cancelReason });
+  for (const item of order.items) await Product.findByIdAndUpdate(item.product, { $inc: { stock: item.quantity, totalSold: -item.quantity } });
+  await order.save();
+  res.json({ success: true, message: 'Order cancelled.', order });
+});
+
+exports.downloadInvoice = asyncHandler(async (req, res) => {
+  const order = await Order.findById(req.params.id).populate('user', 'name email phone');
+  if (!order) return res.status(404).json({ success: false, message: 'Order not found.' });
+  if (order.user._id.toString() !== req.user._id.toString() && req.user.role === 'user') return res.status(403).json({ success: false, message: 'Access denied.' });
+  const pdfBuffer = await generateInvoicePDF(order);
+  res.set({ 'Content-Type': 'application/pdf', 'Content-Disposition': `attachment; filename=invoice-${order.orderNumber}.pdf` });
+  res.send(pdfBuffer);
+});

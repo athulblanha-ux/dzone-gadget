@@ -1,0 +1,16 @@
+{
+  "name": "d-store-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "concurrently \"npm run server\" \"npm run client\" \"npm run admin\"",
+    "server": "cd server && npm start",
+    "client": "cd client && npm run dev",
+    "admin": "cd admin && npm run dev -- --port 3001"
+  },
+  "dependencies": {
+    "concurrently": "^9.1.2",
+    "dotenv": "^17.4.2",
+    "mongoose": "^9.6.1"
+  }
+}

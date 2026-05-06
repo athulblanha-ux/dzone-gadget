@@ -1,0 +1,137 @@
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { FiHeart, FiShoppingCart, FiStar } from 'react-icons/fi';
+import { useCartStore, useWishlistStore, useAuthStore } from '../../store';
+import toast from 'react-hot-toast';
+import api from '../../lib/api';
+
+export default function ProductCard({ product }) {
+  const { addItem } = useCartStore();
+  const { toggle, isInWishlist } = useWishlistStore();
+  const { isAuthenticated } = useAuthStore();
+  const inWishlist = isInWishlist(product._id);
+
+  const handleAddToCart = (e) => {
+    e.preventDefault();
+    if (product.stock === 0) return toast.error('Out of stock');
+    addItem(product);
+    toast.success(`${product.name.substring(0, 20)}... added to cart! 🛒`);
+  };
+
+  const handleWishlist = async (e) => {
+    e.preventDefault();
+    toggle(product._id);
+    if (isAuthenticated) {
+      try {
+        await api.patch(`/users/wishlist/${product._id}`);
+      } catch {
+        // Silently fail if wishlist sync fails
+      }
+    }
+    toast(inWishlist ? 'Removed from wishlist' : '❤️ Added to wishlist!');
+  };
+
+  const displayPrice = product.isOnSale && product.salePrice ? product.salePrice : product.price;
+  const image = product.images?.[0]?.url;
+
+  return (
+    <motion.div
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.2 }}
+      className="group"
+    >
+      <Link to={`/product/${product.slug}`} className="block card overflow-hidden">
+        {/* Image */}
+        <div className="relative aspect-square overflow-hidden bg-gray-50 dark:bg-dark-bg">
+          {image ? (
+            <img
+              src={image}
+              alt={product.name}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              loading="lazy"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center"><img src="/logo.png" className="w-20 h-20 object-contain opacity-50" alt="logo" /></div>
+          )}
+
+          {/* Badges */}
+          <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+            {product.isOnSale && (
+              <span className="bg-primary-500 text-white text-xs font-bold px-2 py-1 rounded-lg">
+                -{product.discountPercent}%
+              </span>
+            )}
+            {product.isNewArrival && (
+              <span className="bg-accent-green text-white text-xs font-bold px-2 py-1 rounded-lg">NEW</span>
+            )}
+            {product.isTrending && (
+              <span className="bg-accent-orange text-white text-xs font-bold px-2 py-1 rounded-lg">🔥 Hot</span>
+            )}
+            {product.stock === 0 && (
+              <span className="bg-gray-500 text-white text-xs font-bold px-2 py-1 rounded-lg">Out of Stock</span>
+            )}
+          </div>
+
+          {/* Actions overlay */}
+          <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={handleWishlist}
+              className={`w-9 h-9 rounded-xl shadow-lg flex items-center justify-center transition-colors ${
+                inWishlist
+                  ? 'bg-primary-500 text-white'
+                  : 'bg-white dark:bg-dark-card text-gray-600 dark:text-dark-muted hover:text-primary-500'
+              }`}
+              aria-label="Add to wishlist"
+            >
+              <FiHeart size={16} fill={inWishlist ? 'currentColor' : 'none'} />
+            </motion.button>
+          </div>
+
+          {/* Quick Add to Cart */}
+          <div className="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+            <button
+              onClick={handleAddToCart}
+              disabled={product.stock === 0}
+              className="w-full py-3 bg-gradient-primary text-white font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-opacity"
+            >
+              <FiShoppingCart size={16} />
+              {product.stock === 0 ? 'Out of Stock' : 'Quick Add'}
+            </button>
+          </div>
+        </div>
+
+        {/* Info */}
+        <div className="p-4">
+          <p className="text-xs text-dark-muted mb-1 truncate">{product.category?.name}</p>
+          <h3 className="font-semibold text-gray-900 dark:text-dark-text text-sm leading-tight line-clamp-2 mb-2 group-hover:text-primary-500 transition-colors">
+            {product.name}
+          </h3>
+
+          {/* Rating */}
+          {product.ratings?.count > 0 && (
+            <div className="flex items-center gap-1 mb-2">
+              <FiStar size={12} className="text-yellow-400 fill-yellow-400" />
+              <span className="text-xs font-medium text-gray-600 dark:text-dark-muted">
+                {product.ratings.average} ({product.ratings.count})
+              </span>
+            </div>
+          )}
+
+          {/* Price */}
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-primary-500 text-base">₹{displayPrice.toLocaleString()}</span>
+            {product.isOnSale && product.salePrice && (
+              <span className="text-xs text-gray-400 line-through">₹{product.price.toLocaleString()}</span>
+            )}
+          </div>
+
+          {/* Stock indicator */}
+          {product.isLowStock && (
+            <p className="text-xs text-orange-500 font-medium mt-1">Only {product.stock} left!</p>
+          )}
+        </div>
+      </Link>
+    </motion.div>
+  );
+}
