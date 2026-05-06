@@ -1,52 +1,46 @@
 services:
-  # Backend API
   - type: web
-    name: d-store-api
-    env: node
-    buildCommand: cd server && npm install
-    startCommand: cd server && npm start
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: PORT
-        value: 5000
-      - key: MONGO_URI
-        sync: false
-      - key: JWT_SECRET
-        generateValue: true
-      - key: JWT_REFRESH_SECRET
-        generateValue: true
-      - key: FRONTEND_URL
-        sync: false
-      - key: ADMIN_URL
-        sync: false
-      - key: CLOUDINARY_CLOUD_NAME
-        sync: false
-      - key: CLOUDINARY_API_KEY
-        sync: false
-      - key: CLOUDINARY_API_SECRET
-        sync: false
-      - key: RAZORPAY_KEY_ID
-        sync: false
-      - key: RAZORPAY_KEY_SECRET
-        sync: false
-
-  # Client Frontend
-  - type: static_site
-    name: d-store-client
-    env: static
-    buildCommand: cd client && npm install && npm run build
-    staticPublishPath: client/dist
-    envVars:
-      - key: VITE_API_URL
-        sync: false
-
-  # Admin Panel
-  - type: static_site
-    name: d-store-admin
-    env: static
-    buildCommand: cd admin && npm install && npm run build
-    staticPublishPath: admin/dist
-    envVars:
-      - key: VITE_API_URL
-        sync: false
+      name: d-store-api
+          env: node
+              buildCommand: cd server && npm install
+                  startCommand: cd server && npm start
+                      envVars:
+                            - key: NODE_ENV
+                                    value: production
+                                          - key: PORT
+                                                  value: 5000
+                                                        - key: MONGO_URI
+                                                                sync: false
+                                                                      - key: JWT_SECRET
+                                                                              generateValue: true
+                                                                                    - key: JWT_REFRESH_SECRET
+                                                                                            generateValue: true
+                                                                                                  - key: FRONTEND_URL
+                                                                                                          sync: false
+                                                                                                                - key: ADMIN_URL
+                                                                                                                        sync: false
+                                                                                                                              - key: CLOUDINARY_CLOUD_NAME
+                                                                                                                                      sync: false
+                                                                                                                                            - key: CLOUDINARY_API_KEY
+                                                                                                                                                    sync: false
+                                                                                                                                                          - key: CLOUDINARY_API_SECRET
+                                                                                                                                                                  sync: false
+                                                                                                                                                                  
+                                                                                                                                                                    - type: web
+                                                                                                                                                                        name: d-store-client
+                                                                                                                                                                            runtime: static
+                                                                                                                                                                                buildCommand: cd client && npm install && npm run build
+                                                                                                                                                                                    staticPublishPath: client/dist
+                                                                                                                                                                                        envVars:
+                                                                                                                                                                                              - key: VITE_API_URL
+                                                                                                                                                                                                      sync: false
+                                                                                                                                                                                                      
+                                                                                                                                                                                                        - type: web
+                                                                                                                                                                                                            name: d-store-admin
+                                                                                                                                                                                                                runtime: static
+                                                                                                                                                                                                                    buildCommand: cd admin && npm install && npm run build
+                                                                                                                                                                                                                        staticPublishPath: admin/dist
+                                                                                                                                                                                                                            envVars:
+                                                                                                                                                                                                                                  - key: VITE_API_URL
+                                                                                                                                                                                                                                          sync: false
+                                                                                                                                                                                                                                          
