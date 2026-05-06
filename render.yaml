@@ -32,7 +32,7 @@ services:
         sync: false
 
   # Client Frontend
-  - type: static
+  - type: static_site
     name: d-store-client
     env: static
     buildCommand: cd client && npm install && npm run build
@@ -42,7 +42,7 @@ services:
         sync: false
 
   # Admin Panel
-  - type: static
+  - type: static_site
     name: d-store-admin
     env: static
     buildCommand: cd admin && npm install && npm run build
