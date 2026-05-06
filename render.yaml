@@ -36,7 +36,7 @@ services:
     name: d-store-client
     env: static
     buildCommand: cd client && npm install && npm run build
-    publishDir: client/dist
+    staticPublishPath: client/dist
     envVars:
       - key: VITE_API_URL
         sync: false
@@ -46,7 +46,7 @@ services:
     name: d-store-admin
     env: static
     buildCommand: cd admin && npm install && npm run build
-    publishDir: admin/dist
+    staticPublishPath: admin/dist
     envVars:
       - key: VITE_API_URL
         sync: false
