@@ -15,6 +15,7 @@ const orderItemSchema = new mongoose.Schema({
 
 const shippingAddressSchema = new mongoose.Schema({
   fullName: { type: String, required: true },
+  email: { type: String, required: true },
   phone: { type: String, required: true },
   addressLine1: { type: String, required: true },
   addressLine2: String,
@@ -26,7 +27,7 @@ const shippingAddressSchema = new mongoose.Schema({
 const orderSchema = new mongoose.Schema(
   {
     orderNumber: { type: String, unique: true },
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     items: [orderItemSchema],
     shippingAddress: { type: shippingAddressSchema, required: true },
 

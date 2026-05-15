@@ -43,12 +43,12 @@ exports.createOrder = asyncHandler(async (req, res) => {
   if (couponCode) {
     const coupon = await Coupon.findOne({ code: couponCode.toUpperCase() });
     if (coupon) {
-      const validation = coupon.isValid(req.user._id, subtotal);
+      const validation = coupon.isValid(req.user?._id, subtotal);
       if (!validation.valid) return res.status(400).json({ success: false, message: validation.message });
       discountAmount = coupon.calculateDiscount(subtotal);
       couponData = { code: coupon.code, discountType: coupon.type, discountValue: coupon.value };
       coupon.usedCount += 1;
-      coupon.usedBy.push(req.user._id);
+      if (req.user) coupon.usedBy.push(req.user._id);
       await coupon.save();
     }
   }
@@ -61,7 +61,7 @@ exports.createOrder = asyncHandler(async (req, res) => {
   const total = subtotal + shippingFee - discountAmount;
 
   const order = await Order.create({
-    user: req.user._id, items: enrichedItems, shippingAddress, paymentMethod,
+    user: req.user?._id || undefined, items: enrichedItems, shippingAddress, paymentMethod,
     subtotal, shippingFee, discountAmount, gstAmount, total, coupon: couponData, notes,
     statusHistory: [{ status: 'placed', message: 'Order placed successfully.' }],
   });
@@ -70,7 +70,9 @@ exports.createOrder = asyncHandler(async (req, res) => {
     await Product.findByIdAndUpdate(item.product, { $inc: { stock: -item.quantity, totalSold: item.quantity } });
   }
 
-  try { await sendEmail({ to: req.user.email, subject: `✅ Order Confirmed — ${order.orderNumber}`, template: 'orderConfirmed', data: { name: req.user.name, order } }); } catch (_) {}
+  const customerEmail = req.user ? req.user.email : shippingAddress.email;
+  const customerName = req.user ? req.user.name : shippingAddress.fullName;
+  try { await sendEmail({ to: customerEmail, subject: `✅ Order Confirmed — ${order.orderNumber}`, template: 'orderConfirmed', data: { name: customerName, order } }); } catch (_) {}
   res.status(201).json({ success: true, order });
 });
 

@@ -59,6 +59,17 @@ export default function Login() {
               </div>
               <button type="submit" disabled={loading} className="btn-primary w-full disabled:opacity-70">{loading ? 'Signing in...' : 'Sign In'}</button>
             </form>
+
+            <div className="mt-6 flex items-center">
+              <div className="flex-1 border-t border-gray-200 dark:border-dark-border"></div>
+              <span className="px-3 text-sm text-gray-400 dark:text-dark-muted">OR</span>
+              <div className="flex-1 border-t border-gray-200 dark:border-dark-border"></div>
+            </div>
+
+            <button type="button" onClick={() => navigate(from)} className="mt-6 w-full py-3 px-4 bg-gray-100 hover:bg-gray-200 dark:bg-dark-bg dark:hover:bg-dark-border text-gray-700 dark:text-dark-text font-semibold rounded-xl transition-colors">
+              Continue as Guest
+            </button>
+
             <p className="text-center text-sm text-gray-500 dark:text-dark-muted mt-6">Don't have an account? <Link to="/register" className="text-primary-500 font-semibold hover:underline">Sign Up</Link></p>
           </div>
         </motion.div>

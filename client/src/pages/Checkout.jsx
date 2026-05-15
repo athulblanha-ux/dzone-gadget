@@ -7,9 +7,10 @@ import toast from 'react-hot-toast';
 
 export default function Checkout() {
   const { items, total, clearCart } = useCartStore();
+  const { user, isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({ fullName: '', phone: '', addressLine1: '', addressLine2: '', city: '', state: '', pincode: '', paymentMethod: 'cod' });
+  const [form, setForm] = useState({ fullName: user?.name || '', email: user?.email || '', phone: user?.phone || '', addressLine1: '', addressLine2: '', city: '', state: '', pincode: '', paymentMethod: 'cod' });
   const [shippingFee, setShippingFee] = useState(49);
   const [calculatingShipping, setCalculatingShipping] = useState(false);
 
@@ -59,27 +60,39 @@ export default function Checkout() {
         const { data } = await api.post('/orders', orderData);
         clearCart();
         toast.success('Order placed successfully! 🎉');
-        navigate(`/orders/${data.order._id}`);
+        if (isAuthenticated) {
+          navigate(`/orders/${data.order._id}`);
+        } else {
+          navigate(`/shop`);
+          toast.success(`Check ${form.email} for order details!`, { duration: 6000 });
+        }
       } else if (form.paymentMethod === 'razorpay') {
         const isLoaded = await loadRazorpay();
         if (!isLoaded) throw new Error('Razorpay SDK failed to load');
         
-        const { data: rzpData } = await api.post('/payments/razorpay', orderData);
+        const { data: orderResponse } = await api.post('/orders', orderData);
+        
+        const { data: rzpData } = await api.post('/payments/razorpay/create-order', { orderId: orderResponse.order._id });
         
         const options = {
-          key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_stub',
-          amount: rzpData.order.amount,
+          key: rzpData.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_stub',
+          amount: rzpData.amount,
           currency: 'INR',
           name: 'D-STORE',
           description: 'D-STORE Order Payment',
-          order_id: rzpData.order.id,
+          order_id: rzpData.razorpayOrderId,
           handler: async (response) => {
-            await api.post('/payments/razorpay/verify', response);
+            await api.post('/payments/razorpay/verify', { ...response, orderId: orderResponse.order._id });
             clearCart();
             toast.success('Payment successful! Order placed. 🎉');
-            navigate(`/orders`);
+            if (isAuthenticated) {
+              navigate(`/orders`);
+            } else {
+              navigate(`/shop`);
+              toast.success(`Check ${form.email} for order details!`, { duration: 6000 });
+            }
           },
-          prefill: { name: form.fullName, contact: form.phone },
+          prefill: { name: form.fullName, email: form.email, contact: form.phone },
           theme: { color: '#FF6B6B' }
         };
         const rzp = new window.Razorpay(options);
@@ -101,6 +114,7 @@ export default function Checkout() {
               <h2 className="font-semibold text-lg mb-4 dark:text-dark-text">Shipping Address</h2>
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2"><input placeholder="Full Name" value={form.fullName} onChange={e => setForm(p => ({...p, fullName:e.target.value}))} className="input" required /></div>
+                <div className="col-span-2"><input type="email" placeholder="Email Address" value={form.email} onChange={e => setForm(p => ({...p, email:e.target.value}))} className="input" required /></div>
                 <div className="col-span-2"><input type="tel" placeholder="Phone Number" value={form.phone} onChange={e => setForm(p => ({...p, phone:e.target.value}))} className="input" required /></div>
                 <div className="col-span-2"><input placeholder="Address Line 1" value={form.addressLine1} onChange={e => setForm(p => ({...p, addressLine1:e.target.value}))} className="input" required /></div>
                 <div className="col-span-2"><input placeholder="Address Line 2 (Optional)" value={form.addressLine2} onChange={e => setForm(p => ({...p, addressLine2:e.target.value}))} className="input" /></div>
