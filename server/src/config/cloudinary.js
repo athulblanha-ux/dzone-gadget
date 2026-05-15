@@ -22,7 +22,6 @@ const uploadToCloudinary = (fileBuffer, folder = 'd-store') => {
       {
         folder,
         resource_type: 'auto',
-        transformation: [{ quality: 'auto', fetch_format: 'auto' }],
       },
       (error, result) => {
         if (error) reject(error);
