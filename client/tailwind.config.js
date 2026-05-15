@@ -6,16 +6,16 @@ export default {
     extend: {
       colors: {
         primary: {
-          50: '#fff5f5',
-          100: '#ffe0e0',
-          200: '#ffc5c5',
-          300: '#ff9999',
-          400: '#ff6b6b',
-          500: '#ff4444',
-          600: '#e63030',
-          700: '#c42020',
-          800: '#a01818',
-          900: '#7d1212',
+          50: '#f5f5f7',
+          100: '#e8e8ed',
+          200: '#d2d2d7',
+          300: '#86868b',
+          400: '#515154',
+          500: '#0071e3', // Apple Blue
+          600: '#005bbf',
+          700: '#004488',
+          800: '#002d5b',
+          900: '#00172d',
         },
         accent: {
           yellow: '#FFE66D',
@@ -37,14 +37,14 @@ export default {
         display: ['Poppins', 'system-ui', 'sans-serif'],
       },
       backgroundImage: {
-        'gradient-primary': 'linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%)',
+        'gradient-primary': 'linear-gradient(135deg, #0071e3 0%, #005bbf 100%)',
         'gradient-purple': 'linear-gradient(135deg, #a855f7 0%, #3b82f6 100%)',
         'gradient-dark': 'linear-gradient(135deg, #1c1c1e 0%, #000000 100%)',
       },
       animation: {
-        'float': 'float 3s ease-in-out infinite',
-        'slide-up': 'slideUp 0.5s ease-out',
-        'fade-in': 'fadeIn 0.3s ease-out',
+        'float': 'float 4s ease-in-out infinite',
+        'slide-up': 'slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+        'fade-in': 'fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
         'bounce-slow': 'bounce 2s infinite',
         'pulse-slow': 'pulse 3s infinite',
         'shimmer': 'shimmer 1.5s infinite',
@@ -68,10 +68,10 @@ export default {
         },
       },
       boxShadow: {
-        'glow': '0 0 30px rgba(255, 107, 107, 0.3)',
-        'glow-yellow': '0 0 30px rgba(255, 230, 109, 0.3)',
-        'card': '0 4px 24px rgba(0, 0, 0, 0.08)',
-        'card-dark': '0 4px 24px rgba(0, 0, 0, 0.4)',
+        'glow': '0 0 20px rgba(0, 113, 227, 0.4)',
+        'glow-yellow': '0 0 20px rgba(255, 255, 255, 0.2)',
+        'card': '0 4px 24px rgba(0, 0, 0, 0.04)',
+        'card-dark': '0 4px 24px rgba(0, 0, 0, 0.6)',
       },
       borderRadius: {
         '2xl': '1rem',

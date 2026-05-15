@@ -20,7 +20,7 @@ export const useAuthStore = create(persist(
 
 export const useThemeStore = create(persist(
   (set, get) => ({
-    isDark: false,
+    isDark: true,
     toggle: () => {
       const dark = !get().isDark;
       document.documentElement.classList.toggle('dark', dark);
@@ -28,5 +28,5 @@ export const useThemeStore = create(persist(
     },
     init: () => document.documentElement.classList.toggle('dark', get().isDark)
   }),
-  { name: 'd-store-admin-theme' }
+  { name: 'd-store-admin-theme-v2' }
 ));
