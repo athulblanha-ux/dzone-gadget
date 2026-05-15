@@ -127,6 +127,11 @@ export default function Products() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    if (!form.name || !form.shortDescription || !form.price || form.stock === '' || form.gstRate === '' || !form.category) {
+      return toast.error("Please fill all required fields (marked with *)");
+    }
+
     const fd = new FormData();
     Object.entries(form).forEach(([key, val]) => {
       if (key === 'tags') {
@@ -243,7 +248,7 @@ export default function Products() {
             </div>
             
             <div className="overflow-y-auto p-4 flex-1">
-              <form id="productForm" onSubmit={handleSubmit} className="space-y-6">
+              <form id="productForm" onSubmit={handleSubmit} className="space-y-6" noValidate>
                 
                 {/* Basic Info */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

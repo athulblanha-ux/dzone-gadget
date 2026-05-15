@@ -21,7 +21,22 @@ export default function OrderDetail() {
             <h1 className="font-display font-bold text-2xl dark:text-dark-text">{data.orderNumber}</h1>
             <p className="text-gray-500 dark:text-dark-muted text-sm mt-1">Placed on {new Date(data.createdAt).toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric' })}</p>
           </div>
-          <a href={`${import.meta.env.VITE_API_URL || 'http://localhost:5001/api'}/orders/${id}/invoice`} target="_blank" className="btn-secondary text-sm py-2 px-4"><FiDownload />Invoice</a>
+          <button onClick={async () => {
+            try {
+              const res = await api.get(`/orders/${id}/invoice`, { responseType: 'blob' });
+              const url = window.URL.createObjectURL(new Blob([res.data]));
+              const link = document.createElement('a');
+              link.href = url;
+              link.setAttribute('download', `invoice-${data.orderNumber}.pdf`);
+              document.body.appendChild(link);
+              link.click();
+              link.remove();
+              window.URL.revokeObjectURL(url);
+            } catch (err) {
+              console.error(err);
+              alert('Failed to download invoice');
+            }
+          }} className="btn-secondary text-sm py-2 px-4"><FiDownload />Invoice</button>
         </div>
         <div className="grid md:grid-cols-2 gap-6 mb-6">
           <div className="card p-5"><h3 className="font-semibold mb-3 dark:text-dark-text">Shipping Address</h3><p className="text-sm text-gray-600 dark:text-dark-muted">{data.shippingAddress.fullName}<br/>{data.shippingAddress.addressLine1}<br/>{data.shippingAddress.city}, {data.shippingAddress.state} - {data.shippingAddress.pincode}<br/>Phone: {data.shippingAddress.phone}</p></div>

@@ -77,7 +77,22 @@ export default function Orders() {
                   </td>
                   <td className="px-4 py-3 text-right">
                     <button onClick={() => setSelectedOrder(order)} className="p-1.5 text-blue-500 hover:bg-blue-50 rounded mr-2" title="View Details"><FiEye /></button>
-                    <a href={`${import.meta.env.VITE_API_URL || 'http://localhost:5001/api'}/orders/${order._id}/invoice`} target="_blank" className="p-1.5 text-gray-500 hover:bg-gray-100 rounded inline-block" title="Download Invoice"><FiDownload /></a>
+                    <button onClick={async () => {
+                      try {
+                        const res = await api.get(`/orders/${order._id}/invoice`, { responseType: 'blob' });
+                        const url = window.URL.createObjectURL(new Blob([res.data]));
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.setAttribute('download', `invoice-${order.orderNumber}.pdf`);
+                        document.body.appendChild(link);
+                        link.click();
+                        link.remove();
+                        window.URL.revokeObjectURL(url);
+                      } catch (err) {
+                        console.error(err);
+                        toast.error('Failed to download invoice');
+                      }
+                    }} className="p-1.5 text-gray-500 hover:bg-gray-100 rounded inline-block" title="Download Invoice"><FiDownload /></button>
                   </td>
                 </tr>
               ))}
