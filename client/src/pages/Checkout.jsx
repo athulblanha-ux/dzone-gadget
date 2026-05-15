@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useCartStore } from '../store';
 import api from '../lib/api';
@@ -109,8 +109,16 @@ export default function Checkout() {
       <div className="max-w-6xl mx-auto px-4 py-8">
         <h1 className="font-display font-bold text-3xl dark:text-dark-text mb-8">Checkout</h1>
         <div className="grid lg:grid-cols-2 gap-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="card p-6">
+          <div className="space-y-6">
+            {!isAuthenticated && (
+              <div className="card p-4 bg-gray-50/50 dark:bg-dark-card/50 border border-gray-200 dark:border-dark-border">
+                <p className="text-sm text-gray-600 dark:text-dark-text">
+                  Checking out as a guest. <Link to="/login" state={{ from: '/checkout' }} className="text-primary-500 font-semibold hover:underline">Log in</Link> for faster checkout and to use your coupons!
+                </p>
+              </div>
+            )}
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="card p-6">
               <h2 className="font-semibold text-lg mb-4 dark:text-dark-text">Shipping Address</h2>
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2"><input placeholder="Full Name" value={form.fullName} onChange={e => setForm(p => ({...p, fullName:e.target.value}))} className="input" required /></div>
@@ -178,7 +186,8 @@ export default function Checkout() {
               </div>
             </div>
             <button type="submit" disabled={loading || calculatingShipping} className="btn-primary w-full text-lg py-4">{loading ? 'Processing...' : (calculatingShipping ? 'Calculating...' : `Place Order (₹${grandTotal.toLocaleString()})`)}</button>
-          </form>
+            </form>
+          </div>
           
           <div>
             <div className="card p-6 sticky top-24 bg-gray-50 dark:bg-dark-bg border-none shadow-none lg:shadow-card lg:bg-white">

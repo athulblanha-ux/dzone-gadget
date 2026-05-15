@@ -59,7 +59,7 @@ export default function Cart() {
                 <div className="flex justify-between text-gray-600 dark:text-dark-muted"><span>Shipping</span><span className="text-xs text-gray-500 self-end">Calculated at checkout</span></div>
                 <div className="border-t border-gray-100 dark:border-dark-border pt-3 flex justify-between font-bold text-lg dark:text-dark-text"><span>Estimated Total</span><span className="text-primary-500">₹{grandTotal.toLocaleString()}</span></div>
               </div>
-              <button onClick={() => isAuthenticated ? navigate('/checkout') : navigate('/login', { state: { from: '/checkout' } })} className="btn-primary w-full mt-6"><FiShoppingBag /> Proceed to Checkout</button>
+              <button onClick={() => navigate('/checkout')} className="btn-primary w-full mt-6"><FiShoppingBag /> Proceed to Checkout</button>
               <Link to="/shop" className="block text-center text-sm text-primary-500 mt-3 hover:underline">Continue Shopping</Link>
             </div>
           </div>

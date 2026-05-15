@@ -25,11 +25,11 @@ export default {
           orange: '#f97316',
         },
         dark: {
-          bg: '#0f0f1a',
-          card: '#1a1a2e',
-          border: '#2a2a3e',
-          text: '#e2e2f0',
-          muted: '#8888aa',
+          bg: '#000000',
+          card: '#1c1c1e',
+          border: '#2c2c2e',
+          text: '#f5f5f7',
+          muted: '#86868b',
         },
       },
       fontFamily: {
@@ -39,7 +39,7 @@ export default {
       backgroundImage: {
         'gradient-primary': 'linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%)',
         'gradient-purple': 'linear-gradient(135deg, #a855f7 0%, #3b82f6 100%)',
-        'gradient-dark': 'linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 100%)',
+        'gradient-dark': 'linear-gradient(135deg, #1c1c1e 0%, #000000 100%)',
       },
       animation: {
         'float': 'float 3s ease-in-out infinite',
