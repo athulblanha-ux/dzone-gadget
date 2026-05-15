@@ -40,10 +40,7 @@ export default function About() {
             <div className="aspect-square bg-gray-100 rounded-3xl overflow-hidden">
               <img src="https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Kids playing" className="w-full h-full object-cover" />
             </div>
-            <div className="absolute -bottom-6 -left-6 bg-white dark:bg-dark-card p-6 rounded-3xl shadow-xl border border-gray-100 dark:border-dark-border">
-              <p className="font-display font-bold text-4xl text-primary-500 mb-1">10k+</p>
-              <p className="text-gray-500 dark:text-dark-muted font-medium">Happy Families</p>
-            </div>
+
           </div>
         </div>
 

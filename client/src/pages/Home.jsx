@@ -19,7 +19,7 @@ function HeroBanner({ banners }) {
 
   const defaultSlides = [
     {
-      title: 'Spark Every Child\'s Imagination',
+      title: 'Spark Every Imagination',
       subtitle: 'Premium toys for growing minds — curated with love.',
       ctaText: 'Shop Now',
       ctaLink: '/shop',
