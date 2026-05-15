@@ -86,7 +86,7 @@ export const useCartStore = create(
 export const useThemeStore = create(
   persist(
     (set, get) => ({
-      theme: 'light',
+      theme: 'dark',
       toggleTheme: () => {
         const newTheme = get().theme === 'light' ? 'dark' : 'light';
         document.documentElement.classList.toggle('dark', newTheme === 'dark');
@@ -97,7 +97,7 @@ export const useThemeStore = create(
         document.documentElement.classList.toggle('dark', theme === 'dark');
       },
     }),
-    { name: 'd-store-theme' }
+    { name: 'd-store-theme-v2' }
   )
 );
 
