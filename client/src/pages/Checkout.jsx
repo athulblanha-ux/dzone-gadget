@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { useCartStore } from '../store';
+import { useCartStore, useAuthStore } from '../store';
 import api from '../lib/api';
 import toast from 'react-hot-toast';
 
