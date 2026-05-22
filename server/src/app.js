@@ -63,8 +63,16 @@ app.use(cors({
     if (!origin) return callback(null, true);
     // Allow any *.vercel.app subdomain (covers all preview + production deployments)
     if (origin.endsWith('.vercel.app')) return callback(null, true);
-    // Allow explicitly configured origins
-    if (allowedOrigins.includes(origin)) return callback(null, true);
+    
+    // Allow explicitly configured origins (and their www. equivalents)
+    const isAllowed = allowedOrigins.some(allowed => {
+      if (origin === allowed) return true;
+      // If allowed is http(s)://domain, also check http(s)://www.domain
+      const wwwEquivalent = allowed.replace(/^https?:\/\//, '$&www.');
+      return origin === wwwEquivalent;
+    });
+
+    if (isAllowed) return callback(null, true);
     callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
