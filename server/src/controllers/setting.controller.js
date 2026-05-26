@@ -8,6 +8,12 @@ exports.getPublicSettings = asyncHandler(async (req, res) => {
   res.json({ success: true, settings: map });
 });
 
+exports.getAllSettings = asyncHandler(async (req, res) => {
+  const settings = await Setting.find({});
+  res.json({ success: true, settings });
+});
+
+
 exports.getSettingsByGroup = asyncHandler(async (req, res) => {
   const settings = await Setting.find({ group: req.params.group }).lean();
   res.json({ success: true, settings });

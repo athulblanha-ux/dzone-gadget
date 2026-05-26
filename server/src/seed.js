@@ -126,8 +126,123 @@ const seed = async () => {
     { key: 'gst_number', value: '27AABCT1332L1Z8', label: 'GST Number', group: 'general', type: 'text' },
     { key: 'privacy_policy', value: 'Your privacy is important to us...', label: 'Privacy Policy', group: 'policies', type: 'textarea', isPublic: false },
     { key: 'terms_conditions', value: 'By using our website...', label: 'Terms & Conditions', group: 'policies', type: 'textarea', isPublic: false },
-    { key: 'return_policy', value: 'We accept returns within 7 days...', label: 'Return Policy', group: 'policies', type: 'textarea' },
-    { key: 'shipping_policy', value: 'Orders are shipped within 1-2 business days...', label: 'Shipping Policy', group: 'policies', type: 'textarea' },
+    { key: 'return_policy', value: `Effective Date: 26-05-2026
+At D-STORE, we aim to offer a seamless shopping experience with fast and reliable delivery, high-quality products, and customer-friendly support policies. Please read the following carefully to understand how we handle shipping, delivery, warranty, returns, and cancellations.
+
+### Shipping Partners
+To ensure timely and safe delivery, we only ship through reputed courier partners such as DTDC, Delhivery, and others available at checkout. On special requests and for remote locations, we may use India Post EMS Speed Post. However, we cannot guarantee EMS requests as post offices often reject shipments they consider fragile or non-compliant.
+
+### Shipping Timelines
+- Same-Day Shipping for orders placed before 12 PM (Mon-Sat).
+- Orders placed after the cutoff or on Sundays/Public Holidays will be shipped the next working day.
+- Expected delivery time: 2–5 business days depending on location.
+- Same-day delivery in select areas is possible between 3 PM – 10 PM.
+Note: While we make every effort to ensure timely delivery, there may occasionally be a dispatch delay of 1–2 days due to factors such as courier service delays, truck unavailability, or other unexpected operational issues. We are not liable for such delays caused by courier operations, weather, or circumstances beyond our control. Kindly plan your orders in advance.
+
+### Unboxing Video Requirement
+For your protection and ours:
+- Always take a clear unboxing video showing the sealed package being opened.
+- This helps us process claims for damages, missing parts, or wrong items.
+- No replacement or refund will be approved without proper video evidence.
+
+### Damaged or Tampered Deliveries
+If the package appears damaged or tampered, do not accept it. Immediately contact our customer support with your Order ID and evidence.
+
+### Invoice Policy
+All shipments include a tax invoice as per Indian regulations, including for gifts.
+
+### Warranty Policy
+All D-STORE products carry a standard warranty against manufacturing defects (unless otherwise stated on the product page). If you encounter issues:
+- Notify us within 7 days of receiving the item.
+- Share relevant images/videos with your complaint.
+- Upon verification, we will offer free repair/replacement or 100% refund if the item is unavailable.
+- Replaced product will be delivered within 7 days.
+Warranty Exclusions: Misuse, accidental damage, soldered/modified items, static discharge, or negligence voids warranty.
+
+Products that develop issues due to normal usage, wear and tear, or aging of components are not covered under warranty. This includes, but is not limited to:
+- Scratches, dents, faded paint
+- Worn-out tires, gears, shafts, bearings, motors, or servos
+- Damage caused by long-term usage
+- Battery degradation over time
+- Loose screws, connectors, or cosmetic damage from regular handling
+Since these issues arise from regular use and are not manufacturing defects, free replacements cannot be provided.
+However, D-STORE offers:
+- Paid replacement parts at genuine prices
+- Repair service support if needed
+- Guidance on installation or troubleshooting
+Shipping charges for replacement parts or repairs will be borne by the customer.
+
+### Return Conditions
+- Must be initiated within 7 days of delivery.
+- Item must be unused, in original condition, with original packaging and invoice.
+- An RMA (Return Merchandise Authorization) number will be provided after verification.
+
+### Return Process
+1. Raise a return ticket via the Support page.
+2. Share photos/unboxing video of the item.
+3. After internal verification, we’ll provide an RMA number.
+4. Pack the item carefully (do not write on product box).
+5. Ship it back to us.
+You are responsible for return shipping. We will reimburse the return shipping cost once the issue is confirmed.
+Please note: if we charged ₹50 for shipping at the time of dispatch, we will reimburse ₹100 for the return shipment as compensation, once the issue is verified.
+
+Please note that spare parts, electronic components, upgrade parts, and accessories are non-returnable and non-refundable once delivered, except in cases where the item is defective or incorrect.
+This includes but is not limited to:
+- Motors and brushless systems
+- Servos and ESCs
+- Gear sets, shafts, bearings, and drivetrain parts
+- Batteries and electronic components
+- Upgrade kits and modification parts
+- Screws, mounts, connectors, and small hardware
+
+### Important Notes
+- Customers must verify compatibility with their model before placing an order.
+- Returns will not be accepted for wrong selection, incompatibility, or change of mind.
+- Once parts are installed, soldered, modified, or used, they become ineligible for replacement or refund.
+
+### If the Item Arrives Defective
+If a spare part arrives damaged, non-functional, or incorrect, please:
+1. Notify us within 48 hours of delivery.
+2. Share a clear unboxing video and product photos.
+3. After verification, we will provide a replacement or store credit if the issue is confirmed.
+Please note that minor cosmetic marks on spare parts do not qualify as defects.
+
+### Cancellation Conditions
+- You may request cancellation by email only (before order status moves to “Processing”).
+- Orders in “Pending” or “Payment Verification” status can be cancelled.
+- Orders already packed/shipped cannot be cancelled.
+Cancellation may incur a 5% fee based on your payment gateway, as they deduct fees on all transactions (even refunds).
+
+### If a Shipment is Rejected or Refused by the Customer
+If you reject or refuse delivery after the product has been shipped, you will be liable for the following deductions from your refund amount:
+- Packing and material charges
+- Forward and Return shipping charges
+- 5% Payment Gateway fee
+- Any transit damage or theft loss during return
+- Operational handling fee (up to ₹2000) for order processing and cancellation effort (depending on the product).
+- Business loss compensation fee (up to 10% of product value) in cases where the rejection was found intentional or without a valid reason, such as “change of mind” after shipment.
+This policy is in place to cover unavoidable logistics and handling expenses already incurred once your order is dispatched.
+
+### Refund Policy
+- If the product cannot be repaired or replaced, we offer a 100% refund.
+- Refunds are issued once we receive and verify the returned product.
+- If a refund is approved (only for defective items), the amount will be credited to your original payment method within 7 business days.
+
+### Limits of Responsibility
+D-STORE is not responsible for:
+- Improper use, modification, or incorrect installation of products.
+- Polarity or voltage issues in electrical components.
+- Damage from user error or neglect.
+
+### Customer Support
+Need help? Contact us:
+Phone / WhatsApp: 📱 +91 94953 02826
+Email: 📧 support@d-store.store
+
+### Our Address
+D-STORE, Mumbai, Maharashtra, India
+🌐 www.dstoreindia.com`, label: 'Return Policy', group: 'policies', type: 'textarea' },
+    { key: 'shipping_policy', value: `Orders are shipped within 1-2 business days. Delivery takes 2-5 business days depending on location. Free shipping above ₹499.`, label: 'Shipping Policy', group: 'policies', type: 'textarea' },
   ]);
   console.log('⚙️  Site settings seeded');
 
