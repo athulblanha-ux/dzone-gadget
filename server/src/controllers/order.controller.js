@@ -1,7 +1,7 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
 const Coupon = require('../models/Coupon');
-const ShippingRule = require('../models/ShippingRule');
+const { calculateShippingFee } = require('./shipping.controller');
 const { asyncHandler } = require('../middleware/errorHandler');
 const { sendEmail } = require('../utils/email');
 const { generateInvoicePDF } = require('../utils/invoice');
@@ -24,18 +24,7 @@ exports.createOrder = asyncHandler(async (req, res) => {
   }
 
   // Calculate dynamic shipping fee
-  let shippingRule;
-  if (shippingAddress && shippingAddress.state) {
-    shippingRule = await ShippingRule.findOne({ state: new RegExp(`^${shippingAddress.state}$`, 'i') });
-  }
-  if (!shippingRule) {
-    shippingRule = await ShippingRule.findOne({ state: new RegExp('^default$', 'i') });
-  }
-
-  let shippingFee = 49; // ultimate fallback
-  if (shippingRule) {
-    shippingFee = subtotal >= shippingRule.freeShippingThreshold ? 0 : shippingRule.baseFee;
-  }
+  const shippingFee = await calculateShippingFee(items, shippingAddress?.state, subtotal);
 
   let discountAmount = 0;
   let couponData;

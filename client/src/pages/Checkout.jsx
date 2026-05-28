@@ -19,7 +19,11 @@ export default function Checkout() {
       if (!total) return;
       setCalculatingShipping(true);
       try {
-        const { data } = await api.post('/shipping/calculate', { state: form.state, subtotal: total });
+        const { data } = await api.post('/shipping/calculate', { 
+          state: form.state, 
+          subtotal: total,
+          items: items.map(i => ({ product: i.product._id, quantity: i.quantity }))
+        });
         if (data.success) {
           setShippingFee(data.fee);
         }
@@ -33,7 +37,7 @@ export default function Checkout() {
     // Only fetch if a state is selected, else fetch default
     const timer = setTimeout(() => fetchShipping(), 500);
     return () => clearTimeout(timer);
-  }, [form.state, total]);
+  }, [form.state, total, items]);
 
   const grandTotal = total + shippingFee;
 

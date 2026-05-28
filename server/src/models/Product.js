@@ -56,6 +56,7 @@ const productSchema = new mongoose.Schema(
       default: 'all',
     },
     weight: Number, // in grams, for shipping calculation
+    deliveryCharge: { type: Number, default: 0, min: 0 },
     dimensions: {
       length: Number,
       width: Number,

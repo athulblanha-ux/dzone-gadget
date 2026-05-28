@@ -11,7 +11,7 @@ export default function Products() {
   const [editingProduct, setEditingProduct] = useState(null);
   
   // Form State
-  const initialForm = { name: '', description: '', shortDescription: '', price: '', salePrice: '', stock: '', category: '', tags: '', ageGroup: 'all', gstRate: 18, isFeatured: false, isTrending: false, isNewArrival: false, variants: [], video: null };
+  const initialForm = { name: '', description: '', shortDescription: '', price: '', salePrice: '', stock: '', category: '', tags: '', ageGroup: 'all', gstRate: 18, isFeatured: false, isTrending: false, isNewArrival: false, variants: [], video: null, deliveryCharge: 0 };
   const [form, setForm] = useState(initialForm);
   const [images, setImages] = useState([]);
   const [previews, setPreviews] = useState([]);
@@ -73,7 +73,8 @@ export default function Products() {
         isFeatured: prod.isFeatured,
         isTrending: prod.isTrending,
         isNewArrival: prod.isNewArrival,
-        variants: prod.variants || []
+        variants: prod.variants || [],
+        deliveryCharge: prod.deliveryCharge || 0
       });
       setExistingImages(prod.images || []);
       setExistingVideo(prod.video || null);
@@ -258,11 +259,12 @@ export default function Products() {
                 </div>
 
                 {/* Pricing & Inventory */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                   <div><label className="label">Price (₹) *</label><input required type="number" min="0" className="input" value={form.price} onChange={e => setForm({...form, price: e.target.value})} /></div>
                   <div><label className="label">Sale Price (₹)</label><input type="number" min="0" className="input" value={form.salePrice} onChange={e => setForm({...form, salePrice: e.target.value})} /></div>
                   <div><label className="label">Stock *</label><input required type="number" min="0" className="input" value={form.stock} onChange={e => setForm({...form, stock: e.target.value})} /></div>
                   <div><label className="label">GST Rate (%) *</label><input required type="number" min="0" max="100" className="input" value={form.gstRate} onChange={e => setForm({...form, gstRate: e.target.value})} /></div>
+                  <div><label className="label">Delivery Charge (₹)</label><input type="number" min="0" className="input" value={form.deliveryCharge} onChange={e => setForm({...form, deliveryCharge: e.target.value === '' ? '' : Number(e.target.value)})} /></div>
                 </div>
 
                 {/* Classification */}

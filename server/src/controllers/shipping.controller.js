@@ -1,4 +1,5 @@
 const ShippingRule = require('../models/ShippingRule');
+const Product = require('../models/Product');
 const { asyncHandler } = require('../middleware/errorHandler');
 
 exports.getRules = asyncHandler(async (req, res) => {
@@ -55,12 +56,7 @@ exports.deleteRule = asyncHandler(async (req, res) => {
   res.json({ success: true, message: 'Rule deleted successfully' });
 });
 
-exports.calculateFee = asyncHandler(async (req, res) => {
-  const { state, subtotal } = req.body;
-  if (subtotal === undefined) {
-    return res.status(400).json({ success: false, message: 'Subtotal is required' });
-  }
-
+exports.calculateShippingFee = async (items, state, subtotal) => {
   let rule;
   if (state) {
     rule = await ShippingRule.findOne({ state: new RegExp(`^${state}$`, 'i') });
@@ -70,12 +66,36 @@ exports.calculateFee = asyncHandler(async (req, res) => {
     rule = await ShippingRule.findOne({ state: new RegExp('^default$', 'i') });
   }
 
-  if (!rule) {
-    // Ultimate fallback if even Default rule is missing
-    const fee = subtotal >= 499 ? 0 : 49;
-    return res.json({ success: true, fee });
+  let baseFee = 49;
+  let freeThreshold = 499;
+  if (rule) {
+    baseFee = rule.baseFee;
+    freeThreshold = rule.freeShippingThreshold;
   }
 
-  const fee = subtotal >= rule.freeShippingThreshold ? 0 : rule.baseFee;
+  let totalShippingFee = subtotal >= freeThreshold ? 0 : baseFee;
+
+  if (items && items.length > 0) {
+    for (const item of items) {
+      const productId = item.product && item.product._id ? item.product._id : item.product;
+      if (productId) {
+        const product = await Product.findById(productId);
+        if (product && product.deliveryCharge && product.deliveryCharge > 0) {
+          totalShippingFee += product.deliveryCharge * item.quantity;
+        }
+      }
+    }
+  }
+
+  return totalShippingFee;
+};
+
+exports.calculateFee = asyncHandler(async (req, res) => {
+  const { state, subtotal, items } = req.body;
+  if (subtotal === undefined) {
+    return res.status(400).json({ success: false, message: 'Subtotal is required' });
+  }
+
+  const fee = await exports.calculateShippingFee(items, state, subtotal);
   res.json({ success: true, fee });
 });
