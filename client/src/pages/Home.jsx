@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
-import { FiArrowRight, FiShoppingBag, FiTruck, FiShield, FiRefreshCw, FiInstagram } from 'react-icons/fi';
+import { FiArrowRight, FiShoppingBag, FiTruck, FiShield, FiClock, FiInstagram } from 'react-icons/fi';
 import ProductCard from '../components/product/ProductCard';
 import api from '../lib/api';
 
@@ -139,7 +139,7 @@ function FeaturesStrip() {
   const features = [
     { icon: FiTruck, label: 'Free Delivery', sub: 'On orders above ₹499' },
     { icon: FiShield, label: '100% Safe Toys', sub: 'BIS & international certified' },
-    { icon: FiRefreshCw, label: 'Easy Returns', sub: '7-day hassle-free returns' },
+    { icon: FiClock, label: 'Fast Dispatch', sub: 'Orders ship in 24 hours' },
     { icon: FiShoppingBag, label: 'Secure Checkout', sub: 'Razorpay & Stripe secured' },
   ];
 

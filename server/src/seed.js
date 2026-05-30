@@ -153,13 +153,13 @@ All shipments include a tax invoice as per Indian regulations, including for gif
 
 ### Warranty Policy
 All D-STORE products carry a standard warranty against manufacturing defects (unless otherwise stated on the product page). If you encounter issues:
-- Notify us within 7 days of receiving the item.
+- Notify us promptly of receiving the item.
 - Share relevant images/videos with your complaint.
 - Upon verification, we will offer free repair/replacement or 100% refund if the item is unavailable.
-- Replaced product will be delivered within 7 days.
+- Replaced product will be delivered as soon as possible.
 Warranty Exclusions: Misuse, accidental damage, soldered/modified items, static discharge, or negligence voids warranty.
 
-Products that develop issues due to normal usage, wear and tear, or aging of components are not covered under warranty. This includes, but is not limited to:
+Products that develop issues due to normal usage, wear and tear, or aging of components are not covered without warranty. This includes, but is not limited to:
 - Scratches, dents, faded paint
 - Worn-out tires, gears, shafts, bearings, motors, or servos
 - Damage caused by long-term usage
@@ -173,7 +173,7 @@ However, D-STORE offers:
 Shipping charges for replacement parts or repairs will be borne by the customer.
 
 ### Return Conditions
-- Must be initiated within 7 days of delivery.
+- Must be initiated within the return eligibility window.
 - Item must be unused, in original condition, with original packaging and invoice.
 - An RMA (Return Merchandise Authorization) number will be provided after verification.
 
@@ -263,7 +263,7 @@ D-STORE, Mumbai, Maharashtra, India
   await FAQ.insertMany([
     { question: 'What age groups are your toys suitable for?', answer: 'We carry toys for all age groups from 0-2 years to 13+. Every product has an age recommendation.', category: 'products', order: 1 },
     { question: 'Do you offer free shipping?', answer: 'Yes! Orders above ₹499 qualify for free shipping.', category: 'shipping', order: 1 },
-    { question: 'What is your return policy?', answer: 'We accept returns within 7 days of delivery for unused, undamaged products in original packaging.', category: 'returns', order: 1 },
+    { question: 'What is your return policy?', answer: 'Please refer to our Return Policy page for details on returns and eligibility.', category: 'returns', order: 1 },
     { question: 'How can I track my order?', answer: 'Once your order is shipped, you\'ll receive a tracking link via email and SMS.', category: 'orders', order: 1 },
     { question: 'Which payment methods do you accept?', answer: 'We accept Razorpay (UPI, cards, netbanking), Stripe, and Cash on Delivery.', category: 'payments', order: 1 },
   ]);

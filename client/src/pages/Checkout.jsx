@@ -10,6 +10,7 @@ export default function Checkout() {
   const { user, isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [mockPaymentData, setMockPaymentData] = useState(null);
   const [form, setForm] = useState({ fullName: user?.name || '', email: user?.email || '', phone: user?.phone || '', addressLine1: '', addressLine2: '', city: '', state: '', pincode: '', paymentMethod: 'cod' });
   const [shippingFee, setShippingFee] = useState(49);
   const [calculatingShipping, setCalculatingShipping] = useState(false);
@@ -71,36 +72,45 @@ export default function Checkout() {
           toast.success(`Check ${form.email} for order details!`, { duration: 6000 });
         }
       } else if (form.paymentMethod === 'razorpay') {
-        const isLoaded = await loadRazorpay();
-        if (!isLoaded) throw new Error('Razorpay SDK failed to load');
-        
         const { data: orderResponse } = await api.post('/orders', orderData);
-        
         const { data: rzpData } = await api.post('/payments/razorpay/create-order', { orderId: orderResponse.order._id });
         
-        const options = {
-          key: rzpData.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_stub',
-          amount: rzpData.amount,
-          currency: 'INR',
-          name: 'D-STORE',
-          description: 'D-STORE Order Payment',
-          order_id: rzpData.razorpayOrderId,
-          handler: async (response) => {
-            await api.post('/payments/razorpay/verify', { ...response, orderId: orderResponse.order._id });
-            clearCart();
-            toast.success('Payment successful! Order placed. 🎉');
-            if (isAuthenticated) {
-              navigate(`/orders`);
-            } else {
-              navigate(`/shop`);
-              toast.success(`Check ${form.email} for order details!`, { duration: 6000 });
-            }
-          },
-          prefill: { name: form.fullName, email: form.email, contact: form.phone },
-          theme: { color: '#FF6B6B' }
-        };
-        const rzp = new window.Razorpay(options);
-        rzp.open();
+        if (rzpData.isMock) {
+          setMockPaymentData({
+            orderId: orderResponse.order._id,
+            razorpayOrderId: rzpData.razorpayOrderId,
+            amount: rzpData.amount,
+            keyId: rzpData.keyId,
+            email: form.email
+          });
+        } else {
+          const isLoaded = await loadRazorpay();
+          if (!isLoaded) throw new Error('Razorpay SDK failed to load');
+          
+          const options = {
+            key: rzpData.keyId,
+            amount: rzpData.amount,
+            currency: 'INR',
+            name: 'D-STORE',
+            description: 'D-STORE Order Payment',
+            order_id: rzpData.razorpayOrderId,
+            handler: async (response) => {
+              await api.post('/payments/razorpay/verify', { ...response, orderId: orderResponse.order._id });
+              clearCart();
+              toast.success('Payment successful! Order placed. 🎉');
+              if (isAuthenticated) {
+                navigate(`/orders`);
+              } else {
+                navigate(`/shop`);
+                toast.success(`Check ${form.email} for order details!`, { duration: 6000 });
+              }
+            },
+            prefill: { name: form.fullName, email: form.email, contact: form.phone },
+            theme: { color: '#FF6B6B' }
+          };
+          const rzp = new window.Razorpay(options);
+          rzp.open();
+        }
       }
     } catch (err) {
       toast.error(err.response?.data?.message || err.message || 'Checkout failed');
@@ -214,6 +224,109 @@ export default function Checkout() {
           </div>
         </div>
       </div>
+      {/* Mock Razorpay Simulator Modal */}
+      {mockPaymentData && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-2xl shadow-2xl p-6 max-w-md w-full mx-4 animate-in fade-in zoom-in-95 duration-200">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b dark:border-dark-border pb-4 mb-4">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded bg-primary-500 flex items-center justify-center text-white font-bold">R</div>
+                <div>
+                  <h3 className="font-bold text-gray-900 dark:text-dark-text text-lg">Razorpay Simulator</h3>
+                  <span className="text-xs font-semibold px-2 py-0.5 bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 rounded-full">Sandbox Mode</span>
+                </div>
+              </div>
+              <button 
+                onClick={() => {
+                  setMockPaymentData(null);
+                  toast.error('Payment cancelled.');
+                }} 
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 font-bold text-xl"
+              >
+                &times;
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="space-y-4 my-6">
+              <div className="bg-gray-50 dark:bg-dark-bg p-4 rounded-xl space-y-2">
+                <div className="flex justify-between text-sm text-gray-500">
+                  <span>Merchant</span>
+                  <span className="font-semibold text-gray-800 dark:text-dark-text">D-STORE</span>
+                </div>
+                <div className="flex justify-between text-sm text-gray-500">
+                  <span>Order ID</span>
+                  <span className="font-mono text-xs text-gray-800 dark:text-dark-text">{mockPaymentData.razorpayOrderId}</span>
+                </div>
+                <div className="flex justify-between text-base font-bold border-t dark:border-dark-border pt-2 text-gray-900 dark:text-dark-text">
+                  <span>Amount to Pay</span>
+                  <span className="text-primary-500">₹{(mockPaymentData.amount / 100).toLocaleString('en-IN')}</span>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-xs text-gray-400 font-semibold tracking-wider uppercase">Select simulated payment method</p>
+                <div className="grid grid-cols-3 gap-2">
+                  <button className="flex flex-col items-center justify-center p-3 border-2 border-primary-500 bg-primary-50/10 dark:bg-primary-950/10 rounded-xl text-center">
+                    <span className="text-xs font-medium dark:text-dark-text">UPI / QR</span>
+                  </button>
+                  <button className="flex flex-col items-center justify-center p-3 border border-gray-200 dark:border-dark-border rounded-xl text-center hover:bg-gray-50 dark:hover:bg-dark-bg transition-colors">
+                    <span className="text-xs font-medium text-gray-600 dark:text-dark-muted">Card</span>
+                  </button>
+                  <button className="flex flex-col items-center justify-center p-3 border border-gray-200 dark:border-dark-border rounded-xl text-center hover:bg-gray-50 dark:hover:bg-dark-bg transition-colors">
+                    <span className="text-xs font-medium text-gray-600 dark:text-dark-muted">Net Banking</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex flex-col gap-2 mt-6">
+              <button 
+                onClick={async () => {
+                  setLoading(true);
+                  try {
+                    const response = {
+                      razorpay_order_id: mockPaymentData.razorpayOrderId,
+                      razorpay_payment_id: `pay_mock_${Math.random().toString(36).substr(2, 9)}`,
+                      razorpay_signature: 'mock_signature'
+                    };
+                    await api.post('/payments/razorpay/verify', { ...response, orderId: mockPaymentData.orderId });
+                    setMockPaymentData(null);
+                    clearCart();
+                    toast.success('Payment successful! Order placed. 🎉');
+                    if (isAuthenticated) {
+                      navigate(`/orders`);
+                    } else {
+                      navigate(`/shop`);
+                      toast.success(`Check ${mockPaymentData.email} for order details!`, { duration: 6000 });
+                    }
+                  } catch (err) {
+                    toast.error(err.response?.data?.message || err.message || 'Payment verification failed');
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
+                disabled={loading}
+                className="btn-primary w-full py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-all"
+              >
+                {loading ? 'Verifying...' : 'Simulate Success ✔'}
+              </button>
+              <button 
+                onClick={() => {
+                  setMockPaymentData(null);
+                  toast.error('Simulated payment failed / cancelled.');
+                }}
+                disabled={loading}
+                className="btn-secondary w-full py-3 border border-red-500 text-red-500 hover:bg-red-500/10 font-bold rounded-xl transition-all"
+              >
+                Simulate Failure ✖
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

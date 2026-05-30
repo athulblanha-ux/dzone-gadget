@@ -78,7 +78,13 @@ exports.getMyOrders = asyncHandler(async (req, res) => {
 exports.getOrder = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id).populate('user', 'name email');
   if (!order) return res.status(404).json({ success: false, message: 'Order not found.' });
-  if (order.user._id.toString() !== req.user._id.toString() && req.user.role === 'user') return res.status(403).json({ success: false, message: 'Access denied.' });
+  
+  if (req.user.role === 'user') {
+    if (!order.user || order.user._id.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: 'Access denied.' });
+    }
+  }
+
   res.json({ success: true, order });
 });
 
