@@ -265,7 +265,7 @@ D-STORE, Mumbai, Maharashtra, India
     { question: 'Do you offer free shipping?', answer: 'Yes! Orders above ₹499 qualify for free shipping.', category: 'shipping', order: 1 },
     { question: 'What is your return policy?', answer: 'Please refer to our Return Policy page for details on returns and eligibility.', category: 'returns', order: 1 },
     { question: 'How can I track my order?', answer: 'Once your order is shipped, you\'ll receive a tracking link via email and SMS.', category: 'orders', order: 1 },
-    { question: 'Which payment methods do you accept?', answer: 'We accept Razorpay (UPI, cards, netbanking), Stripe, and Cash on Delivery.', category: 'payments', order: 1 },
+    { question: 'Which payment methods do you accept?', answer: 'We accept secure online payments via Razorpay (UPI, credit/debit cards, netbanking).', category: 'payments', order: 1 },
   ]);
   console.log('❓ FAQs seeded');
 

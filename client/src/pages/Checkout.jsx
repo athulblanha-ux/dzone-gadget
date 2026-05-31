@@ -11,7 +11,7 @@ export default function Checkout() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [mockPaymentData, setMockPaymentData] = useState(null);
-  const [form, setForm] = useState({ fullName: user?.name || '', email: user?.email || '', phone: user?.phone || '', addressLine1: '', addressLine2: '', city: '', state: '', pincode: '', paymentMethod: 'cod' });
+  const [form, setForm] = useState({ fullName: user?.name || '', email: user?.email || '', phone: user?.phone || '', addressLine1: '', addressLine2: '', city: '', state: '', pincode: '', paymentMethod: 'razorpay' });
   const [shippingFee, setShippingFee] = useState(49);
   const [calculatingShipping, setCalculatingShipping] = useState(false);
 
@@ -189,13 +189,9 @@ export default function Checkout() {
             <div className="card p-6">
               <h2 className="font-semibold text-lg mb-4 dark:text-dark-text">Payment Method</h2>
               <div className="space-y-3">
-                <label className="flex items-center gap-3 p-3 border border-gray-200 dark:border-dark-border rounded-xl cursor-pointer">
-                  <input type="radio" name="payment" value="razorpay" checked={form.paymentMethod === 'razorpay'} onChange={e => setForm(p => ({...p, paymentMethod:e.target.value}))} className="accent-primary-500" />
+                <label className="flex items-center gap-3 p-3 border border-primary-500 dark:border-dark-border bg-primary-50/10 rounded-xl cursor-default">
+                  <input type="radio" name="payment" value="razorpay" checked={true} readOnly className="accent-primary-500" />
                   <span className="font-medium dark:text-dark-text">Pay Online (UPI, Cards, Netbanking)</span>
-                </label>
-                <label className="flex items-center gap-3 p-3 border border-gray-200 dark:border-dark-border rounded-xl cursor-pointer">
-                  <input type="radio" name="payment" value="cod" checked={form.paymentMethod === 'cod'} onChange={e => setForm(p => ({...p, paymentMethod:e.target.value}))} className="accent-primary-500" />
-                  <span className="font-medium dark:text-dark-text">Cash on Delivery</span>
                 </label>
               </div>
             </div>
