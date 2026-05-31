@@ -137,30 +137,28 @@ function HeroBanner({ banners }) {
 // ─── Features Strip ─────────────────────────────────────────────────────────────
 function FeaturesStrip() {
   const features = [
-    { icon: FiTruck, label: 'Free Delivery', sub: 'On orders above ₹499' },
-    { icon: FiShield, label: '100% Safe Toys', sub: 'BIS & international certified' },
     { icon: FiClock, label: 'Fast Dispatch', sub: 'Orders ship in 24 hours' },
     { icon: FiShoppingBag, label: 'Secure Checkout', sub: 'Razorpay & Stripe secured' },
   ];
 
   return (
-    <div className="bg-gradient-primary py-6 px-4">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <section className="section !py-4">
+      <div className="bg-gradient-to-r from-accent-purple to-accent-blue rounded-3xl py-8 px-8 text-white shadow-xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {features.map(({ icon: Icon, label, sub }) => (
-            <div key={label} className="flex items-center gap-3 text-white">
-              <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Icon size={18} />
+            <div key={label} className="flex flex-col sm:flex-row items-center text-center sm:text-left gap-4">
+              <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0 backdrop-blur-sm">
+                <Icon size={22} />
               </div>
               <div>
-                <p className="font-semibold text-sm">{label}</p>
-                <p className="text-white/80 text-xs">{sub}</p>
+                <p className="font-display font-bold text-lg">{label}</p>
+                <p className="text-white/80 text-sm mt-0.5">{sub}</p>
               </div>
             </div>
           ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
