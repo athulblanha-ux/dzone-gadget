@@ -38,7 +38,7 @@ exports.getDashboardAnalytics = asyncHandler(async (req, res) => {
     Order.aggregate([
       { $match: { createdAt: { $gte: startDate }, paymentStatus: 'paid' } },
       { $unwind: '$items' },
-      { $group: { _id: '$items.product', name: { $first: '$items.name' }, totalSold: { $sum: '$items.quantity' }, revenue: { $sum: { $multiply: ['$items.price', '$items.quantity'] } } } },
+      { $group: { _id: '$items.product', name: { $first: '$items.name' }, image: { $first: '$items.image' }, price: { $first: '$items.price' }, totalSold: { $sum: '$items.quantity' }, revenue: { $sum: { $multiply: ['$items.price', '$items.quantity'] } } } },
       { $sort: { revenue: -1 } },
       { $limit: 10 },
     ]),
