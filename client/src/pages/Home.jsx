@@ -23,7 +23,7 @@ function HeroBanner({ banners }) {
       subtitle: 'Premium toys for growing minds — curated with love.',
       ctaText: 'Shop Now',
       ctaLink: '/shop',
-      bg: 'from-primary-400 to-accent-yellow',
+      bg: 'from-primary-400 to-accent-purple',
       emoji: '🎮',
     },
     {
@@ -39,7 +39,7 @@ function HeroBanner({ banners }) {
       subtitle: 'Up to 40% off on premium toy collections.',
       ctaText: 'View Offers',
       ctaLink: '/shop?sale=true',
-      bg: 'from-accent-orange to-accent-yellow',
+      bg: 'from-accent-purple to-accent-pink',
       emoji: '🎪',
     },
   ];
@@ -65,7 +65,7 @@ function HeroBanner({ banners }) {
               <div className="absolute inset-0 bg-black/40" />
             </div>
           ) : (
-            <div className={`w-full h-full bg-gradient-to-br ${slides[current]?.bg || 'from-primary-400 to-accent-yellow'} relative overflow-hidden`}>
+            <div className={`w-full h-full bg-gradient-to-br ${slides[current]?.bg || 'from-primary-400 to-accent-purple'} relative overflow-hidden`}>
               {/* Decorative circles */}
               <div className="absolute -top-20 -right-20 w-96 h-96 bg-white/10 rounded-full" />
               <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-white/10 rounded-full" />
@@ -262,7 +262,7 @@ function FlashSaleBanner({ products }) {
 
   return (
     <section className="section !py-0">
-      <div className="bg-gradient-to-r from-primary-500 to-accent-yellow rounded-3xl overflow-hidden">
+      <div className="bg-gradient-to-r from-primary-500 to-accent-purple rounded-3xl overflow-hidden">
         <div className="px-8 py-10 flex flex-col lg:flex-row items-center gap-8">
           <div className="text-white text-center lg:text-left">
             <div className="flex items-center gap-2 mb-2">
@@ -401,51 +401,7 @@ function Testimonials({ testimonials }) {
   );
 }
 
-// ─── Newsletter Banner ─────────────────────────────────────────────────────────
-function NewsletterBanner() {
-  const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!email) return;
-    setLoading(true);
-    try {
-      await api.post('/newsletters/subscribe', { email, source: 'homepage' });
-      toast.success('🎉 Subscribed! Enjoy 10% off your first order!');
-      setEmail('');
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to subscribe.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <section className="section !py-8">
-      <div className="bg-gradient-to-r from-accent-purple to-accent-blue rounded-3xl p-8 sm:p-12 text-center text-white">
-        <h2 className="font-display font-bold text-3xl mb-3">Get Exclusive Deals! 🎁</h2>
-        <p className="text-white/90 mb-6">Subscribe for 10% off your first order + weekly toy alerts.</p>
-        <form onSubmit={handleSubmit} className="flex gap-3 max-w-md mx-auto">
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Your email address"
-            className="flex-1 px-4 py-3 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-white/50"
-          />
-          <button
-            type="submit"
-            disabled={loading}
-            className="bg-white text-accent-purple font-bold px-6 py-3 rounded-xl hover:shadow-xl transition-all disabled:opacity-70"
-          >
-            {loading ? '...' : 'Subscribe'}
-          </button>
-        </form>
-      </div>
-    </section>
-  );
-}
 
 // ─── Home Page ─────────────────────────────────────────────────────────────────
 import toast from 'react-hot-toast';
@@ -525,7 +481,6 @@ export default function Home() {
       />
       <InstagramSection posts={instagramData} />
       <Testimonials testimonials={testimonials} />
-      <NewsletterBanner />
     </>
   );
 }

@@ -50,7 +50,7 @@ export default function FAQ() {
           </div>
         )}
         
-        <div className="mt-16 text-center card p-8 bg-gradient-to-r from-primary-50 to-accent-yellow/10 border-primary-100">
+        <div className="mt-16 text-center card p-8 bg-gradient-to-r from-primary-500/10 to-accent-purple/10 border-primary-500/20">
           <h3 className="font-display font-bold text-xl mb-2">Still have questions?</h3>
           <p className="text-gray-600 mb-6">Our support team is here to help you.</p>
           <a href="/contact" className="btn-primary">Contact Us</a>

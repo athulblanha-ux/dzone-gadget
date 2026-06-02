@@ -7,7 +7,7 @@ export default function About() {
       <Helmet><title>About Us — D-STORE</title></Helmet>
       
       {/* Hero */}
-      <div className="relative bg-gradient-to-r from-primary-500 to-accent-yellow py-24 text-center text-white">
+      <div className="relative bg-gradient-to-r from-primary-500 to-accent-purple py-24 text-center text-white">
         <div className="max-w-4xl mx-auto px-4">
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="font-display font-bold text-5xl mb-6">Our Story</motion.h1>
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-xl text-white/90 leading-relaxed">
