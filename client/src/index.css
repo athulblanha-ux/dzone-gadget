@@ -14,7 +14,7 @@
   }
 
   body {
-    @apply font-sans bg-white text-gray-900 dark:bg-dark-bg dark:text-dark-text transition-colors duration-300;
+    @apply font-sans bg-dark-bg text-dark-text transition-colors duration-300;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -25,52 +25,52 @@
 @layer components {
   /* ─── Buttons ────────────────────────────────────────────────────────── */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-semibold text-white bg-primary-500 hover:bg-primary-600 active:scale-95 transition-all duration-200;
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-semibold text-black bg-primary-500 hover:bg-primary-400 active:scale-95 transition-all duration-200 shadow-glow;
   }
   
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-semibold text-primary-500 border border-primary-500 hover:bg-primary-50 active:scale-95 transition-all duration-200 dark:hover:bg-dark-card;
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-semibold text-primary-500 border border-primary-500 hover:bg-primary-500/10 hover:shadow-glow active:scale-95 transition-all duration-200 dark:hover:bg-dark-card;
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full font-medium text-gray-600 hover:bg-gray-100 active:scale-95 transition-all duration-200 dark:text-dark-muted dark:hover:bg-dark-card;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full font-medium text-dark-text hover:bg-dark-card active:scale-95 transition-all duration-200;
   }
 
   .btn-icon {
-    @apply p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-dark-card transition-colors duration-200 flex items-center justify-center;
+    @apply p-2 rounded-xl hover:bg-dark-card transition-colors duration-200 flex items-center justify-center;
   }
 
   /* ─── Cards ──────────────────────────────────────────────────────────── */
   .card {
-    @apply bg-white dark:bg-dark-card rounded-3xl shadow-card dark:shadow-card-dark border border-gray-100/50 dark:border-dark-border/50 transition-all duration-300;
+    @apply bg-dark-card rounded-3xl shadow-card border border-dark-border/50 hover:border-primary-500/30 transition-all duration-300;
   }
 
   .card-hover {
-    @apply card hover:shadow-xl hover:-translate-y-1 cursor-pointer;
+    @apply card hover:shadow-glow hover:-translate-y-1 cursor-pointer;
   }
 
   /* ─── Inputs ─────────────────────────────────────────────────────────── */
   .input {
-    @apply w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-dark-text placeholder-gray-400 dark:placeholder-dark-muted focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all duration-200;
+    @apply w-full px-4 py-3 rounded-xl border border-dark-border bg-dark-card text-dark-text placeholder-dark-muted focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200;
   }
 
   .label {
-    @apply block text-sm font-medium text-gray-700 dark:text-dark-text mb-1.5;
+    @apply block text-sm font-medium text-dark-text mb-1.5;
   }
 
   /* ─── Badge ──────────────────────────────────────────────────────────── */
   .badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border;
   }
 
-  .badge-primary { @apply badge bg-primary-100 text-primary-700; }
-  .badge-green { @apply badge bg-green-100 text-green-700; }
-  .badge-yellow { @apply badge bg-yellow-100 text-yellow-700; }
-  .badge-gray { @apply badge bg-gray-100 text-gray-700; }
+  .badge-primary { @apply badge bg-primary-950/20 text-primary-400 border-primary-500/20; }
+  .badge-green { @apply badge bg-green-950/20 text-green-400 border-green-500/20; }
+  .badge-yellow { @apply badge bg-yellow-950/20 text-yellow-400 border-yellow-500/20; }
+  .badge-gray { @apply badge bg-gray-800/30 text-dark-muted border-dark-border/50; }
 
   /* ─── Skeleton Loading ───────────────────────────────────────────────── */
   .skeleton {
-    @apply bg-gray-200 dark:bg-dark-border rounded animate-pulse;
+    @apply bg-dark-card border border-dark-border rounded animate-pulse;
   }
 
   /* ─── Section ────────────────────────────────────────────────────────── */
@@ -79,7 +79,7 @@
   }
 
   .section-title {
-    @apply text-3xl font-display font-bold text-gray-900 dark:text-dark-text;
+    @apply text-3xl font-display font-bold text-dark-text;
   }
 
   /* ─── Scrollbar ──────────────────────────────────────────────────────── */
@@ -93,11 +93,11 @@
   }
   
   .bg-glass {
-    @apply bg-white/70 dark:bg-black/70 backdrop-blur-xl border border-white/20 dark:border-[#2c2c2e]/50;
+    @apply bg-dark-bg/70 dark:bg-black/70 backdrop-blur-xl border border-dark-border/50;
   }
 
   .shimmer-bg {
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background: linear-gradient(90deg, #0f1016 25%, #1b1d28 50%, #0f1016 75%);
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
   }
