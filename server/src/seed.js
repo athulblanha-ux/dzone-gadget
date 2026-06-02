@@ -130,7 +130,7 @@ const seed = async () => {
 At D-STORE, we aim to offer a seamless shopping experience with fast and reliable delivery, high-quality products, and customer-friendly support policies. Please read the following carefully to understand how we handle shipping, delivery, warranty, returns, and cancellations.
 
 ### Shipping Partners
-To ensure timely and safe delivery, we only ship through reputed courier partners such as DTDC, Delhivery, and others available at checkout. On special requests and for remote locations, we may use India Post EMS Speed Post. However, we cannot guarantee EMS requests as post offices often reject shipments they consider fragile or non-compliant.
+To ensure timely and safe delivery, we only ship through reputed courier partners such as Delhivery, BlueDart, Ecom Express, and others available at checkout. On special requests and for remote locations, we may use India Post EMS Speed Post. However, we cannot guarantee EMS requests as post offices often reject shipments they consider fragile or non-compliant.
 
 ### Shipping Timelines
 - Same-Day Shipping for orders placed before 12 PM (Mon-Sat).
@@ -242,7 +242,7 @@ Email: 📧 support@d-store.store
 ### Our Address
 D-STORE, Mumbai, Maharashtra, India
 🌐 www.dstoreindia.com`, label: 'Return Policy', group: 'policies', type: 'textarea' },
-    { key: 'shipping_policy', value: `Orders are shipped within 1-2 business days. Delivery takes 2-5 business days depending on location. Free shipping above ₹499.`, label: 'Shipping Policy', group: 'policies', type: 'textarea' },
+    { key: 'shipping_policy', value: `Orders are shipped within 1-2 business days. Delivery takes 2-5 business days depending on location.`, label: 'Shipping Policy', group: 'policies', type: 'textarea' },
   ]);
   console.log('⚙️  Site settings seeded');
 
@@ -262,7 +262,7 @@ D-STORE, Mumbai, Maharashtra, India
   // ─── FAQs ───────────────────────────────────────────────────────────────────
   await FAQ.insertMany([
     { question: 'What age groups are your toys suitable for?', answer: 'We carry toys for all age groups from 0-2 years to 13+. Every product has an age recommendation.', category: 'products', order: 1 },
-    { question: 'Do you offer free shipping?', answer: 'Yes! Orders above ₹499 qualify for free shipping.', category: 'shipping', order: 1 },
+    { question: 'What are the shipping charges?', answer: 'Shipping fee is calculated at checkout based on your state/delivery address.', category: 'shipping', order: 1 },
     { question: 'What is your return policy?', answer: 'Please refer to our Return Policy page for details on returns and eligibility.', category: 'returns', order: 1 },
     { question: 'How can I track my order?', answer: 'Once your order is shipped, you\'ll receive a tracking link via email and SMS.', category: 'orders', order: 1 },
     { question: 'Which payment methods do you accept?', answer: 'We accept secure online payments via Razorpay (UPI, credit/debit cards, netbanking).', category: 'payments', order: 1 },

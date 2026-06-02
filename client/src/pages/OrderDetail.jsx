@@ -101,17 +101,37 @@ export default function OrderDetail() {
           <div className="card p-5"><h3 className="font-semibold mb-3 dark:text-dark-text">Shipping Address</h3><p className="text-sm text-gray-600 dark:text-dark-muted">{data.shippingAddress.fullName}<br/>{data.shippingAddress.addressLine1}<br/>{data.shippingAddress.city}, {data.shippingAddress.state} - {data.shippingAddress.pincode}<br/>Phone: {data.shippingAddress.phone}</p></div>
           <div className="card p-5">
             <h3 className="font-semibold mb-3 dark:text-dark-text">Payment Info</h3>
-            <p className="text-sm text-gray-600 dark:text-dark-muted">
-              Method: {data.paymentMethod.toUpperCase()}<br/>
-              Status: <span className={data.paymentStatus === 'paid' ? 'text-green-500 font-semibold' : 'text-yellow-500'}>{data.paymentStatus}</span>
-            </p>
-            {data.paymentMethod === 'razorpay' && data.paymentStatus === 'pending' && data.status !== 'cancelled' && (
+            <div className="text-sm text-gray-600 dark:text-dark-muted space-y-1.5">
+              <p>
+                Method: <span className="font-semibold capitalize">{data.paymentMethod === 'partial_cod' ? 'Partial COD' : data.paymentMethod}</span>
+              </p>
+              <p>
+                Status: <span className={
+                  data.paymentStatus === 'paid' || data.paymentStatus === 'partially_paid' 
+                    ? 'text-green-500 font-semibold capitalize' 
+                    : 'text-yellow-500 capitalize'
+                }>{data.paymentStatus.replace('_', ' ')}</span>
+              </p>
+              {data.paymentMethod === 'partial_cod' && (
+                <div className="border-t border-gray-100 dark:border-dark-border mt-2 pt-2 text-xs space-y-1">
+                  <div className="flex justify-between">
+                    <span>Paid Advance:</span>
+                    <span className="font-medium text-gray-900 dark:text-dark-text">₹{data.advanceAmount?.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>COD Balance Due:</span>
+                    <span className="font-medium text-gray-900 dark:text-dark-text">₹{data.codBalance?.toLocaleString()}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+            {(data.paymentMethod === 'razorpay' || data.paymentMethod === 'partial_cod') && data.paymentStatus === 'pending' && data.status !== 'cancelled' && (
               <button 
                 onClick={() => handlePayNow(data)}
                 disabled={payLoading}
                 className="mt-3 w-full bg-primary-500 hover:bg-primary-600 text-white font-medium py-2 px-4 rounded-xl text-xs transition-colors flex items-center justify-center gap-1 shadow-sm"
               >
-                {payLoading ? 'Processing...' : 'Pay Now'}
+                {payLoading ? 'Processing...' : (data.paymentMethod === 'partial_cod' ? 'Pay Advance Now' : 'Pay Now')}
               </button>
             )}
           </div>

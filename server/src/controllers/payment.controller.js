@@ -15,6 +15,8 @@ exports.createRazorpayOrder = asyncHandler(async (req, res) => {
   const keySecret = process.env.RAZORPAY_KEY_SECRET || 'rzp_test_stubsecret123';
   const isMock = keyId.startsWith('rzp_test_stub');
 
+  const amountToPay = order.paymentMethod === 'partial_cod' ? order.advanceAmount : order.total;
+
   if (isMock) {
     const mockOrderId = `order_mock_${Math.random().toString(36).substr(2, 9)}`;
     order.paymentOrderId = mockOrderId;
@@ -22,7 +24,7 @@ exports.createRazorpayOrder = asyncHandler(async (req, res) => {
     return res.json({
       success: true,
       razorpayOrderId: mockOrderId,
-      amount: Math.round(order.total * 100),
+      amount: Math.round(amountToPay * 100),
       currency: 'INR',
       keyId: keyId,
       isMock: true
@@ -31,7 +33,7 @@ exports.createRazorpayOrder = asyncHandler(async (req, res) => {
 
   // Real Razorpay integration
   const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret });
-  const rzpOrder = await razorpay.orders.create({ amount: Math.round(order.total * 100), currency: 'INR', receipt: order.orderNumber });
+  const rzpOrder = await razorpay.orders.create({ amount: Math.round(amountToPay * 100), currency: 'INR', receipt: order.orderNumber });
   order.paymentOrderId = rzpOrder.id;
   await order.save();
   res.json({ success: true, razorpayOrderId: rzpOrder.id, amount: rzpOrder.amount, currency: 'INR', keyId: keyId });
@@ -52,10 +54,19 @@ exports.verifyRazorpayPayment = asyncHandler(async (req, res) => {
   const order = await Order.findById(orderId);
   if (!order) return res.status(404).json({ success: false, message: 'Order not found.' });
 
-  order.paymentStatus = 'paid';
+  if (order.paymentMethod === 'partial_cod') {
+    order.paymentStatus = 'partially_paid';
+  } else {
+    order.paymentStatus = 'paid';
+  }
   order.paymentId = razorpay_payment_id || `pay_mock_${Math.random().toString(36).substr(2, 9)}`;
   order.status = 'confirmed';
-  order.statusHistory.push({ status: 'confirmed', message: `Payment received via Razorpay${isMock ? ' (Mock Mode)' : ''}.` });
+  order.statusHistory.push({ 
+    status: 'confirmed', 
+    message: order.paymentMethod === 'partial_cod' 
+      ? `Partial COD advance of ₹${order.advanceAmount} received via Razorpay${isMock ? ' (Mock Mode)' : ''}. Remaining ₹${order.codBalance} COD due on delivery.`
+      : `Payment received via Razorpay${isMock ? ' (Mock Mode)' : ''}.` 
+  });
   await order.save();
 
   res.json({ success: true, message: 'Payment verified.', order });

@@ -49,9 +49,17 @@ exports.createOrder = asyncHandler(async (req, res) => {
 
   const total = subtotal + shippingFee - discountAmount;
 
+  let advanceAmount = 0;
+  let codBalance = 0;
+  if (paymentMethod === 'partial_cod') {
+    advanceAmount = Math.min(200, total);
+    codBalance = total - advanceAmount;
+  }
+
   const order = await Order.create({
     user: req.user?._id || undefined, items: enrichedItems, shippingAddress, paymentMethod,
     subtotal, shippingFee, discountAmount, gstAmount, total, coupon: couponData, notes,
+    advanceAmount, codBalance,
     statusHistory: [{ status: 'placed', message: 'Order placed successfully.' }],
   });
 

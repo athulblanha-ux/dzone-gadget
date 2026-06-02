@@ -41,6 +41,8 @@ export default function Checkout() {
   }, [form.state, total, items]);
 
   const grandTotal = total + shippingFee;
+  const advanceAmount = form.paymentMethod === 'partial_cod' ? Math.min(200, grandTotal) : grandTotal;
+  const codBalance = form.paymentMethod === 'partial_cod' ? grandTotal - advanceAmount : 0;
 
   if (items.length === 0) {
     navigate('/cart');
@@ -71,7 +73,7 @@ export default function Checkout() {
           navigate(`/shop`);
           toast.success(`Check ${form.email} for order details!`, { duration: 6000 });
         }
-      } else if (form.paymentMethod === 'razorpay') {
+      } else if (form.paymentMethod === 'razorpay' || form.paymentMethod === 'partial_cod') {
         const { data: orderResponse } = await api.post('/orders', orderData);
         const { data: rzpData } = await api.post('/payments/razorpay/create-order', { orderId: orderResponse.order._id });
         
@@ -92,14 +94,14 @@ export default function Checkout() {
             amount: rzpData.amount,
             currency: 'INR',
             name: 'D-STORE',
-            description: 'D-STORE Order Payment',
+            description: form.paymentMethod === 'partial_cod' ? 'D-STORE Partial COD Advance' : 'D-STORE Order Payment',
             order_id: rzpData.razorpayOrderId,
             handler: async (response) => {
               await api.post('/payments/razorpay/verify', { ...response, orderId: orderResponse.order._id });
               clearCart();
-              toast.success('Payment successful! Order placed. 🎉');
+              toast.success(form.paymentMethod === 'partial_cod' ? 'Advance paid! Order placed. 🎉' : 'Payment successful! Order placed. 🎉');
               if (isAuthenticated) {
-                navigate(`/orders`);
+                navigate(`/orders/${orderResponse.order._id}`);
               } else {
                 navigate(`/shop`);
                 toast.success(`Check ${form.email} for order details!`, { duration: 6000 });
@@ -189,13 +191,63 @@ export default function Checkout() {
             <div className="card p-6">
               <h2 className="font-semibold text-lg mb-4 dark:text-dark-text">Payment Method</h2>
               <div className="space-y-3">
-                <label className="flex items-center gap-3 p-3 border border-primary-500 dark:border-dark-border bg-primary-50/10 rounded-xl cursor-default">
-                  <input type="radio" name="payment" value="razorpay" checked={true} readOnly className="accent-primary-500" />
-                  <span className="font-medium dark:text-dark-text">Pay Online (UPI, Cards, Netbanking)</span>
+                <label 
+                  onClick={() => setForm(p => ({ ...p, paymentMethod: 'razorpay' }))} 
+                  className={`flex items-start gap-3 p-4 border rounded-2xl cursor-pointer transition-all ${
+                    form.paymentMethod === 'razorpay' 
+                      ? 'border-primary-500 bg-primary-50/10 dark:bg-primary-950/10' 
+                      : 'border-gray-200 dark:border-dark-border hover:border-gray-300'
+                  }`}
+                >
+                  <input 
+                    type="radio" 
+                    name="payment" 
+                    value="razorpay" 
+                    checked={form.paymentMethod === 'razorpay'} 
+                    onChange={() => {}} 
+                    className="accent-primary-500 mt-1" 
+                  />
+                  <div>
+                    <span className="font-semibold block dark:text-dark-text text-sm">Pay Online (UPI, Cards, Netbanking)</span>
+                    <span className="text-xs text-gray-500 dark:text-dark-muted block mt-1">Pay full amount online for faster processing.</span>
+                  </div>
+                </label>
+
+                <label 
+                  onClick={() => setForm(p => ({ ...p, paymentMethod: 'partial_cod' }))} 
+                  className={`flex items-start gap-3 p-4 border rounded-2xl cursor-pointer transition-all ${
+                    form.paymentMethod === 'partial_cod' 
+                      ? 'border-primary-500 bg-primary-50/10 dark:bg-primary-950/10' 
+                      : 'border-gray-200 dark:border-dark-border hover:border-gray-300'
+                  }`}
+                >
+                  <input 
+                    type="radio" 
+                    name="payment" 
+                    value="partial_cod" 
+                    checked={form.paymentMethod === 'partial_cod'} 
+                    onChange={() => {}} 
+                    className="accent-primary-500 mt-1" 
+                  />
+                  <div>
+                    <span className="font-semibold block dark:text-dark-text text-sm">Partial Cash on Delivery (COD)</span>
+                    <span className="text-xs text-gray-500 dark:text-dark-muted block mt-1">
+                      Pay ₹{Math.min(200, grandTotal).toLocaleString()} advance online to confirm order, balance ₹{Math.max(0, grandTotal - Math.min(200, grandTotal)).toLocaleString()} on delivery.
+                    </span>
+                  </div>
                 </label>
               </div>
             </div>
-            <button type="submit" disabled={loading || calculatingShipping} className="btn-primary w-full text-lg py-4">{loading ? 'Processing...' : (calculatingShipping ? 'Calculating...' : `Place Order (₹${grandTotal.toLocaleString()})`)}</button>
+            <button type="submit" disabled={loading || calculatingShipping} className="btn-primary w-full text-lg py-4 shadow-lg shadow-primary-500/20">
+              {loading 
+                ? 'Processing...' 
+                : calculatingShipping 
+                  ? 'Calculating...' 
+                  : form.paymentMethod === 'partial_cod'
+                    ? `Pay Advance & Place Order (₹${advanceAmount.toLocaleString()})`
+                    : `Place Order (₹${grandTotal.toLocaleString()})`
+              }
+            </button>
             </form>
           </div>
           
@@ -215,6 +267,18 @@ export default function Checkout() {
                 <div className="flex justify-between text-gray-600 dark:text-dark-muted"><span>Subtotal</span><span>₹{total.toLocaleString()}</span></div>
                 <div className="flex justify-between text-gray-600 dark:text-dark-muted"><span>Shipping</span><span>{calculatingShipping ? 'Calculating...' : (shippingFee === 0 ? 'FREE' : `₹${shippingFee}`)}</span></div>
                 <div className="flex justify-between text-xl font-bold pt-4 dark:text-dark-text border-t border-gray-200 dark:border-dark-border"><span>Total</span><span className="text-primary-500">₹{grandTotal.toLocaleString()}</span></div>
+                {form.paymentMethod === 'partial_cod' && (
+                  <div className="border-t border-dashed border-gray-200 dark:border-dark-border mt-3 pt-3 space-y-2 text-sm">
+                    <div className="flex justify-between text-green-600 dark:text-green-400 font-medium">
+                      <span>Pay Advance Now</span>
+                      <span>₹{advanceAmount.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between text-gray-600 dark:text-dark-muted font-medium">
+                      <span>Pay Balance on Delivery</span>
+                      <span>₹{codBalance.toLocaleString()}</span>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

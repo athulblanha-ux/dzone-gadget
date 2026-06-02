@@ -73,7 +73,7 @@ exports.calculateShippingFee = async (items, state, subtotal) => {
     freeThreshold = rule.freeShippingThreshold;
   }
 
-  let totalShippingFee = subtotal >= freeThreshold ? 0 : baseFee;
+  let totalShippingFee = baseFee;
 
   if (items && items.length > 0) {
     for (const item of items) {
