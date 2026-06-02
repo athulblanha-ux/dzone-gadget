@@ -69,7 +69,9 @@ exports.createOrder = asyncHandler(async (req, res) => {
 
   const customerEmail = req.user ? req.user.email : shippingAddress.email;
   const customerName = req.user ? req.user.name : shippingAddress.fullName;
-  try { await sendEmail({ to: customerEmail, subject: `✅ Order Confirmed — ${order.orderNumber}`, template: 'orderConfirmed', data: { name: customerName, order } }); } catch (_) {}
+  if (customerEmail) {
+    try { await sendEmail({ to: customerEmail, subject: `✅ Order Confirmed — ${order.orderNumber}`, template: 'orderConfirmed', data: { name: customerName, order } }); } catch (_) {}
+  }
   res.status(201).json({ success: true, order });
 });
 

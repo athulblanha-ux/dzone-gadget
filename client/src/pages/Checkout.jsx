@@ -71,7 +71,11 @@ export default function Checkout() {
           navigate(`/orders/${data.order._id}`);
         } else {
           navigate(`/shop`);
-          toast.success(`Check ${form.email} for order details!`, { duration: 6000 });
+          if (form.email) {
+            toast.success(`Check ${form.email} for order details!`, { duration: 6000 });
+          } else {
+            toast.success('Order placed successfully! 🎉', { duration: 6000 });
+          }
         }
       } else if (form.paymentMethod === 'razorpay' || form.paymentMethod === 'partial_cod') {
         const { data: orderResponse } = await api.post('/orders', orderData);
@@ -104,7 +108,11 @@ export default function Checkout() {
                 navigate(`/orders/${orderResponse.order._id}`);
               } else {
                 navigate(`/shop`);
-                toast.success(`Check ${form.email} for order details!`, { duration: 6000 });
+                if (form.email) {
+                  toast.success(`Check ${form.email} for order details!`, { duration: 6000 });
+                } else {
+                  toast.success('Order placed successfully! 🎉', { duration: 6000 });
+                }
               }
             },
             prefill: { name: form.fullName, email: form.email, contact: form.phone },
@@ -138,7 +146,7 @@ export default function Checkout() {
               <h2 className="font-semibold text-lg mb-4 dark:text-dark-text">Shipping Address</h2>
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2"><input placeholder="Full Name" value={form.fullName} onChange={e => setForm(p => ({...p, fullName:e.target.value}))} className="input" required /></div>
-                <div className="col-span-2"><input type="email" placeholder="Email Address" value={form.email} onChange={e => setForm(p => ({...p, email:e.target.value}))} className="input" required /></div>
+                <div className="col-span-2"><input type="email" placeholder="Email Address (Optional)" value={form.email} onChange={e => setForm(p => ({...p, email:e.target.value}))} className="input" /></div>
                 <div className="col-span-2"><input type="tel" placeholder="Phone Number" value={form.phone} onChange={e => setForm(p => ({...p, phone:e.target.value}))} className="input" required /></div>
                 <div className="col-span-2"><input placeholder="Address Line 1" value={form.addressLine1} onChange={e => setForm(p => ({...p, addressLine1:e.target.value}))} className="input" required /></div>
                 <div className="col-span-2"><input placeholder="Address Line 2 (Optional)" value={form.addressLine2} onChange={e => setForm(p => ({...p, addressLine2:e.target.value}))} className="input" /></div>
@@ -357,10 +365,14 @@ export default function Checkout() {
                     clearCart();
                     toast.success('Payment successful! Order placed. 🎉');
                     if (isAuthenticated) {
-                      navigate(`/orders`);
+                      navigate(`/orders/${mockPaymentData.orderId}`);
                     } else {
                       navigate(`/shop`);
-                      toast.success(`Check ${mockPaymentData.email} for order details!`, { duration: 6000 });
+                      if (mockPaymentData.email) {
+                        toast.success(`Check ${mockPaymentData.email} for order details!`, { duration: 6000 });
+                      } else {
+                        toast.success('Order placed successfully! 🎉', { duration: 6000 });
+                      }
                     }
                   } catch (err) {
                     toast.error(err.response?.data?.message || err.message || 'Payment verification failed');
