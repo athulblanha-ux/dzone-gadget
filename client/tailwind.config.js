@@ -6,32 +6,32 @@ export default {
     extend: {
       colors: {
         primary: {
-          50: '#f0feff',
-          100: '#e0fdff',
-          200: '#bdfaff',
-          300: '#80f5ff',
-          400: '#33f2ff',
-          500: '#00f0ff', // Neon Cyan
-          600: '#00b8d4',
-          700: '#008b9c',
-          800: '#005f6b',
-          900: '#00363d',
+          50: '#f3f2ff',
+          100: '#dedaff',
+          200: '#bbb3ff',
+          300: '#998eff',
+          400: '#8172ff',
+          500: '#6c5ce7', // Royal Violet
+          600: '#5b4cd8',
+          700: '#4839bd',
+          800: '#35279e',
+          900: '#21187d',
         },
         accent: {
           pink: '#ff007f',
           magenta: '#ff0055',
           purple: '#bc00dd',
           yellow: '#ffe600',
-          blue: '#00f0ff',
-          green: '#39ff14', // Neon Green
-          orange: '#ff5e00',
+          blue: '#00d2ff',
+          green: '#20c997',
+          orange: '#fd7e14',
         },
         dark: {
-          bg: '#050508', // Pure dark cyber black
-          card: '#0f1016', // Slate dark card
-          border: '#1b1d28', // Glowing cyber border reference
-          text: '#f0f1f7',
-          muted: '#7b7e8f',
+          bg: '#060608', // Framer space dark
+          card: '#0f0f14', // Framer slate card
+          border: 'rgba(255, 255, 255, 0.08)', // Ultra thin silver-white borders
+          text: '#ffffff',
+          muted: '#888899',
         },
       },
       fontFamily: {
@@ -39,9 +39,9 @@ export default {
         display: ['Poppins', 'system-ui', 'sans-serif'],
       },
       backgroundImage: {
-        'gradient-primary': 'linear-gradient(135deg, #00f0ff 0%, #ff007f 100%)', // Cyan to Pink
-        'gradient-purple': 'linear-gradient(135deg, #bc00dd 0%, #00f0ff 100%)', // Violet to Cyan
-        'gradient-dark': 'linear-gradient(135deg, #0f1016 0%, #050508 100%)',
+        'gradient-primary': 'linear-gradient(135deg, #6c5ce7 0%, #00d2ff 100%)', // Violet to Cyan
+        'gradient-purple': 'linear-gradient(135deg, #8a2be2 0%, #6c5ce7 100%)',
+        'gradient-dark': 'linear-gradient(135deg, #0f0f14 0%, #060608 100%)',
       },
       animation: {
         'float': 'float 4s ease-in-out infinite',
@@ -70,13 +70,12 @@ export default {
         },
       },
       boxShadow: {
-        'glow': '0 0 20px rgba(0, 240, 255, 0.45)',
-        'glow-cyan': '0 0 15px rgba(0, 240, 255, 0.45)',
-        'glow-pink': '0 0 15px rgba(255, 0, 127, 0.45)',
-        'glow-yellow': '0 0 20px rgba(255, 230, 0, 0.25)',
-        'card': '0 4px 24px rgba(0, 0, 0, 0.4)',
-        'card-dark': '0 4px 24px rgba(0, 0, 0, 0.7)',
-        'border-glow': '0 0 8px rgba(0, 240, 255, 0.2)',
+        'glow': '0 0 20px rgba(108, 92, 231, 0.4)',
+        'framer-shadow': '0 0 0 1px rgba(255, 255, 255, 0.08), 0 8px 30px rgba(0, 0, 0, 0.5)',
+        'framer-shadow-hover': '0 0 0 1px rgba(255, 255, 255, 0.16), 0 0 25px rgba(108, 92, 231, 0.15), 0 12px 40px rgba(0, 0, 0, 0.7)',
+        'card': '0 0 0 1px rgba(255, 255, 255, 0.08), 0 4px 24px rgba(0, 0, 0, 0.4)',
+        'card-dark': '0 0 0 1px rgba(255, 255, 255, 0.12), 0 8px 30px rgba(0, 0, 0, 0.7)',
+        'border-glow': '0 0 0 1px rgba(108, 92, 231, 0.3), 0 0 12px rgba(108, 92, 231, 0.1)',
       },
       borderRadius: {
         '2xl': '1rem',
