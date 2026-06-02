@@ -262,48 +262,46 @@ function FlashSaleBanner({ products }) {
 
   return (
     <section className="section !py-0">
-      <div className="bg-gradient-to-r from-primary-500 to-accent-purple rounded-3xl overflow-hidden">
-        <div className="px-8 py-10 flex flex-col lg:flex-row items-center gap-8">
-          <div className="text-white text-center lg:text-left">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-3xl">⚡</span>
-              <span className="font-display font-bold text-2xl">Flash Sale!</span>
-            </div>
-            <p className="text-white/90 mb-4">Limited time deals — don't miss out!</p>
-            <div className="flex gap-3 justify-center lg:justify-start">
-              {[{ label: 'Hours', value: pad(timeLeft.h) }, { label: 'Mins', value: pad(timeLeft.m) }, { label: 'Secs', value: pad(timeLeft.s) }].map(({ label, value }) => (
-                <div key={label} className="bg-white/20 rounded-xl px-4 py-3 text-center min-w-[60px]">
-                  <div className="font-display font-bold text-2xl">{value}</div>
-                  <div className="text-xs text-white/80">{label}</div>
-                </div>
-              ))}
-            </div>
+      <div className="card px-8 py-10 flex flex-col lg:flex-row items-center gap-8">
+        <div className="text-white text-center lg:text-left flex-shrink-0">
+          <div className="flex items-center justify-center lg:justify-start gap-2 mb-2">
+            <span className="text-3xl">⚡</span>
+            <span className="font-display font-bold text-2xl text-dark-text">Flash Sale!</span>
           </div>
-          {products?.length > 0 && (
-            <div className="flex gap-4 overflow-x-auto hide-scrollbar">
-              {products.slice(0, 4).map((p) => (
-                <Link
-                  key={p._id}
-                  to={`/product/${p.slug}`}
-                  className="bg-white rounded-2xl p-3 flex-shrink-0 w-36 hover:shadow-lg transition-shadow"
-                >
-                  <div className="aspect-square bg-gray-50 rounded-xl mb-2 overflow-hidden">
-                    {p.images?.[0]?.url ? (
-                      <img src={p.images[0].url} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center"><img src="/logo.png" className="w-12 h-12 object-contain opacity-50" alt="logo" /></div>
-                    )}
-                  </div>
-                  <p className="text-xs font-medium text-gray-800 line-clamp-1">{p.name}</p>
-                  <p className="text-primary-500 font-bold text-sm">₹{(p.salePrice || p.price).toLocaleString()}</p>
-                </Link>
-              ))}
-            </div>
-          )}
-          <Link to="/shop?sale=true" className="flex-shrink-0 bg-white text-primary-500 font-bold px-6 py-3 rounded-2xl hover:shadow-xl transition-all">
-            Shop Now
-          </Link>
+          <p className="text-dark-muted mb-4">Limited time deals — don't miss out!</p>
+          <div className="flex gap-3 justify-center lg:justify-start">
+            {[{ label: 'Hours', value: pad(timeLeft.h) }, { label: 'Mins', value: pad(timeLeft.m) }, { label: 'Secs', value: pad(timeLeft.s) }].map(({ label, value }) => (
+              <div key={label} className="bg-white/5 border border-white/[0.06] rounded-xl px-4 py-3 text-center min-w-[60px] backdrop-blur-md">
+                <div className="font-display font-bold text-2xl text-dark-text">{value}</div>
+                <div className="text-xs text-dark-muted">{label}</div>
+              </div>
+            ))}
+          </div>
         </div>
+        {products?.length > 0 && (
+          <div className="flex gap-4 overflow-x-auto hide-scrollbar py-2">
+            {products.slice(0, 4).map((p) => (
+              <Link
+                key={p._id}
+                to={`/product/${p.slug}`}
+                className="bg-[#121217]/50 border border-white/[0.06] rounded-2xl p-3 flex-shrink-0 w-36 hover:shadow-framer-shadow-hover hover:scale-[1.02] active:scale-95 transition-all duration-300 backdrop-blur-md"
+              >
+                <div className="aspect-square bg-white/5 rounded-xl mb-2 overflow-hidden border border-white/[0.03]">
+                  {p.images?.[0]?.url ? (
+                    <img src={p.images[0].url} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center"><img src="/logo.png" className="w-12 h-12 object-contain opacity-50" alt="logo" /></div>
+                  )}
+                </div>
+                <p className="text-xs font-medium text-dark-text line-clamp-1">{p.name}</p>
+                <p className="text-primary-400 font-bold text-sm">₹{(p.salePrice || p.price).toLocaleString()}</p>
+              </Link>
+            ))}
+          </div>
+        )}
+        <Link to="/shop?sale=true" className="flex-shrink-0 bg-white hover:bg-white/90 text-[#060608] font-bold px-6 py-3 rounded-2xl hover:scale-[1.02] active:scale-95 transition-all duration-300">
+          Shop Now
+        </Link>
       </div>
     </section>
   );
