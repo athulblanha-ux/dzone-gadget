@@ -1,28 +1,7 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
-import { FiInstagram, FiFacebook, FiTwitter, FiYoutube, FiMail, FiPhone, FiMapPin, FiSend } from 'react-icons/fi';
-import api from '../../lib/api';
-import toast from 'react-hot-toast';
+import { FiInstagram, FiFacebook, FiTwitter, FiYoutube, FiMail, FiPhone, FiMapPin } from 'react-icons/fi';
 
 export default function Footer() {
-  const [email, setEmail] = useState('');
-  const [subscribing, setSubscribing] = useState(false);
-
-  const handleSubscribe = async (e) => {
-    e.preventDefault();
-    if (!email) return;
-    setSubscribing(true);
-    try {
-      await api.post('/newsletters/subscribe', { email, source: 'footer' });
-      toast.success('Subscribed! Check your inbox for 10% off.');
-      setEmail('');
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Subscription failed.');
-    } finally {
-      setSubscribing(false);
-    }
-  };
-
   const links = {
     'Quick Links': [
       { label: 'Home', to: '/' },
@@ -58,25 +37,6 @@ export default function Footer() {
             <p className="text-dark-muted text-sm leading-relaxed mb-6">
               Where play comes to life. Discover premium, safe, and fun toys for every child's imagination.
             </p>
-
-            {/* Newsletter */}
-            <p className="text-dark-text font-semibold mb-3">Get 10% off your first order!</p>
-            <form onSubmit={handleSubscribe} className="flex gap-2">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Your email..."
-                className="flex-1 px-4 py-2.5 rounded-xl bg-dark-bg border border-dark-border text-dark-text placeholder-dark-muted text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
-              />
-              <button
-                type="submit"
-                disabled={subscribing}
-                className="btn-primary py-2.5 px-4"
-              >
-                {subscribing ? '...' : <FiSend size={16} />}
-              </button>
-            </form>
 
             {/* Social */}
             <div className="flex gap-3 mt-6">
