@@ -62,7 +62,7 @@ export default function Settings() {
             <div key={group} className="card p-6">
               <h2 className="text-lg font-bold mb-4 capitalize dark:text-white border-b dark:border-dark-border pb-2">{group}</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {data.filter(s => s.group === group).map(setting => (
+                {data.filter(s => s.group === group && s.key !== 'free_shipping_threshold').map(setting => (
                   <div key={setting.key} className={setting.type === 'textarea' ? 'col-span-1 md:col-span-2' : ''}>
                     <label className="label">{setting.label}</label>
                     {setting.type === 'textarea' ? (

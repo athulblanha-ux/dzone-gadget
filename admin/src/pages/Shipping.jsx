@@ -7,7 +7,7 @@ import api from '../lib/api';
 export default function Shipping() {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
-  const [currentRule, setCurrentRule] = useState({ state: '', baseFee: 49, freeShippingThreshold: 499 });
+  const [currentRule, setCurrentRule] = useState({ state: '', baseFee: 49, freeShippingThreshold: 999999 });
 
   const { data: rules, isLoading } = useQuery({
     queryKey: ['shippingRules'],
@@ -20,7 +20,7 @@ export default function Shipping() {
       queryClient.invalidateQueries(['shippingRules']);
       toast.success('Shipping rule added');
       setIsEditing(false);
-      setCurrentRule({ state: '', baseFee: 49, freeShippingThreshold: 499 });
+      setCurrentRule({ state: '', baseFee: 49, freeShippingThreshold: 999999 });
     },
     onError: (err) => toast.error(err.response?.data?.message || 'Failed to add rule')
   });
@@ -31,7 +31,7 @@ export default function Shipping() {
       queryClient.invalidateQueries(['shippingRules']);
       toast.success('Shipping rule updated');
       setIsEditing(false);
-      setCurrentRule({ state: '', baseFee: 49, freeShippingThreshold: 499 });
+      setCurrentRule({ state: '', baseFee: 49, freeShippingThreshold: 999999 });
     },
     onError: (err) => toast.error(err.response?.data?.message || 'Failed to update rule')
   });
@@ -66,7 +66,7 @@ export default function Shipping() {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold dark:text-white">Shipping Rules</h1>
         <button 
-          onClick={() => { setIsEditing(true); setCurrentRule({ state: '', baseFee: 49, freeShippingThreshold: 499 }); }} 
+          onClick={() => { setIsEditing(true); setCurrentRule({ state: '', baseFee: 49, freeShippingThreshold: 999999 }); }} 
           className="btn-primary flex items-center gap-2"
         >
           <FiPlus /> Add Rule
@@ -76,7 +76,7 @@ export default function Shipping() {
       {isEditing && (
         <div className="card p-6 border-2 border-primary-500">
           <h2 className="text-xl font-bold mb-4 dark:text-white">{currentRule._id ? 'Edit' : 'Add'} Shipping Rule</h2>
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="label">State</label>
               <select 
@@ -138,17 +138,6 @@ export default function Shipping() {
                 required 
               />
             </div>
-            <div>
-              <label className="label">Free Shipping Threshold (₹)</label>
-              <input 
-                type="number" 
-                className="input" 
-                value={currentRule.freeShippingThreshold} 
-                onChange={e => setCurrentRule({...currentRule, freeShippingThreshold: Number(e.target.value)})} 
-                min="0"
-                required 
-              />
-            </div>
             <div className="col-span-full flex justify-end gap-3 mt-4">
               <button type="button" onClick={() => setIsEditing(false)} className="btn-secondary">Cancel</button>
               <button type="submit" disabled={createMutation.isLoading || updateMutation.isLoading} className="btn-primary">
@@ -165,7 +154,6 @@ export default function Shipping() {
             <tr>
               <th className="p-4 font-semibold dark:text-gray-300">State</th>
               <th className="p-4 font-semibold dark:text-gray-300">Base Fee</th>
-              <th className="p-4 font-semibold dark:text-gray-300">Free Shipping Threshold</th>
               <th className="p-4 font-semibold text-right dark:text-gray-300">Actions</th>
             </tr>
           </thead>
@@ -176,7 +164,6 @@ export default function Shipping() {
                   {rule.state} {rule.state.toLowerCase() === 'default' && <span className="ml-2 text-xs bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-full">Fallback</span>}
                 </td>
                 <td className="p-4 dark:text-gray-300">₹{rule.baseFee}</td>
-                <td className="p-4 dark:text-gray-300">₹{rule.freeShippingThreshold}</td>
                 <td className="p-4 text-right space-x-2">
                   <button onClick={() => handleEdit(rule)} className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg">
                     <FiEdit2 />
@@ -194,7 +181,7 @@ export default function Shipping() {
             ))}
             {rules?.length === 0 && (
               <tr>
-                <td colSpan="4" className="p-8 text-center text-gray-500">No shipping rules found. Add one above!</td>
+                <td colSpan="3" className="p-8 text-center text-gray-500">No shipping rules found. Add one above!</td>
               </tr>
             )}
           </tbody>
