@@ -116,7 +116,7 @@ const seed = async () => {
     { key: 'site_tagline', value: 'Where Play Comes to Life', label: 'Tagline', group: 'general', type: 'text' },
     { key: 'contact_email', value: 'support@d-store.store', label: 'Support Email', group: 'contact', type: 'text' },
     { key: 'contact_phone', value: '+91 94953 02826', label: 'Phone', group: 'contact', type: 'text' },
-    { key: 'contact_address', value: '123, Toy Street, Mumbai, Maharashtra - 400001', label: 'Address', group: 'contact', type: 'textarea' },
+    { key: 'contact_address', value: '123, Toy Street, Mukkam, Kozhikode, Kerala - 673602', label: 'Address', group: 'contact', type: 'textarea' },
     { key: 'whatsapp_number', value: '919495302826', label: 'WhatsApp Number', group: 'contact', type: 'text' },
     { key: 'instagram_handle', value: 'dstore.in', label: 'Instagram Handle', group: 'social', type: 'text' },
     { key: 'instagram_url', value: 'https://www.instagram.com/dstore.in/', label: 'Instagram URL', group: 'social', type: 'text' },
@@ -130,7 +130,7 @@ const seed = async () => {
 At D-STORE, we aim to offer a seamless shopping experience with fast and reliable delivery, high-quality products, and customer-friendly support policies. Please read the following carefully to understand how we handle shipping, delivery, warranty, returns, and cancellations.
 
 ### Shipping Partners
-To ensure timely and safe delivery, we only ship through reputed courier partners such as Delhivery, BlueDart, Ecom Express, and others available at checkout. On special requests and for remote locations, we may use India Post EMS Speed Post. However, we cannot guarantee EMS requests as post offices often reject shipments they consider fragile or non-compliant.
+To ensure timely and safe delivery, we only ship through reputed courier partners such as DTDC and ST Courier. On special requests and for remote locations, we may use India Post EMS Speed Post. However, we cannot guarantee EMS requests as post offices often reject shipments they consider fragile or non-compliant.
 
 ### Shipping Timelines
 - Same-Day Shipping for orders placed before 12 PM (Mon-Sat).
@@ -240,7 +240,7 @@ Phone / WhatsApp: 📱 +91 94953 02826
 Email: 📧 support@d-store.store
 
 ### Our Address
-D-STORE, Mumbai, Maharashtra, India
+D-STORE, Mukkam, Kozhikode, Kerala, India
 🌐 www.dstoreindia.com`, label: 'Return Policy', group: 'policies', type: 'textarea' },
     { key: 'shipping_policy', value: `Orders are shipped within 1-2 business days. Delivery takes 2-5 business days depending on location.`, label: 'Shipping Policy', group: 'policies', type: 'textarea' },
   ]);

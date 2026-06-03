@@ -14,7 +14,7 @@ export default function Footer() {
     setSubscribing(true);
     try {
       await api.post('/newsletters/subscribe', { email, source: 'footer' });
-      toast.success('Subscribed! 🎉 Check your inbox for 10% off.');
+      toast.success('Subscribed! Check your inbox for 10% off.');
       setEmail('');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Subscription failed.');
@@ -133,11 +133,11 @@ export default function Footer() {
             </span>
             <span className="flex items-center gap-2">
               <FiMapPin size={14} className="text-primary-400" />
-              Mumbai, Maharashtra, India
+              Mukkam, Kozhikode, Kerala, India
             </span>
           </div>
           <p className="text-dark-muted text-sm">
-            © {new Date().getFullYear()} D-STORE. Made with ❤️ in India.
+            © {new Date().getFullYear()} D-STORE. Made with love in India.
           </p>
         </div>
       </div>

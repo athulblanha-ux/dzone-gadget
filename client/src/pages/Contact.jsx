@@ -59,7 +59,7 @@ export default function Contact() {
               <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-500 flex items-center justify-center flex-shrink-0"><FiMapPin size={20} /></div>
               <div>
                 <h3 className="font-bold dark:text-dark-text mb-1">Office</h3>
-                <p className="text-gray-500 dark:text-dark-muted leading-relaxed">{settings?.contact_address || '123, Toy Street, Mumbai, Maharashtra - 400001'}</p>
+                <p className="text-gray-500 dark:text-dark-muted leading-relaxed">{settings?.contact_address || '123, Toy Street, Mukkam, Kozhikode, Kerala - 673602'}</p>
               </div>
             </div>
           </div>

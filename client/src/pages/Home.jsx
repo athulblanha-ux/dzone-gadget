@@ -3,9 +3,25 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
-import { FiArrowRight, FiShoppingBag, FiTruck, FiShield, FiClock, FiInstagram } from 'react-icons/fi';
+import { FiArrowRight, FiShoppingBag, FiTruck, FiShield, FiClock, FiInstagram, FiZap, FiBox, FiUsers, FiGrid, FiBookOpen, FiHeart, FiActivity, FiTarget, FiCpu, FiFeather, FiTv, FiSmile } from 'react-icons/fi';
 import ProductCard from '../components/product/ProductCard';
 import api from '../lib/api';
+
+const getCategoryIcon = (slug, size = 24) => {
+  switch (slug) {
+    case 'action-figures': return <FiUsers size={size} />;
+    case 'building-blocks': return <FiGrid size={size} />;
+    case 'educational-toys': return <FiBookOpen size={size} />;
+    case 'dolls-accessories': return <FiHeart size={size} />;
+    case 'outdoor-sports': return <FiActivity size={size} />;
+    case 'puzzles-games': return <FiTarget size={size} />;
+    case 'remote-control': return <FiCpu size={size} />;
+    case 'arts-crafts': return <FiFeather size={size} />;
+    case 'toys': return <FiSmile size={size} />;
+    case 'gadgets': return <FiTv size={size} />;
+    default: return <FiBox size={size} />;
+  }
+};
 
 // ─── Hero Banner Carousel ──────────────────────────────────────────────────────
 function HeroBanner({ banners }) {
@@ -24,7 +40,6 @@ function HeroBanner({ banners }) {
       ctaText: 'Shop Now',
       ctaLink: '/shop',
       bg: 'from-primary-400 to-accent-purple',
-      emoji: '🎮',
     },
     {
       title: 'New Arrivals This Week',
@@ -32,7 +47,6 @@ function HeroBanner({ banners }) {
       ctaText: 'See New Arrivals',
       ctaLink: '/shop?sort=newest',
       bg: 'from-accent-purple to-accent-blue',
-      emoji: '🎉',
     },
     {
       title: 'Festival Offers',
@@ -40,7 +54,6 @@ function HeroBanner({ banners }) {
       ctaText: 'View Offers',
       ctaLink: '/shop?sale=true',
       bg: 'from-accent-purple to-accent-pink',
-      emoji: '🎪',
     },
   ];
 
@@ -75,14 +88,6 @@ function HeroBanner({ banners }) {
           <div className="absolute inset-0 flex items-center">
             <div className="max-w-7xl mx-auto px-4 sm:px-8 w-full">
               <div className="max-w-xl">
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                  className="text-6xl mb-4"
-                >
-                  {slides[current]?.emoji || ''}
-                </motion.div>
                 <motion.h1
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -183,12 +188,12 @@ function CategoryGrid({ categories }) {
           >
             <Link
               to={`/category/${cat.slug}`}
-              className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white dark:bg-dark-card hover:shadow-lg hover:-translate-y-1 transition-all duration-200 text-center group border border-gray-100 dark:border-dark-border"
+              className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-white/5 border border-white/[0.06] backdrop-blur-md hover:shadow-framer-shadow-hover hover:-translate-y-1 transition-all duration-300 text-center group"
             >
-              <div className="w-14 h-14 rounded-2xl bg-gradient-primary flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
-                {cat.icon || ''}
+              <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/[0.08] backdrop-blur-md flex items-center justify-center text-primary-400 group-hover:scale-110 transition-transform duration-300">
+                {getCategoryIcon(cat.slug)}
               </div>
-              <span className="text-xs font-semibold text-gray-700 dark:text-dark-text leading-tight">
+              <span className="text-xs font-bold text-dark-text leading-tight uppercase tracking-wider">
                 {cat.name}
               </span>
             </Link>
@@ -265,7 +270,7 @@ function FlashSaleBanner({ products }) {
       <div className="card px-8 py-10 flex flex-col lg:flex-row items-center gap-8">
         <div className="text-white text-center lg:text-left flex-shrink-0">
           <div className="flex items-center justify-center lg:justify-start gap-2 mb-2">
-            <span className="text-3xl">⚡</span>
+            <FiZap className="text-primary-400 fill-current animate-pulse-slow text-2xl" />
             <span className="font-display font-bold text-2xl text-dark-text">Flash Sale!</span>
           </div>
           <p className="text-dark-muted mb-4">Limited time deals — don't miss out!</p>
@@ -360,7 +365,7 @@ function Testimonials({ testimonials }) {
   return (
     <section className="section bg-gray-50 dark:bg-dark-card rounded-3xl">
       <div className="text-center mb-10">
-        <h2 className="section-title">Happy Little Customers 💕</h2>
+        <h2 className="section-title">Happy Little Customers</h2>
         <p className="text-gray-500 dark:text-dark-muted mt-2">What parents say about us</p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -459,20 +464,20 @@ export default function Home() {
       <FeaturesStrip />
       <CategoryGrid categories={categoriesData} />
       <ProductsSection
-        title="Featured Toys ✨"
+        title="Featured Toys"
         subtitle="Handpicked by our toy experts"
         products={featuredProducts}
         viewAllLink="/shop?isFeatured=true"
       />
       <FlashSaleBanner products={saleProducts} />
       <ProductsSection
-        title="Trending Now 🔥"
+        title="Trending Now"
         subtitle="What kids are loving this week"
         products={trendingProducts}
         viewAllLink="/shop?isTrending=true"
       />
       <ProductsSection
-        title="New Arrivals 🆕"
+        title="New Arrivals"
         subtitle="Fresh toys just added to our collection"
         products={newArrivals}
         viewAllLink="/shop?sort=newest"

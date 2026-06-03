@@ -154,6 +154,14 @@ export default function Orders() {
                   ))}
                 </div>
               </div>
+
+              <div className="border-t border-gray-100 dark:border-dark-border pt-4 space-y-2 text-sm max-w-xs ml-auto">
+                <div className="flex justify-between text-gray-500"><span>Subtotal:</span><span className="font-semibold text-gray-900 dark:text-white">₹{selectedOrder.subtotal?.toLocaleString()}</span></div>
+                <div className="flex justify-between text-gray-500"><span>Shipping:</span><span className="font-semibold text-gray-900 dark:text-white">{selectedOrder.shippingFee === 0 ? 'FREE' : `₹${selectedOrder.shippingFee}`}</span></div>
+                {selectedOrder.codFee > 0 && <div className="flex justify-between text-gray-500"><span>COD Fee:</span><span className="font-semibold text-gray-900 dark:text-white">₹{selectedOrder.codFee}</span></div>}
+                {selectedOrder.discountAmount > 0 && <div className="flex justify-between text-green-500"><span>Discount:</span><span className="font-semibold">-₹{selectedOrder.discountAmount?.toLocaleString()}</span></div>}
+                <div className="flex justify-between font-bold text-base dark:text-white pt-2 border-t dark:border-dark-border"><span>Total:</span><span className="text-primary-500">₹{selectedOrder.total?.toLocaleString()}</span></div>
+              </div>
             </div>
             <div className="p-4 border-t dark:border-dark-border flex justify-end gap-3 bg-gray-50 dark:bg-dark-bg/50">
               <button onClick={() => setSelectedOrder(null)} className="btn-secondary">Close</button>

@@ -1,7 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
-import api from '../lib/api';
+
 
 export default function Blog() {
   const { data, isLoading } = useQuery({ queryKey: ['blogs'], queryFn: () => api.get('/blogs').then(r => r.data.blogs) });
@@ -10,7 +7,7 @@ export default function Blog() {
     <>
       <Helmet><title>Blog — D-STORE</title></Helmet>
       <div className="bg-gradient-to-b from-accent-purple/10 to-white dark:from-dark-card dark:to-dark-bg py-16 mb-8 text-center px-4">
-        <h1 className="font-display font-bold text-4xl dark:text-dark-text mb-4">D-STORE Blog ✍️</h1>
+        <h1 className="font-display font-bold text-4xl dark:text-dark-text mb-4">D-STORE Blog</h1>
         <p className="text-gray-500 max-w-2xl mx-auto text-lg">Parenting tips, toy reviews, and fun activity ideas for your little ones.</p>
       </div>
 
@@ -24,7 +21,7 @@ export default function Blog() {
             {data?.map(post => (
               <Link key={post._id} to={`/blog/${post.slug}`} className="card overflow-hidden group">
                 <div className="aspect-video bg-gray-100 overflow-hidden relative">
-                  {post.coverImage?.url ? <img src={post.coverImage.url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" /> : <div className="w-full h-full flex items-center justify-center text-4xl">📝</div>}
+                  {post.coverImage?.url ? <img src={post.coverImage.url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" /> : <div className="w-full h-full flex items-center justify-center text-4xl text-primary-400 bg-white/5"><FiFileText /></div>}
                   <div className="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-lg text-xs font-bold text-primary-500">{post.category}</div>
                 </div>
                 <div className="p-6">

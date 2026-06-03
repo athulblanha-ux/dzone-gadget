@@ -40,7 +40,8 @@ export default function Checkout() {
     return () => clearTimeout(timer);
   }, [form.state, total, items]);
 
-  const grandTotal = total + shippingFee;
+  const codFee = form.paymentMethod === 'partial_cod' ? 50 : 0;
+  const grandTotal = total + shippingFee + codFee;
   const advanceAmount = form.paymentMethod === 'partial_cod' ? Math.min(200, grandTotal) : grandTotal;
   const codBalance = form.paymentMethod === 'partial_cod' ? grandTotal - advanceAmount : 0;
 
@@ -274,6 +275,9 @@ export default function Checkout() {
               <div className="border-t border-gray-200 dark:border-dark-border pt-4 space-y-2">
                 <div className="flex justify-between text-gray-600 dark:text-dark-muted"><span>Subtotal</span><span>₹{total.toLocaleString()}</span></div>
                 <div className="flex justify-between text-gray-600 dark:text-dark-muted"><span>Shipping</span><span>{calculatingShipping ? 'Calculating...' : (shippingFee === 0 ? 'FREE' : `₹${shippingFee}`)}</span></div>
+                {codFee > 0 && (
+                  <div className="flex justify-between text-gray-600 dark:text-dark-muted"><span>COD Fee</span><span>₹{codFee}</span></div>
+                )}
                 <div className="flex justify-between text-xl font-bold pt-4 dark:text-dark-text border-t border-gray-200 dark:border-dark-border"><span>Total</span><span className="text-primary-500">₹{grandTotal.toLocaleString()}</span></div>
                 {form.paymentMethod === 'partial_cod' && (
                   <div className="border-t border-dashed border-gray-200 dark:border-dark-border mt-3 pt-3 space-y-2 text-sm">

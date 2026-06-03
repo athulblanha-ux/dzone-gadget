@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiFilter, FiGrid, FiList, FiX, FiChevronDown } from 'react-icons/fi';
+import { FiFilter, FiGrid, FiList, FiX, FiChevronDown, FiSearch } from 'react-icons/fi';
 import ProductCard from '../components/product/ProductCard';
 import api from '../lib/api';
 
@@ -89,7 +89,7 @@ export default function Shop() {
           </div>
         ) : data?.products?.length === 0 ? (
           <div className="text-center py-20">
-            <div className="text-6xl mb-4">🔍</div>
+            <div className="text-primary-500 mb-4 flex justify-center"><FiSearch size={48} /></div>
             <h3 className="text-xl font-semibold dark:text-dark-text mb-2">No products found</h3>
             <p className="text-gray-500">Try adjusting your filters.</p>
             <button onClick={clearFilters} className="btn-primary mt-6">Clear Filters</button>
@@ -125,7 +125,7 @@ export default function Shop() {
                     {categoriesData?.map(cat => (
                       <label key={cat._id} className="flex items-center gap-2 cursor-pointer">
                         <input type="radio" name="category" checked={filters.category === cat._id} onChange={() => updateFilter('category', cat._id)} className="accent-primary-500" />
-                        <span className="text-sm dark:text-dark-text">{cat.icon} {cat.name}</span>
+                        <span className="text-sm dark:text-dark-text">{cat.name}</span>
                       </label>
                     ))}
                   </div>

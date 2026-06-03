@@ -15,7 +15,7 @@ export default function ProductCard({ product }) {
     e.preventDefault();
     if (product.stock === 0) return toast.error('Out of stock');
     addItem(product);
-    toast.success(`${product.name.substring(0, 20)}... added to cart! 🛒`);
+    toast.success(`${product.name.substring(0, 20)}... added to cart!`);
   };
 
   const handleWishlist = async (e) => {
@@ -28,7 +28,7 @@ export default function ProductCard({ product }) {
         // Silently fail if wishlist sync fails
       }
     }
-    toast(inWishlist ? 'Removed from wishlist' : '❤️ Added to wishlist!');
+    toast(inWishlist ? 'Removed from wishlist' : 'Added to wishlist!');
   };
 
   const displayPrice = product.isOnSale && product.salePrice ? product.salePrice : product.price;
@@ -65,7 +65,7 @@ export default function ProductCard({ product }) {
               <span className="bg-accent-green text-white text-xs font-bold px-2 py-1 rounded-lg">NEW</span>
             )}
             {product.isTrending && (
-              <span className="bg-accent-orange text-white text-xs font-bold px-2 py-1 rounded-lg">🔥 Hot</span>
+              <span className="bg-accent-orange text-white text-xs font-bold px-2 py-1 rounded-lg">TRENDING</span>
             )}
             {product.stock === 0 && (
               <span className="bg-gray-500 text-white text-xs font-bold px-2 py-1 rounded-lg">Out of Stock</span>

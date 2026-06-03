@@ -112,6 +112,7 @@ const generateInvoicePDF = (order) => {
 
       addRow('Subtotal:', `₹${order.subtotal.toFixed(2)}`);
       addRow('Shipping:', order.shippingFee === 0 ? 'FREE' : `₹${order.shippingFee.toFixed(2)}`);
+      if (order.codFee > 0) addRow('COD Fee:', `₹${order.codFee.toFixed(2)}`);
       if (order.discountAmount > 0) addRow('Discount:', `-₹${order.discountAmount.toFixed(2)}`);
       addRow('GST:', `₹${order.gstAmount.toFixed(2)}`);
       doc.moveTo(380, y).lineTo(545, y).strokeColor('#ccc').stroke();

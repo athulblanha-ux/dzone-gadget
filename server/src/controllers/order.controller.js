@@ -47,18 +47,21 @@ exports.createOrder = asyncHandler(async (req, res) => {
     return acc + (item.price - base) * item.quantity;
   }, 0) * 100) / 100;
 
-  const total = subtotal + shippingFee - discountAmount;
+  const codFee = (paymentMethod === 'partial_cod' || paymentMethod === 'cod') ? 50 : 0;
+  const total = subtotal + shippingFee + codFee - discountAmount;
 
   let advanceAmount = 0;
   let codBalance = 0;
   if (paymentMethod === 'partial_cod') {
     advanceAmount = Math.min(200, total);
     codBalance = total - advanceAmount;
+  } else if (paymentMethod === 'cod') {
+    codBalance = total;
   }
 
   const order = await Order.create({
     user: req.user?._id || undefined, items: enrichedItems, shippingAddress, paymentMethod,
-    subtotal, shippingFee, discountAmount, gstAmount, total, coupon: couponData, notes,
+    subtotal, shippingFee, codFee, discountAmount, gstAmount, total, coupon: couponData, notes,
     advanceAmount, codBalance,
     statusHistory: [{ status: 'placed', message: 'Order placed successfully.' }],
   });

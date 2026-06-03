@@ -150,6 +150,7 @@ export default function OrderDetail() {
           <div className="border-t border-gray-100 dark:border-dark-border mt-4 pt-4 space-y-2 text-sm">
             <div className="flex justify-between text-gray-500 dark:text-dark-muted"><span>Subtotal</span><span>₹{data.subtotal.toLocaleString()}</span></div>
             <div className="flex justify-between text-gray-500 dark:text-dark-muted"><span>Shipping</span><span>{data.shippingFee === 0 ? 'FREE' : `₹${data.shippingFee}`}</span></div>
+            {data.codFee > 0 && <div className="flex justify-between text-gray-500 dark:text-dark-muted"><span>COD Fee</span><span>₹{data.codFee.toLocaleString()}</span></div>}
             {data.discountAmount > 0 && <div className="flex justify-between text-green-500"><span>Discount</span><span>-₹{data.discountAmount.toLocaleString()}</span></div>}
             <div className="flex justify-between font-bold text-base dark:text-dark-text pt-2 border-t border-gray-100 dark:border-dark-border"><span>Total</span><span className="text-primary-500">₹{data.total.toLocaleString()}</span></div>
           </div>

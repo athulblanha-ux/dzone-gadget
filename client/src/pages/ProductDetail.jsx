@@ -212,16 +212,16 @@ export default function ProductDetail() {
                     <div className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-950/20 text-primary-500 flex items-center justify-center">
                       <FiTruck size={20} />
                     </div>
-                    <div>
+                     <div>
                       <span className="block text-base">Fast & Reliable Delivery</span>
-                      <span className="block text-xs font-normal text-gray-500 dark:text-dark-muted">Delhivery & more</span>
+                      <span className="block text-xs font-normal text-gray-500 dark:text-dark-muted">DTDC & ST Courier</span>
                     </div>
                   </div>
                   {openAccordion === 'delivery' ? <FiChevronUp size={20} className="text-gray-400" /> : <FiChevronDown size={20} className="text-gray-400" />}
                 </button>
                 {openAccordion === 'delivery' && (
                   <div className="p-4 border-t border-gray-100 dark:border-dark-border text-sm text-gray-600 dark:text-dark-muted bg-gray-50/50 dark:bg-dark-bg/20 leading-relaxed animate-fade-in">
-                    We ship all orders within 24-48 hours. We partner with reliable delivery companies including Delhivery, BlueDart, Ecom Express, and Xpressbees to ensure fast and safe transit. Estimated delivery time is 3-5 business days depending on your location. (DTDC is excluded).
+                    We ship all orders within 24-48 hours. We partner with reliable delivery companies including DTDC and ST Courier to ensure fast and safe transit. Estimated delivery time is 3-5 business days depending on your location.
                   </div>
                 )}
               </div>
