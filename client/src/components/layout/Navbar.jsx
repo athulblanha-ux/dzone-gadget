@@ -14,7 +14,7 @@ export default function Navbar() {
 
   const { itemCount } = useCartStore();
   const { items: wishlistItems } = useWishlistStore();
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated, user, logout } = useAuthStore();
   const { theme, toggleTheme } = useThemeStore();
   const navigate = useNavigate();
   const location = useLocation();
@@ -211,7 +211,7 @@ export default function Navbar() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: '100%' }}
             transition={{ type: 'spring', damping: 25 }}
-            className="fixed inset-y-0 right-0 w-72 bg-white dark:bg-dark-card shadow-2xl z-50 flex flex-col pt-20 px-6 gap-4"
+            className="fixed inset-y-0 right-0 w-72 bg-white dark:bg-dark-card shadow-2xl z-50 flex flex-col pt-20 px-6 gap-4 overflow-y-auto"
           >
             <button
               onClick={() => setMobileOpen(false)}
@@ -219,17 +219,80 @@ export default function Navbar() {
             >
               <FiX size={24} />
             </button>
+
+            {isAuthenticated && (
+              <div className="flex items-center gap-3 pb-4 mb-2 border-b border-gray-100 dark:border-dark-border">
+                {user?.avatar?.url ? (
+                  <img src={user.avatar.url} alt={user.name} className="w-10 h-10 rounded-full object-cover" />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-white font-bold text-base flex-shrink-0">
+                    {user?.name?.[0]?.toUpperCase()}
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-gray-800 dark:text-dark-text truncate">{user?.name}</p>
+                  <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                </div>
+              </div>
+            )}
+
             {navLinks.map((link) => (
               <Link
                 key={link.label}
                 to={link.to}
+                onClick={() => setMobileOpen(false)}
                 className="text-lg font-medium py-2 border-b border-gray-100 dark:border-dark-border text-gray-800 dark:text-dark-text hover:text-primary-500 transition-colors"
               >
                 {link.label}
               </Link>
             ))}
-            {!isAuthenticated && (
-              <Link to="/login" className="btn-primary mt-4 text-center">
+
+            {isAuthenticated ? (
+              <>
+                <Link
+                  to="/profile"
+                  onClick={() => setMobileOpen(false)}
+                  className="text-lg font-medium py-2 border-b border-gray-100 dark:border-dark-border text-gray-800 dark:text-dark-text hover:text-primary-500 transition-colors"
+                >
+                  My Profile
+                </Link>
+                <Link
+                  to="/orders"
+                  onClick={() => setMobileOpen(false)}
+                  className="text-lg font-medium py-2 border-b border-gray-100 dark:border-dark-border text-gray-800 dark:text-dark-text hover:text-primary-500 transition-colors"
+                >
+                  My Orders
+                </Link>
+                <Link
+                  to="/wishlist"
+                  onClick={() => setMobileOpen(false)}
+                  className="text-lg font-medium py-2 border-b border-gray-100 dark:border-dark-border text-gray-800 dark:text-dark-text hover:text-primary-500 transition-colors"
+                >
+                  Wishlist
+                </Link>
+                {(user?.role === 'admin' || user?.role === 'moderator') && (
+                  <a
+                    href="https://admin.dstoreindia.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setMobileOpen(false)}
+                    className="text-lg font-medium py-2 border-b border-gray-100 dark:border-dark-border text-gray-800 dark:text-dark-text hover:text-primary-500 transition-colors"
+                  >
+                    Admin Panel
+                  </a>
+                )}
+                <button
+                  onClick={() => {
+                    logout();
+                    setMobileOpen(false);
+                  }}
+                  className="w-full text-left text-lg font-medium py-2 text-red-500 hover:text-red-600 transition-colors"
+                >
+                  Log Out
+                </button>
+              </>
+            ) : (
+              <Link to="/login" onClick={() => setMobileOpen(false)} className="btn-primary mt-4 text-center">
                 Sign In
               </Link>
             )}

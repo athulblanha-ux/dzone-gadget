@@ -149,43 +149,45 @@ export default function Shipping() {
       )}
 
       <div className="card overflow-hidden">
-        <table className="w-full text-left">
-          <thead className="bg-gray-50 dark:bg-dark-bg border-b border-gray-100 dark:border-dark-border">
-            <tr>
-              <th className="p-4 font-semibold dark:text-gray-300">State</th>
-              <th className="p-4 font-semibold dark:text-gray-300">Base Fee</th>
-              <th className="p-4 font-semibold text-right dark:text-gray-300">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100 dark:divide-dark-border">
-            {rules?.map((rule) => (
-              <tr key={rule._id} className="hover:bg-gray-50 dark:hover:bg-dark-bg/50">
-                <td className="p-4 dark:text-gray-300 font-medium">
-                  {rule.state} {rule.state.toLowerCase() === 'default' && <span className="ml-2 text-xs bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-full">Fallback</span>}
-                </td>
-                <td className="p-4 dark:text-gray-300">₹{rule.baseFee}</td>
-                <td className="p-4 text-right space-x-2">
-                  <button onClick={() => handleEdit(rule)} className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg">
-                    <FiEdit2 />
-                  </button>
-                  {rule.state.toLowerCase() !== 'default' && (
-                    <button 
-                      onClick={() => { if(window.confirm('Delete this rule?')) deleteMutation.mutate(rule._id); }} 
-                      className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
-                    >
-                      <FiTrash2 />
-                    </button>
-                  )}
-                </td>
-              </tr>
-            ))}
-            {rules?.length === 0 && (
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead className="bg-gray-50 dark:bg-dark-bg border-b border-gray-100 dark:border-dark-border">
               <tr>
-                <td colSpan="3" className="p-8 text-center text-gray-500">No shipping rules found. Add one above!</td>
+                <th className="p-4 font-semibold dark:text-gray-300">State</th>
+                <th className="p-4 font-semibold dark:text-gray-300">Base Fee</th>
+                <th className="p-4 font-semibold text-right dark:text-gray-300">Actions</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-dark-border">
+              {rules?.map((rule) => (
+                <tr key={rule._id} className="hover:bg-gray-50 dark:hover:bg-dark-bg/50">
+                  <td className="p-4 dark:text-gray-300 font-medium">
+                    {rule.state} {rule.state.toLowerCase() === 'default' && <span className="ml-2 text-xs bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-full">Fallback</span>}
+                  </td>
+                  <td className="p-4 dark:text-gray-300">₹{rule.baseFee}</td>
+                  <td className="p-4 text-right space-x-2">
+                    <button onClick={() => handleEdit(rule)} className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg">
+                      <FiEdit2 />
+                    </button>
+                    {rule.state.toLowerCase() !== 'default' && (
+                      <button 
+                        onClick={() => { if(window.confirm('Delete this rule?')) deleteMutation.mutate(rule._id); }} 
+                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
+                      >
+                        <FiTrash2 />
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+              {rules?.length === 0 && (
+                <tr>
+                  <td colSpan="3" className="p-8 text-center text-gray-500">No shipping rules found. Add one above!</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

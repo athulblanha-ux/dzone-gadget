@@ -84,8 +84,17 @@ export default function Shop() {
         </div>
 
         {isLoading ? (
-          <div className={`grid gap-4 sm:gap-6 ${view === 'grid' ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4' : 'grid-cols-1'}`}>
-            {Array(8).fill(null).map((_, i) => <div key={i} className="card overflow-hidden"><div className="skeleton aspect-square" /><div className="p-4 space-y-2"><div className="skeleton h-3 w-1/3 rounded" /><div className="skeleton h-4 rounded" /><div className="skeleton h-5 w-1/4 rounded" /></div></div>)}
+          <div className={`grid gap-4 sm:gap-6 ${view === 'grid' ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4' : 'grid-cols-1 max-w-4xl'}`}>
+            {Array(8).fill(null).map((_, i) => (
+              <div key={i} className={`card overflow-hidden ${view === 'list' ? 'flex flex-col sm:flex-row' : 'block'}`}>
+                <div className={`skeleton ${view === 'list' ? 'w-full sm:w-48 aspect-square' : 'aspect-square'}`} />
+                <div className="p-4 flex-1 space-y-2">
+                  <div className="skeleton h-3 w-1/3 rounded" />
+                  <div className="skeleton h-4 rounded" />
+                  <div className="skeleton h-5 w-1/4 rounded" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : data?.products?.length === 0 ? (
           <div className="text-center py-20">
@@ -95,8 +104,8 @@ export default function Shop() {
             <button onClick={clearFilters} className="btn-primary mt-6">Clear Filters</button>
           </div>
         ) : (
-          <div className={`grid gap-4 sm:gap-6 ${view === 'grid' ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4' : 'grid-cols-1 max-w-2xl'}`}>
-            {data?.products?.map(p => <ProductCard key={p._id} product={p} />)}
+          <div className={`grid gap-4 sm:gap-6 ${view === 'grid' ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4' : 'grid-cols-1 max-w-4xl'}`}>
+            {data?.products?.map(p => <ProductCard key={p._id} product={p} view={view} />)}
           </div>
         )}
 

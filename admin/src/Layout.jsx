@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { FiHome, FiBox, FiShoppingCart, FiUsers, FiSettings, FiLogOut, FiMenu, FiMoon, FiSun, FiLayers, FiFileText, FiTrendingUp, FiEdit3, FiStar, FiTruck } from 'react-icons/fi';
+import { FiHome, FiBox, FiShoppingCart, FiUsers, FiSettings, FiLogOut, FiMenu, FiMoon, FiSun, FiLayers, FiFileText, FiTrendingUp, FiEdit3, FiStar, FiTruck, FiX } from 'react-icons/fi';
 import { useAuthStore, useThemeStore } from './store';
 
 const NAV_ITEMS = [
@@ -17,13 +17,18 @@ const NAV_ITEMS = [
   { icon: FiSettings, label: 'Settings', path: '/settings' },
 ];
 
-const Sidebar = ({ location, user, handleLogout }) => (
+const Sidebar = ({ location, user, handleLogout, onLinkClick }) => (
   <div className="flex flex-col h-full bg-white dark:bg-dark-card border-r border-gray-200 dark:border-dark-border w-64 flex-shrink-0 transition-colors">
-    <div className="h-16 flex items-center px-6 border-b border-gray-200 dark:border-dark-border">
+    <div className="h-16 flex items-center justify-between px-6 border-b border-gray-200 dark:border-dark-border">
       <span className="text-xl font-bold text-primary-600 dark:text-primary-500 flex items-center gap-2">
         <img src="/logo.png" alt="D-STORE" className="h-8 w-auto object-contain rounded-sm" />
         Admin
       </span>
+      {onLinkClick && (
+        <button onClick={onLinkClick} className="lg:hidden p-1.5 text-gray-500 hover:bg-gray-100 dark:hover:bg-dark-bg rounded-lg">
+          <FiX size={20} />
+        </button>
+      )}
     </div>
     <div className="flex-1 py-4 overflow-y-auto">
       <nav className="px-3 space-y-1">
@@ -31,6 +36,7 @@ const Sidebar = ({ location, user, handleLogout }) => (
           <Link
             key={item.path}
             to={item.path}
+            onClick={onLinkClick}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${
               location.pathname === item.path
                 ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-400'
@@ -71,9 +77,9 @@ export default function Layout() {
       </div>
       
       {sidebarOpen && (
-        <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)}>
+        <div className="fixed inset-0 bg-black/50 z-50 lg:hidden" onClick={() => setSidebarOpen(false)}>
           <div className="h-full w-64 transform transition-transform" onClick={e => e.stopPropagation()}>
-            <Sidebar location={location} user={user} handleLogout={handleLogout} />
+            <Sidebar location={location} user={user} handleLogout={handleLogout} onLinkClick={() => setSidebarOpen(false)} />
           </div>
         </div>
       )}

@@ -124,8 +124,8 @@ export default function Blogs() {
               <button onClick={() => setIsModalOpen(false)}><FiX /></button>
             </div>
             <form onSubmit={handleSubmit} className="p-4 overflow-y-auto space-y-4">
-              <div className="grid grid-cols-3 gap-6">
-                <div className="col-span-2 space-y-4">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2 space-y-4">
                   <div>
                     <label className="label">Title *</label>
                     <input type="text" className="input" value={form.title} onChange={e=>setForm({...form, title:e.target.value})} required />
