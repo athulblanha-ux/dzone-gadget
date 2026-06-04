@@ -27,12 +27,6 @@ const getCategoryIcon = (slug, size = 24) => {
 function HeroBanner({ banners }) {
   const [current, setCurrent] = useState(0);
 
-  useEffect(() => {
-    if (!banners?.length) return;
-    const timer = setInterval(() => setCurrent((c) => (c + 1) % banners.length), 5000);
-    return () => clearInterval(timer);
-  }, [banners]);
-
   const defaultSlides = [
     {
       title: 'Spark Every Imagination',
@@ -58,6 +52,12 @@ function HeroBanner({ banners }) {
   ];
 
   const slides = banners?.length ? banners : defaultSlides;
+
+  useEffect(() => {
+    if (!slides?.length) return;
+    const timer = setInterval(() => setCurrent((c) => (c + 1) % slides.length), 2000);
+    return () => clearInterval(timer);
+  }, [slides.length]);
 
   return (
     <div className="relative h-[70vh] min-h-[500px] overflow-hidden rounded-none">
