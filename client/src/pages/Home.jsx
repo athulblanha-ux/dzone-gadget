@@ -80,8 +80,8 @@ function HeroBanner({ banners }) {
           ) : (
             <div className={`w-full h-full bg-gradient-to-br ${slides[current]?.bg || 'from-primary-400 to-accent-purple'} relative overflow-hidden`}>
               {/* Decorative circles */}
-              <div className="absolute -top-20 -right-20 w-96 h-96 bg-white/10 rounded-full" />
-              <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-white/10 rounded-full" />
+              <div className="absolute -top-20 -right-20 w-96 h-96 bg-white/10 rounded-full animate-float-1" />
+              <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-white/10 rounded-full animate-float-2" />
             </div>
           )}
 

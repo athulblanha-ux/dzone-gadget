@@ -103,3 +103,43 @@
     animation: shimmer 1.5s infinite;
   }
 }
+
+@keyframes float-circle-1 {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -40px) scale(1.05);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.95);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+@keyframes float-circle-2 {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(-30px, 30px) scale(0.95);
+  }
+  66% {
+    transform: translate(30px, -20px) scale(1.05);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-float-1 {
+  animation: float-circle-1 8s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+.animate-float-2 {
+  animation: float-circle-2 10s ease-in-out infinite;
+  animation-delay: 2s;
+}
