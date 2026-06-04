@@ -26,7 +26,7 @@ const getCategoryIcon = (slug, size = 24) => {
 };
 
 // ─── Hero Banner Carousel ──────────────────────────────────────────────────────
-function HeroBanner({ banners }) {
+function HeroBanner({ banners, latestProducts }) {
   const [current, setCurrent] = useState(0);
 
   const defaultSlides = [
@@ -61,6 +61,49 @@ function HeroBanner({ banners }) {
     return () => clearInterval(timer);
   }, [slides.length]);
 
+  const getSlideBg = (index, slide) => {
+    if (slide?.image?.url) {
+      return (
+        <div
+          className="w-full h-full bg-cover bg-center relative"
+          style={{ backgroundImage: `url(${slide.image.url})` }}
+        >
+          <div className="absolute inset-0 bg-black/40" />
+        </div>
+      );
+    }
+
+    if (index === 1 && latestProducts?.[0]?.images?.[0]?.url) {
+      return (
+        <div
+          className="w-full h-full bg-cover bg-center relative"
+          style={{ backgroundImage: `url(${latestProducts[0].images[0].url})` }}
+        >
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]" />
+        </div>
+      );
+    }
+
+    if (index === 2 && latestProducts?.[1]?.images?.[0]?.url) {
+      return (
+        <div
+          className="w-full h-full bg-cover bg-center relative"
+          style={{ backgroundImage: `url(${latestProducts[1].images[0].url})` }}
+        >
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]" />
+        </div>
+      );
+    }
+
+    return (
+      <div className={`w-full h-full bg-gradient-to-br ${slide?.bg || 'from-primary-400 to-accent-purple'} relative overflow-hidden`}>
+        {/* Decorative circles */}
+        <div className="absolute -top-20 -right-20 w-96 h-96 bg-white/10 rounded-full animate-float-1" />
+        <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-white/10 rounded-full animate-float-2" />
+      </div>
+    );
+  };
+
   return (
     <div className="relative h-[70vh] min-h-[500px] overflow-hidden rounded-none">
       <AnimatePresence mode="wait">
@@ -72,20 +115,7 @@ function HeroBanner({ banners }) {
           transition={{ duration: 1.2, ease: 'easeInOut' }}
           className="absolute inset-0"
         >
-          {slides[current]?.image?.url ? (
-            <div
-              className="w-full h-full bg-cover bg-center relative"
-              style={{ backgroundImage: `url(${slides[current].image.url})` }}
-            >
-              <div className="absolute inset-0 bg-black/40" />
-            </div>
-          ) : (
-            <div className={`w-full h-full bg-gradient-to-br ${slides[current]?.bg || 'from-primary-400 to-accent-purple'} relative overflow-hidden`}>
-              {/* Decorative circles */}
-              <div className="absolute -top-20 -right-20 w-96 h-96 bg-white/10 rounded-full animate-float-1" />
-              <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-white/10 rounded-full animate-float-2" />
-            </div>
-          )}
+          {getSlideBg(current, slides[current])}
 
           <div className="absolute inset-0 flex items-center">
             <div className="max-w-7xl mx-auto px-4 sm:px-8 w-full">
@@ -417,6 +447,11 @@ export default function Home() {
     queryFn: () => api.get('/banners?position=hero').then((r) => r.data.banners),
   });
 
+  const { data: latestProducts } = useQuery({
+    queryKey: ['products-latest-hero'],
+    queryFn: () => api.get('/products?limit=5').then((r) => r.data.products),
+  });
+
   const { data: categoriesData } = useQuery({
     queryKey: ['categories-featured'],
     queryFn: () => api.get('/categories?featured=true').then((r) => r.data.categories),
@@ -462,7 +497,7 @@ export default function Home() {
         <meta property="og:description" content="Premium toys for every child's imagination." />
       </Helmet>
 
-      <HeroBanner banners={banners} />
+      <HeroBanner banners={banners} latestProducts={latestProducts} />
       <FeaturesStrip />
       <CategoryGrid categories={categoriesData} />
       <ProductsSection
