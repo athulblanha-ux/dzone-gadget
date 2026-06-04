@@ -55,7 +55,7 @@ function HeroBanner({ banners }) {
 
   useEffect(() => {
     if (!slides?.length) return;
-    const timer = setInterval(() => setCurrent((c) => (c + 1) % slides.length), 2000);
+    const timer = setInterval(() => setCurrent((c) => (c + 1) % slides.length), 5000);
     return () => clearInterval(timer);
   }, [slides.length]);
 
@@ -67,7 +67,7 @@ function HeroBanner({ banners }) {
           initial={{ opacity: 0, x: 100 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -100 }}
-          transition={{ duration: 0.6, ease: 'easeInOut' }}
+          transition={{ duration: 1.2, ease: 'easeInOut' }}
           className="absolute inset-0"
         >
           {slides[current]?.image?.url ? (
