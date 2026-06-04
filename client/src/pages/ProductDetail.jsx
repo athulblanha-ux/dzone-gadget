@@ -69,7 +69,7 @@ export default function ProductDetail() {
               ) : <div className="w-full h-full flex items-center justify-center"><img src="/logo.png" className="w-32 h-32 object-contain opacity-50" alt="logo" /></div>}
             </div>
             {(data.images?.length > 1 || data.video?.url) && (
-              <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-2">
+              <div className="w-full max-w-full overflow-x-auto flex gap-4 hide-scrollbar pb-2">
                 {data.video?.url && (
                   <button onClick={() => setShowVideo(true)} className={`w-20 h-20 flex-shrink-0 rounded-2xl border-2 overflow-hidden relative ${showVideo ? 'border-primary-500' : 'border-transparent'}`}>
                     <video src={data.video.url} className="w-full h-full object-contain" />

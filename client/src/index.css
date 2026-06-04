@@ -13,6 +13,13 @@
     @apply scroll-smooth;
   }
 
+  html, body {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+    touch-action: pan-y;
+  }
+
   body {
     @apply font-sans text-dark-text transition-colors duration-300;
     background: radial-gradient(circle at 50% 0%, rgba(108, 92, 231, 0.08) 0%, rgba(6, 6, 8, 0) 50%), #060608;

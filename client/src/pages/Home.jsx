@@ -316,7 +316,7 @@ function FlashSaleBanner({ products }) {
           </div>
         </div>
         {products?.length > 0 && (
-          <div className="flex gap-4 overflow-x-auto hide-scrollbar py-2">
+          <div className="w-full max-w-full overflow-x-auto flex gap-4 hide-scrollbar py-2">
             {products.slice(0, 4).map((p) => (
               <Link
                 key={p._id}

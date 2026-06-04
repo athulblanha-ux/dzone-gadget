@@ -5,6 +5,12 @@
 @tailwind utilities;
 
 @layer base {
+  html, body {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
   body {
     @apply font-sans bg-gray-50 text-gray-900 dark:bg-dark-bg dark:text-dark-text;
   }
