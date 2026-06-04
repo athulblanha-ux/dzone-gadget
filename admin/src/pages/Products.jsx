@@ -85,6 +85,8 @@ export default function Products() {
       setExistingVideo(null);
     }
     setImages([]);
+    previews.forEach(url => URL.revokeObjectURL(url));
+    setPreviews([]);
     setVideoFile(null);
     if (videoPreview) URL.revokeObjectURL(videoPreview);
     setVideoPreview(null);

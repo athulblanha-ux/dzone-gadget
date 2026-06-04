@@ -182,6 +182,7 @@ exports.updateProduct = asyncHandler(async (req, res) => {
       }));
       
       product.images = existingImages;
+      product.markModified('images');
     } catch (err) {
       console.error("Error parsing existingImages:", err);
     }
@@ -199,6 +200,7 @@ exports.updateProduct = asyncHandler(async (req, res) => {
       alt: req.body.name || product.name || `Product image ${existingImages.length + i + 1}`
     }));
     product.images = [...existingImages, ...newImages];
+    product.markModified('images');
   }
 
   // Upload new video if provided
@@ -212,11 +214,13 @@ exports.updateProduct = asyncHandler(async (req, res) => {
       url: result.secure_url,
       publicId: result.public_id,
     };
+    product.markModified('video');
   } else if (req.body.removeVideo === 'true') {
     if (product.video?.publicId) {
       await deleteFromCloudinary(product.video.publicId);
     }
     product.video = null;
+    product.markModified('video');
   }
 
   // Copy other fields to the product document
