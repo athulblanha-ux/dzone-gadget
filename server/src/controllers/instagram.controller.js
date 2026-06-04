@@ -5,49 +5,49 @@ const fallbackPosts = [
   {
     id: 'mock_post_1',
     media_type: 'IMAGE',
-    media_url: 'https://images.unsplash.com/photo-1594787318286-3d835c1d207f?auto=format&fit=crop&w=600&q=80',
+    media_url: '/images/products/batch1_1.jpg',
     permalink: 'https://www.instagram.com/dstore.in/',
-    caption: 'Unleash the speed with our latest Hobbygrade RC Sports Cars! 🏎️💨 #rccars #hobbygrade #dstore',
+    caption: 'Unleash the beast! The CRAWLER CYBERTREK with camera. Large scale off-road performance. 🚙📸 DM for orders! #rccars #cybertrek #toys',
     timestamp: new Date().toISOString()
   },
   {
     id: 'mock_post_2',
     media_type: 'IMAGE',
-    media_url: 'https://images.unsplash.com/photo-1581235720704-06d3acfcb36f?auto=format&fit=crop&w=600&q=80',
+    media_url: '/images/products/batch1_2.jpg',
     permalink: 'https://www.instagram.com/dstore.in/',
-    caption: 'Precision scale and details. Check out our new Diecast models range! 🚗✨ #diecast #scalemodels',
+    caption: 'Exquisite details. Lamborghini metal diecast (1:32 scale model) with openable doors and sound. 🏎️🔥 #diecast #lamborghini',
     timestamp: new Date().toISOString()
   },
   {
     id: 'mock_post_3',
     media_type: 'IMAGE',
-    media_url: 'https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&w=600&q=80',
+    media_url: '/images/products/batch2_3.jpg',
     permalink: 'https://www.instagram.com/dstore.in/',
-    caption: 'Build your imagination block by block. Premium building sets now in stock! 🧱🏰 #buildingblocks #blocks',
+    caption: 'Tackle any terrain with the 4*4 BIG MOKA CRAWLER. Heavy duty shocks and high-grip tires! 🛞⛰️ #crawler #rccars',
     timestamp: new Date().toISOString()
   },
   {
     id: 'mock_post_4',
     media_type: 'IMAGE',
-    media_url: 'https://images.unsplash.com/photo-1608889175123-8ec330b86f84?auto=format&fit=crop&w=600&q=80',
+    media_url: '/images/products/batch3_6.jpg',
     permalink: 'https://www.instagram.com/dstore.in/',
-    caption: 'Action figures and robotic collectibles for the ultimate fans. Get yours today! 🤖🛡️ #actionfigures #toys',
+    caption: 'Fly high and capture everything. E88 Drone with dual 4K HD cameras. Stable flight and easy control! 🛸📸 #drone #quadcopter',
     timestamp: new Date().toISOString()
   },
   {
     id: 'mock_post_5',
     media_type: 'IMAGE',
-    media_url: 'https://images.unsplash.com/photo-1517524206127-48bbd363f3d7?auto=format&fit=crop&w=600&q=80',
+    media_url: '/images/products/batch2_6.jpg',
     permalink: 'https://www.instagram.com/dstore.in/',
-    caption: 'Retro classics never fade. Add this vintage Beetle scale model to your collection! 🚘❤️ #vintagecars #diecast',
+    caption: 'Classic design meets remote control power. RC Defender 1:16 scale SUV. Order yours today! 🚙✨ #defender #rccars',
     timestamp: new Date().toISOString()
   },
   {
     id: 'mock_post_6',
     media_type: 'IMAGE',
-    media_url: 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?auto=format&fit=crop&w=600&q=80',
+    media_url: '/images/products/batch3_5.jpg',
     permalink: 'https://www.instagram.com/dstore.in/',
-    caption: 'Creative learning and STEM play for growing minds. Explore educational toys! 🧠🎒 #stem #educationaltoys',
+    caption: 'Take to the skies. RC Fighter Jet combat aircraft with ultra-stable flight controls! 🛩️🚀 #rcplane #fighterjet',
     timestamp: new Date().toISOString()
   }
 ];
