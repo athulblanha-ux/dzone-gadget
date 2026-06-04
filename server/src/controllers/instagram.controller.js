@@ -1,68 +1,48 @@
 const { asyncHandler } = require('../middleware/errorHandler');
 const axios = require('axios');
-
-const fallbackPosts = [
-  {
-    id: 'mock_post_1',
-    media_type: 'IMAGE',
-    media_url: '/images/products/batch1_1.jpg',
-    permalink: 'https://www.instagram.com/dstore.in/',
-    caption: 'Unleash the beast! The CRAWLER CYBERTREK with camera. Large scale off-road performance. 🚙📸 DM for orders! #rccars #cybertrek #toys',
-    timestamp: new Date().toISOString()
-  },
-  {
-    id: 'mock_post_2',
-    media_type: 'IMAGE',
-    media_url: '/images/products/batch1_2.jpg',
-    permalink: 'https://www.instagram.com/dstore.in/',
-    caption: 'Exquisite details. Lamborghini metal diecast (1:32 scale model) with openable doors and sound. 🏎️🔥 #diecast #lamborghini',
-    timestamp: new Date().toISOString()
-  },
-  {
-    id: 'mock_post_3',
-    media_type: 'IMAGE',
-    media_url: '/images/products/batch2_3.jpg',
-    permalink: 'https://www.instagram.com/dstore.in/',
-    caption: 'Tackle any terrain with the 4*4 BIG MOKA CRAWLER. Heavy duty shocks and high-grip tires! 🛞⛰️ #crawler #rccars',
-    timestamp: new Date().toISOString()
-  },
-  {
-    id: 'mock_post_4',
-    media_type: 'IMAGE',
-    media_url: '/images/products/batch3_6.jpg',
-    permalink: 'https://www.instagram.com/dstore.in/',
-    caption: 'Fly high and capture everything. E88 Drone with dual 4K HD cameras. Stable flight and easy control! 🛸📸 #drone #quadcopter',
-    timestamp: new Date().toISOString()
-  },
-  {
-    id: 'mock_post_5',
-    media_type: 'IMAGE',
-    media_url: '/images/products/batch2_6.jpg',
-    permalink: 'https://www.instagram.com/dstore.in/',
-    caption: 'Classic design meets remote control power. RC Defender 1:16 scale SUV. Order yours today! 🚙✨ #defender #rccars',
-    timestamp: new Date().toISOString()
-  },
-  {
-    id: 'mock_post_6',
-    media_type: 'IMAGE',
-    media_url: '/images/products/batch3_5.jpg',
-    permalink: 'https://www.instagram.com/dstore.in/',
-    caption: 'Take to the skies. RC Fighter Jet combat aircraft with ultra-stable flight controls! 🛩️🚀 #rcplane #fighterjet',
-    timestamp: new Date().toISOString()
-  }
-];
+const Product = require('../models/Product');
 
 /**
  * @route   GET /api/instagram/feed
  * Fetches recent media from Instagram Graph API.
- * Falls back to manually configured posts in settings if token not set.
+ * Falls back to the latest uploaded products from database if token not set.
  */
 exports.getInstagramFeed = asyncHandler(async (req, res) => {
   const token = process.env.INSTAGRAM_ACCESS_TOKEN;
   const accountId = process.env.INSTAGRAM_BUSINESS_ACCOUNT_ID;
 
+  // Query latest 6 products as fallback
+  let fallbackPosts = [];
+  try {
+    const products = await Product.find({ isActive: true })
+      .sort({ createdAt: -1 })
+      .limit(6)
+      .lean();
+      
+    fallbackPosts = products.map((p, i) => ({
+      id: p._id.toString(),
+      media_type: 'IMAGE',
+      media_url: p.images?.[0]?.url || '/logo.png',
+      permalink: 'https://www.instagram.com/dstore.in/',
+      caption: `${p.name} — ${p.description ? p.description.replace(/<[^>]*>/g, '').substring(0, 120) : 'Premium toys online'}... DM for orders! 🧸✨`,
+      timestamp: p.createdAt || new Date().toISOString()
+    }));
+  } catch (dbErr) {
+    // Hardcoded fallback if database query fails
+    fallbackPosts = [
+      {
+        id: 'mock_post_1',
+        media_type: 'IMAGE',
+        media_url: '/images/products/batch1_1.jpg',
+        permalink: 'https://www.instagram.com/dstore.in/',
+        caption: 'Unleash the beast! The CRAWLER CYBERTREK with camera. Large scale off-road performance.',
+        timestamp: new Date().toISOString()
+      }
+    ];
+  }
+
   if (!token || !accountId) {
-    // Return mock posts — since admin didn't configure Graph API
+    // Return latest products as fallback — since admin didn't configure Graph API
     return res.json({ success: true, posts: fallbackPosts, manual: true });
   }
 
@@ -70,9 +50,9 @@ exports.getInstagramFeed = asyncHandler(async (req, res) => {
     const fields = 'id,media_type,media_url,thumbnail_url,permalink,caption,timestamp';
     const url = `https://graph.instagram.com/${accountId}/media?fields=${fields}&limit=12&access_token=${token}`;
     const { data } = await axios.get(url);
-    res.json({ success: true, posts: data.data || fallbackPosts, manual: false });
+    res.json({ success: true, posts: data.data && data.data.length ? data.data : fallbackPosts, manual: false });
   } catch (err) {
-    // If token expired, don't crash — return fallback posts
+    // If token expired, return latest products as fallback
     res.json({ success: true, posts: fallbackPosts, error: 'Instagram token may be expired.', manual: true });
   }
 });
