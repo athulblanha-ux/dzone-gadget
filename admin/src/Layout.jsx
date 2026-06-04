@@ -71,7 +71,7 @@ export default function Layout() {
   const handleLogout = () => { logout(); navigate('/login'); };
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-dark-bg transition-colors">
+    <div className="flex h-screen bg-gray-50 dark:bg-dark-bg transition-colors w-full overflow-x-hidden relative">
       <div className="hidden lg:block">
         <Sidebar location={location} user={user} handleLogout={handleLogout} />
       </div>
