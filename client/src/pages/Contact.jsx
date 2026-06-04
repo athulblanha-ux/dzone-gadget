@@ -39,14 +39,6 @@ export default function Contact() {
             <h2 className="font-display font-bold text-2xl dark:text-dark-text">Get in touch</h2>
             
             <div className="flex gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-primary-50 text-primary-500 flex items-center justify-center flex-shrink-0"><FiMail size={20} /></div>
-              <div>
-                <h3 className="font-bold dark:text-dark-text mb-1">Email</h3>
-                <p className="text-gray-500 dark:text-dark-muted">{settings?.contact_email || 'support@d-store.store'}</p>
-              </div>
-            </div>
-            
-            <div className="flex gap-4">
               <div className="w-12 h-12 rounded-2xl bg-green-50 text-green-500 flex items-center justify-center flex-shrink-0"><FiPhone size={20} /></div>
               <div>
                 <h3 className="font-bold dark:text-dark-text mb-1">Phone / WhatsApp</h3>

@@ -84,10 +84,6 @@ export default function Footer() {
         <div className="border-t border-dark-border mt-12 pt-8 flex flex-col md:flex-row justify-between items-start gap-6">
           <div className="flex flex-wrap gap-6 text-dark-muted text-sm">
             <span className="flex items-center gap-2">
-              <FiMail size={14} className="text-primary-400" />
-              support@d-store.store
-            </span>
-            <span className="flex items-center gap-2">
               <FiPhone size={14} className="text-primary-400" />
               +91 94953 02826
             </span>
