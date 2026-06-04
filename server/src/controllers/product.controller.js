@@ -181,7 +181,7 @@ exports.updateProduct = asyncHandler(async (req, res) => {
         alt: img.alt || product.name
       }));
       
-      data.images = existingImages;
+      product.images = existingImages;
     } catch (err) {
       console.error("Error parsing existingImages:", err);
     }
@@ -198,7 +198,7 @@ exports.updateProduct = asyncHandler(async (req, res) => {
       publicId: r.public_id,
       alt: req.body.name || product.name || `Product image ${existingImages.length + i + 1}`
     }));
-    data.images = [...existingImages, ...newImages];
+    product.images = [...existingImages, ...newImages];
   }
 
   // Upload new video if provided
@@ -208,7 +208,7 @@ exports.updateProduct = asyncHandler(async (req, res) => {
       await deleteFromCloudinary(product.video.publicId);
     }
     const result = await uploadToCloudinary(req.files.video[0].buffer, 'd-store/products/videos');
-    data.video = {
+    product.video = {
       url: result.secure_url,
       publicId: result.public_id,
     };
@@ -216,16 +216,37 @@ exports.updateProduct = asyncHandler(async (req, res) => {
     if (product.video?.publicId) {
       await deleteFromCloudinary(product.video.publicId);
     }
-    data.video = null;
+    product.video = null;
   }
 
-  if (typeof data.variants === 'string') data.variants = JSON.parse(data.variants);
-  if (typeof data.tags === 'string') data.tags = JSON.parse(data.tags);
-
-  const updated = await Product.findByIdAndUpdate(req.params.id, data, {
-    new: true,
-    runValidators: true,
+  // Copy other fields to the product document
+  Object.entries(req.body).forEach(([key, val]) => {
+    if (
+      key !== 'images' && 
+      key !== 'existingImages' && 
+      key !== 'video' && 
+      key !== 'removeVideo' && 
+      key !== '_id'
+    ) {
+      if (key === 'variants' && typeof val === 'string') {
+        try {
+          product[key] = JSON.parse(val);
+        } catch (e) {
+          console.error("Failed to parse variants:", e);
+        }
+      } else if (key === 'tags' && typeof val === 'string') {
+        try {
+          product[key] = JSON.parse(val);
+        } catch (e) {
+          console.error("Failed to parse tags:", e);
+        }
+      } else {
+        product[key] = val;
+      }
+    }
   });
+
+  const updated = await product.save();
 
   res.json({ success: true, product: updated });
 });
