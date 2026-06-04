@@ -11,6 +11,25 @@ const connectDB = async () => {
 
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
 
+    // Seed default categories if they don't exist
+    try {
+      const Category = require('../models/Category');
+      const defaultCategories = [
+        { name: 'Hobbygrade', slug: 'hobbygrade', icon: '⚙️', order: 9, isFeatured: true },
+        { name: 'Diecast', slug: 'diecast', icon: '🚗', order: 10, isFeatured: true }
+      ];
+
+      for (const cat of defaultCategories) {
+        const exists = await Category.findOne({ slug: cat.slug || cat.name.toLowerCase() });
+        if (!exists) {
+          await Category.create(cat);
+          console.log(`🌱 Seeded missing category: ${cat.name}`);
+        }
+      }
+    } catch (seedErr) {
+      console.error('❌ Failed to seed default categories:', seedErr);
+    }
+
     mongoose.connection.on('error', (err) => {
       console.error('❌ MongoDB connection error:', err);
     });
