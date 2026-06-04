@@ -47,7 +47,7 @@ export default function ProductCard({ product }) {
             <img
               src={image}
               alt={product.name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
               loading="lazy"
             />
           ) : (
@@ -56,14 +56,6 @@ export default function ProductCard({ product }) {
 
           {/* Badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-            {product.isOnSale && (
-              <span className="bg-primary-500 text-white text-xs font-bold px-2 py-1 rounded-lg">
-                -{product.discountPercent}%
-              </span>
-            )}
-            {product.isNewArrival && (
-              <span className="bg-accent-green text-white text-xs font-bold px-2 py-1 rounded-lg">NEW</span>
-            )}
             {product.isTrending && (
               <span className="bg-accent-orange text-white text-xs font-bold px-2 py-1 rounded-lg">TRENDING</span>
             )}

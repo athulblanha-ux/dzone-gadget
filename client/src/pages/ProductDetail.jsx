@@ -63,17 +63,16 @@ export default function ProductDetail() {
           <div className="space-y-4">
             <div className="aspect-square bg-gray-50 dark:bg-dark-card rounded-3xl overflow-hidden border border-gray-100 dark:border-dark-border relative">
               {showVideo && data.video?.url ? (
-                <video src={data.video.url} controls className="w-full h-full object-cover" />
+                <video src={data.video.url} controls className="w-full h-full object-contain" />
               ) : data.images?.[activeImage]?.url ? (
-                <img src={data.images[activeImage].url} alt={data.name} className="w-full h-full object-cover" />
+                <img src={data.images[activeImage].url} alt={data.name} className="w-full h-full object-contain" />
               ) : <div className="w-full h-full flex items-center justify-center"><img src="/logo.png" className="w-32 h-32 object-contain opacity-50" alt="logo" /></div>}
-              {data.isOnSale && !showVideo && <span className="absolute top-4 left-4 bg-primary-500 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow-lg">-{data.discountPercent}% OFF</span>}
             </div>
             {(data.images?.length > 1 || data.video?.url) && (
               <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-2">
                 {data.video?.url && (
                   <button onClick={() => setShowVideo(true)} className={`w-20 h-20 flex-shrink-0 rounded-2xl border-2 overflow-hidden relative ${showVideo ? 'border-primary-500' : 'border-transparent'}`}>
-                    <video src={data.video.url} className="w-full h-full object-cover" />
+                    <video src={data.video.url} className="w-full h-full object-contain" />
                     <div className="absolute inset-0 flex items-center justify-center bg-black/20 text-white">
                       <svg fill="currentColor" viewBox="0 0 24 24" className="w-8 h-8"><path d="M8 5v14l11-7z"/></svg>
                     </div>
@@ -81,7 +80,7 @@ export default function ProductDetail() {
                 )}
                 {data.images?.map((img, i) => (
                   <button key={img._id} onClick={() => { setActiveImage(i); setShowVideo(false); }} className={`w-20 h-20 flex-shrink-0 rounded-2xl border-2 overflow-hidden ${i === activeImage && !showVideo ? 'border-primary-500' : 'border-transparent'}`}>
-                    <img src={img.url} className="w-full h-full object-cover" alt="" />
+                    <img src={img.url} className="w-full h-full object-contain" alt="" />
                   </button>
                 ))}
               </div>

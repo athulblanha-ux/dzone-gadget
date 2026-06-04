@@ -162,14 +162,43 @@ exports.updateProduct = asyncHandler(async (req, res) => {
 
   const data = { ...req.body };
 
+  // Handle existing images and deletions
+  let existingImages = product.images || [];
+  if (req.body.existingImages) {
+    try {
+      const parsedExisting = JSON.parse(req.body.existingImages);
+      const keptPublicIds = new Set(parsedExisting.map(img => img.publicId || img.public_id).filter(Boolean));
+      
+      // Delete removed images from Cloudinary
+      const removedImages = (product.images || []).filter(img => img.publicId && !keptPublicIds.has(img.publicId));
+      for (const img of removedImages) {
+        await deleteFromCloudinary(img.publicId);
+      }
+      
+      existingImages = parsedExisting.map(img => ({
+        url: img.url,
+        publicId: img.publicId || img.public_id,
+        alt: img.alt || product.name
+      }));
+      
+      data.images = existingImages;
+    } catch (err) {
+      console.error("Error parsing existingImages:", err);
+    }
+  }
+
   // Upload new images if provided
   if (req.files?.images?.length) {
     const uploadPromises = req.files.images.map((file) =>
       uploadToCloudinary(file.buffer, 'd-store/products')
     );
     const results = await Promise.all(uploadPromises);
-    const newImages = results.map((r) => ({ url: r.secure_url, publicId: r.public_id }));
-    data.images = [...(product.images || []), ...newImages];
+    const newImages = results.map((r, i) => ({
+      url: r.secure_url,
+      publicId: r.public_id,
+      alt: req.body.name || product.name || `Product image ${existingImages.length + i + 1}`
+    }));
+    data.images = [...existingImages, ...newImages];
   }
 
   // Upload new video if provided

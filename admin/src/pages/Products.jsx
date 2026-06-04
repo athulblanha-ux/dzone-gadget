@@ -158,7 +158,7 @@ export default function Products() {
   };
 
   const removeExistingImage = (publicId) => {
-    setExistingImages(prev => prev.filter(img => img.public_id !== publicId));
+    setExistingImages(prev => prev.filter(img => (img.publicId || img.public_id) !== publicId));
   };
 
   const addVariant = () => setForm(f => ({ ...f, variants: [...f.variants, { name: 'Color', value: '', priceOffset: 0, stock: 10 }] }));
@@ -194,7 +194,7 @@ export default function Products() {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded bg-gray-100 overflow-hidden flex-shrink-0">
-                        {prod.images?.[0]?.url ? <img src={prod.images[0].url} className="w-full h-full object-cover" /> : <FiImage className="mx-auto mt-4 text-gray-400" />}
+                        {prod.images?.[0]?.url ? <img src={prod.images[0].url} className="w-full h-full object-contain" /> : <FiImage className="mx-auto mt-4 text-gray-400" />}
                       </div>
                       <div>
                         <div className="font-semibold dark:text-white line-clamp-1">{prod.name}</div>
@@ -295,14 +295,14 @@ export default function Products() {
                   <label className="label">Images</label>
                   <div className="flex gap-4 flex-wrap mb-2">
                     {existingImages.map(img => (
-                      <div key={img.public_id} className="relative w-20 h-20 rounded border">
-                        <img src={img.url} className="w-full h-full object-cover rounded" />
-                        <button type="button" onClick={() => removeExistingImage(img.public_id)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"><FiX size={12}/></button>
+                      <div key={img.publicId || img.public_id} className="relative w-20 h-20 rounded border">
+                        <img src={img.url} className="w-full h-full object-contain rounded" />
+                        <button type="button" onClick={() => removeExistingImage(img.publicId || img.public_id)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"><FiX size={12}/></button>
                       </div>
                     ))}
                     {previews.map((url, i) => (
                       <div key={i} className="relative w-20 h-20 rounded border border-blue-300">
-                        <img src={url} className="w-full h-full object-cover rounded opacity-70" />
+                        <img src={url} className="w-full h-full object-contain rounded opacity-70" />
                         <button type="button" onClick={() => removeImage(i)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"><FiX size={12}/></button>
                       </div>
                     ))}

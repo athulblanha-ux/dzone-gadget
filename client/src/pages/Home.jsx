@@ -293,7 +293,7 @@ function FlashSaleBanner({ products }) {
               >
                 <div className="aspect-square bg-white/5 rounded-xl mb-2 overflow-hidden border border-white/[0.03]">
                   {p.images?.[0]?.url ? (
-                    <img src={p.images[0].url} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
+                    <img src={p.images[0].url} alt={p.name} className="w-full h-full object-contain" loading="lazy" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center"><img src="/logo.png" className="w-12 h-12 object-contain opacity-50" alt="logo" /></div>
                   )}

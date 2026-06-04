@@ -266,7 +266,7 @@ export default function Checkout() {
               <div className="space-y-4 mb-6 max-h-96 overflow-y-auto pr-2">
                 {items.map(item => (
                   <div key={item.key} className="flex gap-4 items-center">
-                    <img src={item.product.images?.[0]?.url} alt="" className="w-16 h-16 rounded-xl object-cover" />
+                    <img src={item.product.images?.[0]?.url} alt="" className="w-16 h-16 rounded-xl object-contain" />
                     <div className="flex-1"><p className="text-sm font-medium dark:text-dark-text">{item.product.name}</p><p className="text-xs text-gray-500">Qty: {item.quantity}</p></div>
                     <p className="font-bold text-sm dark:text-dark-text">₹{(item.price * item.quantity).toLocaleString()}</p>
                   </div>

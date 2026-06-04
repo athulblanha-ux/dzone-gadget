@@ -31,7 +31,7 @@ export default function Cart() {
               {items.map(item => (
                 <motion.div key={item.key} layout exit={{ opacity: 0, height: 0 }} className="card p-4 flex gap-4">
                   <div className="w-20 h-20 rounded-xl bg-gray-50 overflow-hidden flex-shrink-0">
-                    {item.product.images?.[0]?.url ? <img src={item.product.images[0].url} alt={item.product.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><img src="/logo.png" className="w-12 h-12 object-contain opacity-50" alt="logo" /></div>}
+                    {item.product.images?.[0]?.url ? <img src={item.product.images[0].url} alt={item.product.name} className="w-full h-full object-contain" /> : <div className="w-full h-full flex items-center justify-center"><img src="/logo.png" className="w-12 h-12 object-contain opacity-50" alt="logo" /></div>}
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-sm dark:text-dark-text line-clamp-2">{item.product.name}</h3>

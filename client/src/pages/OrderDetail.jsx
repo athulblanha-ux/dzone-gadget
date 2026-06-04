@@ -141,7 +141,7 @@ export default function OrderDetail() {
           <div className="space-y-4">
             {data.items.map((item, i) => (
               <div key={i} className="flex gap-4">
-                <div className="w-16 h-16 rounded-xl bg-gray-50 overflow-hidden flex-shrink-0">{item.image ? <img src={item.image} alt={item.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><img src="/logo.png" className="w-8 h-8 object-contain opacity-50" alt="logo" /></div>}</div>
+                <div className="w-16 h-16 rounded-xl bg-gray-50 overflow-hidden flex-shrink-0">{item.image ? <img src={item.image} alt={item.name} className="w-full h-full object-contain" /> : <div className="w-full h-full flex items-center justify-center"><img src="/logo.png" className="w-8 h-8 object-contain opacity-50" alt="logo" /></div>}</div>
                 <div className="flex-1"><p className="font-medium text-sm dark:text-dark-text">{item.name}</p><p className="text-xs text-gray-400">Qty: {item.quantity} · ₹{item.price}</p></div>
                 <p className="font-bold dark:text-dark-text">₹{(item.price*item.quantity).toLocaleString()}</p>
               </div>
