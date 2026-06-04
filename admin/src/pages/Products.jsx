@@ -129,7 +129,7 @@ export default function Products() {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    if (!form.name || !form.shortDescription || !form.price || form.stock === '' || form.gstRate === '' || !form.category) {
+    if (!form.name || !form.shortDescription || !form.description || !form.price || form.stock === '' || form.gstRate === '' || !form.category) {
       return toast.error("Please fill all required fields (marked with *)");
     }
 
@@ -255,7 +255,7 @@ export default function Products() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="col-span-2"><label className="label">Product Name *</label><input required type="text" className="input" value={form.name} onChange={e => setForm({...form, name: e.target.value})} /></div>
                   <div className="col-span-2"><label className="label">Short Description *</label><input required type="text" maxLength={150} className="input" value={form.shortDescription} onChange={e => setForm({...form, shortDescription: e.target.value})} /></div>
-                  <div className="col-span-2"><label className="label">Full Description</label><textarea rows="4" className="input" value={form.description} onChange={e => setForm({...form, description: e.target.value})} /></div>
+                  <div className="col-span-2"><label className="label">Full Description *</label><textarea required rows="4" className="input" value={form.description} onChange={e => setForm({...form, description: e.target.value})} /></div>
                 </div>
 
                 {/* Pricing & Inventory */}
