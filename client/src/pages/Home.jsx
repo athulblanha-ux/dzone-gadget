@@ -79,7 +79,7 @@ function HeroBanner({ banners, latestProducts }) {
           className="w-full h-full bg-cover bg-center relative"
           style={{ backgroundImage: `url(${latestProducts[0].images[0].url})` }}
         >
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]" />
+          <div className="absolute inset-0 bg-black/60" />
         </div>
       );
     }
@@ -90,7 +90,7 @@ function HeroBanner({ banners, latestProducts }) {
           className="w-full h-full bg-cover bg-center relative"
           style={{ backgroundImage: `url(${latestProducts[1].images[0].url})` }}
         >
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]" />
+          <div className="absolute inset-0 bg-black/60" />
         </div>
       );
     }
