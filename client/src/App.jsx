@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
-import { HelmetProvider } from 'react-helmet-async';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
 
 import { useThemeStore } from './store';
 import Layout from './components/layout/Layout';
@@ -53,6 +53,9 @@ function App() {
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
+          <Helmet>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+          </Helmet>
           <React.Suspense
             fallback={
               <div className="min-h-screen flex items-center justify-center">
