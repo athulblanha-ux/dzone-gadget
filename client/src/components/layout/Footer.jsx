@@ -35,7 +35,7 @@ export default function Footer() {
               <span className="font-display font-bold text-2xl text-gradient">D-STORE</span>
             </Link>
             <p className="text-dark-muted text-sm leading-relaxed mb-6">
-              Where play comes to life. Discover premium, safe, and fun toys for every child's imagination.
+              Where passion meets precision. Discover premium hobbygrade models and diecast collections.
             </p>
 
             {/* Social */}

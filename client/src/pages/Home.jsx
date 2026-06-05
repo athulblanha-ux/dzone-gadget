@@ -464,30 +464,30 @@ export default function Home() {
   return (
     <>
       <Helmet>
-        <title>D-STORE — Where Play Comes to Life | Premium Toys Online</title>
-        <meta name="description" content="Shop premium, safe, and fun toys for kids of all ages. Best prices, fast delivery, and exclusive offers on D-STORE — India's favourite toy store." />
-        <meta property="og:title" content="D-STORE — Where Play Comes to Life" />
-        <meta property="og:description" content="Premium toys for every child's imagination." />
+        <title>D-STORE — Where Passion Meets Precision | Premium Hobby & Diecast Store</title>
+        <meta name="description" content="Shop premium hobbygrade models and diecast collectibles. Best prices, fast delivery, and exclusive offers on D-STORE — India's favourite hobby store." />
+        <meta property="og:title" content="D-STORE — Where Passion Meets Precision" />
+        <meta property="og:description" content="Premium hobbygrade models and diecast collections." />
       </Helmet>
 
       <HeroBanner banners={banners} latestProducts={latestProducts} />
       <CategoryGrid categories={categoriesData} />
       <ProductsSection
         title="Trending Now"
-        subtitle="What kids are loving this week"
+        subtitle="What collectors are loving this week"
         products={trendingProducts}
         viewAllLink="/shop?isTrending=true"
       />
       <FlashSaleBanner products={saleProducts} />
       <ProductsSection
-        title="Featured Toys"
-        subtitle="Handpicked by our toy experts"
+        title="Featured Gear"
+        subtitle="Handpicked by our hobby experts"
         products={featuredProducts}
         viewAllLink="/shop?isFeatured=true"
       />
       <ProductsSection
         title="New Arrivals"
-        subtitle="Fresh toys just added to our collection"
+        subtitle="Fresh additions to our collection"
         products={newArrivals}
         viewAllLink="/shop?sort=newest"
       />

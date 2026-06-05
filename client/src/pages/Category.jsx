@@ -40,14 +40,14 @@ export default function Category() {
 
   return (
     <>
-      <Helmet><title>{`${catRes.name} Toys — D-STORE`}</title></Helmet>
+      <Helmet><title>{`${catRes.name} — D-STORE`}</title></Helmet>
       <div className="bg-white/[0.02] border-b border-white/[0.05] py-12 mb-8">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <div className="w-20 h-20 mx-auto bg-white/5 border border-white/[0.08] backdrop-blur-md rounded-2xl flex items-center justify-center text-primary-400 mb-4 shadow-lg">
             {getCategoryIcon(catRes.slug, 32)}
           </div>
           <h1 className="font-display font-bold text-4xl dark:text-dark-text mb-2">{catRes.name}</h1>
-          <p className="text-gray-500 dark:text-dark-muted max-w-2xl mx-auto">Explore our amazing collection of {catRes.name.toLowerCase()} for all ages.</p>
+          <p className="text-gray-500 dark:text-dark-muted max-w-2xl mx-auto">Explore our amazing collection of premium {catRes.name.toLowerCase()} products.</p>
         </div>
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">

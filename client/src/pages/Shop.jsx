@@ -55,14 +55,14 @@ export default function Shop() {
   return (
     <>
       <Helmet>
-        <title>Shop Toys — D-STORE</title>
-        <meta name="description" content="Browse premium toys for all ages. Filter by category, price, and age group." />
+        <title>Shop Models & Gear — D-STORE</title>
+        <meta name="description" content="Browse premium hobbygrade models and diecast collectibles. Filter by category, price, and age group." />
       </Helmet>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
           <div>
             <h1 className="font-display font-bold text-3xl text-gray-900 dark:text-dark-text">
-              {filters.search ? `Results for "${filters.search}"` : 'Shop All Toys'}
+              {filters.search ? `Results for "${filters.search}"` : 'Shop All Models & Gear'}
             </h1>
             {data?.pagination && <p className="text-gray-500 dark:text-dark-muted mt-1">{data.pagination.total} products found</p>}
           </div>
