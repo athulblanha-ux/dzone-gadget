@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
-import { FiArrowRight, FiShoppingBag, FiTruck, FiShield, FiClock, FiInstagram, FiZap, FiBox, FiUsers, FiGrid, FiBookOpen, FiHeart, FiActivity, FiTarget, FiCpu, FiFeather, FiTv, FiSmile, FiTool } from 'react-icons/fi';
+import { FiArrowRight, FiTruck, FiShield, FiInstagram, FiZap, FiBox, FiUsers, FiGrid, FiBookOpen, FiHeart, FiActivity, FiTarget, FiCpu, FiFeather, FiTv, FiSmile, FiTool } from 'react-icons/fi';
 import ProductCard from '../components/product/ProductCard';
 import api from '../lib/api';
 
@@ -171,33 +171,6 @@ function HeroBanner({ banners, latestProducts }) {
   );
 }
 
-// ─── Features Strip ─────────────────────────────────────────────────────────────
-function FeaturesStrip() {
-  const features = [
-    { icon: FiClock, label: 'Fast Dispatch', sub: 'Orders ship in 24 hours' },
-    { icon: FiShoppingBag, label: 'Secure Checkout', sub: 'Razorpay & Stripe secured' },
-  ];
-
-  return (
-    <section className="section !py-4">
-      <div className="card py-8 px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {features.map(({ icon: Icon, label, sub }) => (
-            <div key={label} className="flex flex-col sm:flex-row items-center text-center sm:text-left gap-4">
-              <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center flex-shrink-0 border border-white/[0.05] backdrop-blur-md">
-                <Icon size={22} className="text-primary-400" />
-              </div>
-              <div>
-                <p className="font-display font-bold text-lg text-dark-text">{label}</p>
-                <p className="text-dark-muted text-sm mt-0.5">{sub}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
 
 // ─── Category Grid ─────────────────────────────────────────────────────────────
 function CategoryGrid({ categories }) {
@@ -498,20 +471,19 @@ export default function Home() {
       </Helmet>
 
       <HeroBanner banners={banners} latestProducts={latestProducts} />
-      <FeaturesStrip />
       <CategoryGrid categories={categoriesData} />
-      <ProductsSection
-        title="Featured Toys"
-        subtitle="Handpicked by our toy experts"
-        products={featuredProducts}
-        viewAllLink="/shop?isFeatured=true"
-      />
-      <FlashSaleBanner products={saleProducts} />
       <ProductsSection
         title="Trending Now"
         subtitle="What kids are loving this week"
         products={trendingProducts}
         viewAllLink="/shop?isTrending=true"
+      />
+      <FlashSaleBanner products={saleProducts} />
+      <ProductsSection
+        title="Featured Toys"
+        subtitle="Handpicked by our toy experts"
+        products={featuredProducts}
+        viewAllLink="/shop?isFeatured=true"
       />
       <ProductsSection
         title="New Arrivals"
