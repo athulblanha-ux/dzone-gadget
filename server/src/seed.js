@@ -289,6 +289,10 @@ D-STORE, Mukkam, Kozhikode, Kerala, India
   ]);
   console.log('💬 Testimonials seeded');
 
+  // ─── Shipping Rules ────────────────────────────────────────────────────────
+  await ShippingRule.create({ state: 'Default', baseFee: 49, freeShippingThreshold: 499 });
+  console.log('🚚 Shipping rules seeded');
+
   console.log('\n✅ Database seeded successfully!');
   console.log(`📧 Admin login: ${process.env.ADMIN_EMAIL || 'admin@d-store.store'}`);
   console.log(`🔑 Admin password: ${process.env.ADMIN_PASSWORD || 'Admin@123456'}`);
