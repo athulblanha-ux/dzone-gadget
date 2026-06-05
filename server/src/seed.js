@@ -11,6 +11,12 @@ const HomepageSection = require('./models/HomepageSection');
 const FAQ = require('./models/FAQ');
 const Banner = require('./models/Banner');
 const Testimonial = require('./models/Testimonial');
+const Order = require('./models/Order');
+const Review = require('./models/Review');
+const Coupon = require('./models/Coupon');
+const Newsletter = require('./models/Newsletter');
+const ShippingRule = require('./models/ShippingRule');
+const Blog = require('./models/Blog');
 
 const seed = async () => {
   await mongoose.connect(process.env.MONGO_URI);
@@ -26,6 +32,12 @@ const seed = async () => {
     FAQ.deleteMany({}),
     Banner.deleteMany({}),
     Testimonial.deleteMany({}),
+    Order.deleteMany({}),
+    Review.deleteMany({}),
+    Coupon.deleteMany({}),
+    Newsletter.deleteMany({}),
+    ShippingRule.deleteMany({}),
+    Blog.deleteMany({}),
   ]);
   console.log('🗑️  Cleared existing data');
 
