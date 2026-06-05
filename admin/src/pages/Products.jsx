@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiImage, FiX, FiArrowUp, FiArrowDown } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiImage, FiX } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import api from '../lib/api';
 
@@ -9,8 +9,6 @@ export default function Products() {
   const [page, setPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
-  const [isReorderModalOpen, setIsReorderModalOpen] = useState(false);
-  const [orderedProducts, setOrderedProducts] = useState([]);
   
   // Form State
   const initialForm = { name: '', description: '', shortDescription: '', price: '', salePrice: '', stock: '', category: '', tags: '', ageGroup: 'all', gstRate: 18, isFeatured: false, isTrending: false, isNewArrival: false, variants: [], video: null, deliveryCharge: 0 };
@@ -23,48 +21,6 @@ export default function Products() {
   const [existingVideo, setExistingVideo] = useState(null);
 
   const queryClient = useQueryClient();
-
-  const { data: allProductsData, isLoading: allLoading } = useQuery({
-    queryKey: ['admin-products-all-reorder'],
-    queryFn: () => api.get('/products?limit=all').then(r => r.data.products),
-    enabled: isReorderModalOpen,
-  });
-
-  useEffect(() => {
-    if (allProductsData) {
-      setOrderedProducts(allProductsData);
-    }
-  }, [allProductsData]);
-
-  const reorderMutation = useMutation({
-    mutationFn: (ids) => api.put('/products/reorder', { productIds: ids }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['admin-products']);
-      queryClient.invalidateQueries(['admin-products-all-reorder']);
-      toast.success('Product order saved');
-      setIsReorderModalOpen(false);
-    },
-    onError: (err) => toast.error(err.response?.data?.message || 'Failed to save order')
-  });
-
-  const moveItem = (index, direction) => {
-    const newItems = [...orderedProducts];
-    const targetIndex = index + direction;
-    if (targetIndex < 0 || targetIndex >= newItems.length) return;
-    const temp = newItems[index];
-    newItems[index] = newItems[targetIndex];
-    newItems[targetIndex] = temp;
-    setOrderedProducts(newItems);
-  };
-
-  const handleOrderChange = (index, value) => {
-    const val = parseInt(value);
-    if (isNaN(val) || val < 1 || val > orderedProducts.length) return;
-    const newItems = [...orderedProducts];
-    const item = newItems.splice(index, 1)[0];
-    newItems.splice(val - 1, 0, item);
-    setOrderedProducts(newItems);
-  };
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-products', page, search],
@@ -219,10 +175,7 @@ export default function Products() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-2xl font-bold dark:text-white">Products</h1>
-        <div className="flex gap-2">
-          <button onClick={() => setIsReorderModalOpen(true)} className="btn-secondary">Arrange Products</button>
-          <button onClick={() => handleOpen()} className="btn-primary"><FiPlus /> Add Product</button>
-        </div>
+        <button onClick={() => handleOpen()} className="btn-primary"><FiPlus /> Add Product</button>
       </div>
 
       <div className="card p-4">
@@ -424,80 +377,6 @@ export default function Products() {
             <div className="p-4 border-t dark:border-dark-border flex justify-end gap-3 bg-gray-50 dark:bg-dark-bg/50">
               <button type="button" onClick={handleClose} className="btn-secondary">Cancel</button>
               <button type="submit" form="productForm" disabled={saveMutation.isLoading} className="btn-primary">{saveMutation.isLoading ? 'Saving...' : 'Save Product'}</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Arrange Products Modal */}
-      {isReorderModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-dark-card rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="flex justify-between items-center p-4 border-b dark:border-dark-border">
-              <h3 className="font-bold text-lg dark:text-white">Arrange Products</h3>
-              <button onClick={() => setIsReorderModalOpen(false)} className="p-1 text-gray-500 hover:bg-gray-100 rounded"><FiX size={20} /></button>
-            </div>
-            
-            <div className="overflow-y-auto p-4 flex-1">
-              {allLoading ? (
-                <div className="text-center py-8 text-gray-500">Loading products...</div>
-              ) : orderedProducts.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">No products to arrange.</div>
-              ) : (
-                <div className="space-y-2">
-                  <p className="text-xs text-gray-500 mb-4">Use the up/down arrows or change the rank number to arrange the products in your desired display order.</p>
-                  {orderedProducts.map((prod, idx) => (
-                    <div key={prod._id} className="flex items-center gap-3 bg-gray-50 dark:bg-dark-bg p-3 rounded-xl border border-gray-200 dark:border-dark-border">
-                      <div className="text-sm font-semibold text-gray-400 w-6">#{idx + 1}</div>
-                      <div className="w-10 h-10 rounded bg-white overflow-hidden flex-shrink-0 border">
-                        {prod.images?.[0]?.url ? <img src={prod.images[0].url} className="w-full h-full object-contain" /> : <FiImage className="mx-auto mt-2 text-gray-400" />}
-                      </div>
-                      <div className="font-medium dark:text-white flex-1 truncate">{prod.name}</div>
-                      
-                      <div className="flex gap-1">
-                        <button 
-                          type="button" 
-                          disabled={idx === 0} 
-                          onClick={() => moveItem(idx, -1)} 
-                          className="p-2 bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg disabled:opacity-30 hover:text-primary-500 transition-colors"
-                        >
-                          <FiArrowUp size={16} />
-                        </button>
-                        <button 
-                          type="button" 
-                          disabled={idx === orderedProducts.length - 1} 
-                          onClick={() => moveItem(idx, 1)} 
-                          className="p-2 bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-lg disabled:opacity-30 hover:text-primary-500 transition-colors"
-                        >
-                          <FiArrowDown size={16} />
-                        </button>
-                      </div>
-
-                      <select
-                        value={idx + 1}
-                        onChange={(e) => handleOrderChange(idx, e.target.value)}
-                        className="input text-xs w-16 py-1 pr-6 cursor-pointer"
-                      >
-                        {Array.from({ length: orderedProducts.length }, (_, i) => i + 1).map(num => (
-                          <option key={num} value={num}>{num}</option>
-                        ))}
-                      </select>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            
-            <div className="p-4 border-t dark:border-dark-border flex justify-end gap-3 bg-gray-50 dark:bg-dark-bg/50">
-              <button type="button" onClick={() => setIsReorderModalOpen(false)} className="btn-secondary">Cancel</button>
-              <button 
-                type="button" 
-                onClick={() => reorderMutation.mutate(orderedProducts.map(p => p._id))} 
-                disabled={reorderMutation.isLoading} 
-                className="btn-primary"
-              >
-                {reorderMutation.isLoading ? 'Saving...' : 'Save Order'}
-              </button>
             </div>
           </div>
         </div>

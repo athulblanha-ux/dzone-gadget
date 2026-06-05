@@ -11,39 +11,22 @@ const HomepageSection = require('./models/HomepageSection');
 const FAQ = require('./models/FAQ');
 const Banner = require('./models/Banner');
 const Testimonial = require('./models/Testimonial');
-const Order = require('./models/Order');
-const Review = require('./models/Review');
-const Coupon = require('./models/Coupon');
-const Newsletter = require('./models/Newsletter');
-const ShippingRule = require('./models/ShippingRule');
-const Blog = require('./models/Blog');
 
 const seed = async () => {
   await mongoose.connect(process.env.MONGO_URI);
   console.log('✅ Connected to MongoDB');
 
   // Clear existing data (dev only)
-  const clearPromises = [
+  await Promise.all([
     User.deleteMany({}),
+    Category.deleteMany({}),
+    Product.deleteMany({}),
     Setting.deleteMany({}),
     HomepageSection.deleteMany({}),
     FAQ.deleteMany({}),
     Banner.deleteMany({}),
     Testimonial.deleteMany({}),
-    Order.deleteMany({}),
-    Review.deleteMany({}),
-    Coupon.deleteMany({}),
-    Newsletter.deleteMany({}),
-    ShippingRule.deleteMany({}),
-    Blog.deleteMany({}),
-  ];
-
-  if (process.env.SEED_CATALOG === 'true') {
-    clearPromises.push(Category.deleteMany({}));
-    clearPromises.push(Product.deleteMany({}));
-  }
-
-  await Promise.all(clearPromises);
+  ]);
   console.log('🗑️  Cleared existing data');
 
   // ─── Admin User ────────────────────────────────────────────────────────────
@@ -58,80 +41,74 @@ const seed = async () => {
   console.log('👤 Admin user created');
 
   // ─── Categories ─────────────────────────────────────────────────────────────
-  let categories = [];
-  if (process.env.SEED_CATALOG === 'true') {
-    const categoryData = [
-      { name: 'Action Figures', icon: '🦸', order: 1, isFeatured: true },
-      { name: 'Building & Blocks', icon: '🧱', order: 2, isFeatured: true },
-      { name: 'Educational Toys', icon: '📚', order: 3, isFeatured: true },
-      { name: 'Dolls & Accessories', icon: '🪆', order: 4, isFeatured: true },
-      { name: 'Outdoor & Sports', icon: '⚽', order: 5, isFeatured: true },
-      { name: 'Puzzles & Games', icon: '🧩', order: 6, isFeatured: true },
-      { name: 'Remote Control', icon: '🚗', order: 7, isFeatured: false },
-      { name: 'Arts & Crafts', icon: '🎨', order: 8, isFeatured: false },
-    ];
-    for (const cat of categoryData) {
-      categories.push(await Category.create(cat));
-    }
-    console.log(`📦 ${categories.length} categories created`);
-  } else {
-    categories = await Category.find({});
+  const categoryData = [
+    { name: 'Action Figures', icon: '🦸', order: 1, isFeatured: true },
+    { name: 'Building & Blocks', icon: '🧱', order: 2, isFeatured: true },
+    { name: 'Educational Toys', icon: '📚', order: 3, isFeatured: true },
+    { name: 'Dolls & Accessories', icon: '🪆', order: 4, isFeatured: true },
+    { name: 'Outdoor & Sports', icon: '⚽', order: 5, isFeatured: true },
+    { name: 'Puzzles & Games', icon: '🧩', order: 6, isFeatured: true },
+    { name: 'Remote Control', icon: '🚗', order: 7, isFeatured: false },
+    { name: 'Arts & Crafts', icon: '🎨', order: 8, isFeatured: false },
+  ];
+  const categories = [];
+  for (const cat of categoryData) {
+    categories.push(await Category.create(cat));
   }
+  console.log(`📦 ${categories.length} categories created`);
 
   // ─── Sample Products ────────────────────────────────────────────────────────
-  if (process.env.SEED_CATALOG === 'true') {
-    const productData = [
-      {
-        name: 'Super Hero Action Figure Set',
-        description: 'A premium set of 6 superhero action figures with detailed painting and movable joints. Perfect for kids aged 4+.',
-        shortDescription: 'Set of 6 superhero figures with movable joints.',
-        price: 1299,
-        salePrice: 999,
-        category: categories[0]?._id,
-        stock: 50,
-        images: [{ url: 'https://images.unsplash.com/photo-1608889825205-eebdb9fc5806?w=800&q=80', alt: 'Action Figure Set' }],
-        tags: ['superhero', 'action', 'figures'],
-        ageGroup: '3-5',
-        isFeatured: true,
-        isTrending: true,
-        isNewArrival: true,
-        gstRate: 18,
-      },
-      {
-        name: 'Rainbow Building Blocks 200pcs',
-        description: 'Colorful, non-toxic building blocks that stimulate creativity and fine motor skills. Includes 200 pieces in 12 vibrant colors.',
-        shortDescription: '200 colorful building blocks for creative play.',
-        price: 799,
-        category: categories[1]?._id,
-        stock: 80,
-        images: [{ url: 'https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=800&q=80', alt: 'Building Blocks' }],
-        tags: ['blocks', 'building', 'colorful'],
-        ageGroup: '0-2',
-        isFeatured: true,
-        gstRate: 12,
-      },
-      {
-        name: 'STEM Science Explorer Kit',
-        description: 'An exciting science kit with 30+ experiments covering chemistry, physics, and biology. Comes with guide book.',
-        shortDescription: '30+ science experiments in one kit.',
-        price: 1599,
-        salePrice: 1299,
-        category: categories[2]?._id,
-        stock: 35,
-        images: [{ url: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=800&q=80', alt: 'Science Kit' }],
-        tags: ['stem', 'science', 'educational'],
-        ageGroup: '6-8',
-        isFeatured: true,
-        isTrending: true,
-        gstRate: 18,
-      },
-    ];
-    const products = [];
-    for (const prod of productData) {
-      products.push(await Product.create(prod));
-    }
-    console.log(`${products.length} products created`);
+  const productData = [
+    {
+      name: 'Super Hero Action Figure Set',
+      description: 'A premium set of 6 superhero action figures with detailed painting and movable joints. Perfect for kids aged 4+.',
+      shortDescription: 'Set of 6 superhero figures with movable joints.',
+      price: 1299,
+      salePrice: 999,
+      category: categories[0]._id,
+      stock: 50,
+      images: [{ url: 'https://images.unsplash.com/photo-1608889825205-eebdb9fc5806?w=800&q=80', alt: 'Action Figure Set' }],
+      tags: ['superhero', 'action', 'figures'],
+      ageGroup: '3-5',
+      isFeatured: true,
+      isTrending: true,
+      isNewArrival: true,
+      gstRate: 18,
+    },
+    {
+      name: 'Rainbow Building Blocks 200pcs',
+      description: 'Colorful, non-toxic building blocks that stimulate creativity and fine motor skills. Includes 200 pieces in 12 vibrant colors.',
+      shortDescription: '200 colorful building blocks for creative play.',
+      price: 799,
+      category: categories[1]._id,
+      stock: 80,
+      images: [{ url: 'https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=800&q=80', alt: 'Building Blocks' }],
+      tags: ['blocks', 'building', 'colorful'],
+      ageGroup: '0-2',
+      isFeatured: true,
+      gstRate: 12,
+    },
+    {
+      name: 'STEM Science Explorer Kit',
+      description: 'An exciting science kit with 30+ experiments covering chemistry, physics, and biology. Comes with guide book.',
+      shortDescription: '30+ science experiments in one kit.',
+      price: 1599,
+      salePrice: 1299,
+      category: categories[2]._id,
+      stock: 35,
+      images: [{ url: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=800&q=80', alt: 'Science Kit' }],
+      tags: ['stem', 'science', 'educational'],
+      ageGroup: '6-8',
+      isFeatured: true,
+      isTrending: true,
+      gstRate: 18,
+    },
+  ];
+  const products = [];
+  for (const prod of productData) {
+    products.push(await Product.create(prod));
   }
+  console.log(`${products.length} products created`);
 
   // ─── Site Settings ──────────────────────────────────────────────────────────
   await Setting.insertMany([
@@ -299,10 +276,6 @@ D-STORE, Mukkam, Kozhikode, Kerala, India
     { name: 'Anita Patel', role: 'Parent', rating: 4, comment: 'Beautiful packaging and great quality. The building blocks set is perfect.', isFeatured: true, order: 3 },
   ]);
   console.log('💬 Testimonials seeded');
-
-  // ─── Shipping Rules ────────────────────────────────────────────────────────
-  await ShippingRule.create({ state: 'Default', baseFee: 49, freeShippingThreshold: 499 });
-  console.log('🚚 Shipping rules seeded');
 
   console.log('\n✅ Database seeded successfully!');
   console.log(`📧 Admin login: ${process.env.ADMIN_EMAIL || 'admin@d-store.store'}`);
