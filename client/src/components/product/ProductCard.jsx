@@ -65,7 +65,7 @@ export default function ProductCard({ product, view }) {
           {/* Badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-1.5">
             {product.isTrending && (
-              <span className="bg-accent-orange text-white text-xs font-bold px-2 py-1 rounded-lg">TRENDING</span>
+              <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-lg">TRENDING</span>
             )}
             {product.stock === 0 && (
               <span className="bg-gray-500 text-white text-xs font-bold px-2 py-1 rounded-lg">Out of Stock</span>

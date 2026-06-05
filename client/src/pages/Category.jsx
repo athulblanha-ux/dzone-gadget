@@ -31,7 +31,7 @@ export default function Category() {
   
   const { data: prodRes, isLoading: prodLoading } = useQuery({ 
     queryKey: ['products-by-category', catRes?._id], 
-    queryFn: () => api.get(`/products?category=${catRes._id}`).then(r => r.data),
+    queryFn: () => api.get(`/products?category=${catRes._id}&limit=all`).then(r => r.data),
     enabled: !!catRes?._id
   });
 

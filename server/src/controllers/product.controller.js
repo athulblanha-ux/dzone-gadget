@@ -8,6 +8,10 @@ const { uploadToCloudinary, deleteFromCloudinary } = require('../config/cloudina
 const buildProductFilter = (query) => {
   const filter = { isActive: true };
 
+  if (query.id) {
+    const ids = Array.isArray(query.id) ? query.id : [query.id];
+    filter._id = { $in: ids };
+  }
   if (query.category) filter.category = query.category;
   if (query.isFeatured) filter.isFeatured = query.isFeatured === 'true';
   if (query.isTrending) filter.isTrending = query.isTrending === 'true';
@@ -43,9 +47,10 @@ const buildProductFilter = (query) => {
  * @access  Public
  */
 exports.getProducts = asyncHandler(async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = Math.min(parseInt(req.query.limit) || 12, 100);
-  const skip = (page - 1) * limit;
+  const all = req.query.all === 'true' || req.query.limit === 'all';
+  const page = all ? 1 : (parseInt(req.query.page) || 1);
+  const limit = all ? 1000000 : Math.min(parseInt(req.query.limit) || 12, 100);
+  const skip = all ? 0 : (page - 1) * limit;
 
   // Sort
   const sortOptions = {

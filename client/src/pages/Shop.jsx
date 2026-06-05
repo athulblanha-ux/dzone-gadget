@@ -29,7 +29,7 @@ export default function Shop() {
     isFeatured: searchParams.get('isFeatured') || '',
     isTrending: searchParams.get('isTrending') || '',
     isNewArrival: searchParams.get('isNewArrival') || '',
-    page: 1,
+    limit: 'all',
   });
 
   const { data, isLoading } = useQuery({
@@ -47,8 +47,8 @@ export default function Shop() {
     queryFn: () => api.get('/categories').then(r => r.data.categories),
   });
 
-  const updateFilter = (key, value) => setFilters(prev => ({ ...prev, [key]: value, page: 1 }));
-  const clearFilters = () => setFilters({ search: '', category: '', sort: 'newest', minPrice: '', maxPrice: '', ageGroup: '', inStock: '', isFeatured: '', isTrending: '', isNewArrival: '', page: 1 });
+  const updateFilter = (key, value) => setFilters(prev => ({ ...prev, [key]: value }));
+  const clearFilters = () => setFilters({ search: '', category: '', sort: 'newest', minPrice: '', maxPrice: '', ageGroup: '', inStock: '', isFeatured: '', isTrending: '', isNewArrival: '', limit: 'all' });
   const activeCount = [filters.category, filters.minPrice, filters.maxPrice, filters.ageGroup, filters.inStock].filter(Boolean).length;
 
   return (
@@ -106,14 +106,6 @@ export default function Shop() {
         ) : (
           <div className={`grid gap-4 sm:gap-6 ${view === 'grid' ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4' : 'grid-cols-1 max-w-4xl'}`}>
             {data?.products?.map(p => <ProductCard key={p._id} product={p} view={view} />)}
-          </div>
-        )}
-
-        {data?.pagination && data.pagination.pages > 1 && (
-          <div className="flex justify-center gap-2 mt-10">
-            {Array.from({ length: data.pagination.pages }, (_, i) => i + 1).map(p => (
-              <button key={p} onClick={() => setFilters(prev => ({ ...prev, page: p }))} className={`w-10 h-10 rounded-xl font-semibold text-sm transition-all ${p === filters.page ? 'bg-primary-500 text-white' : 'card text-gray-600 dark:text-dark-muted'}`}>{p}</button>
-            ))}
           </div>
         )}
       </div>
