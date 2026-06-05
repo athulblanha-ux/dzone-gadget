@@ -67,6 +67,7 @@ const productSchema = new mongoose.Schema(
     metaDescription: String,
     totalSold: { type: Number, default: 0 },
     instagramPostId: String, // Link to Instagram post
+    order: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
@@ -111,6 +112,7 @@ productSchema.index({ price: 1 });
 productSchema.index({ 'ratings.average': -1 });
 productSchema.index({ totalSold: -1 });
 productSchema.index({ createdAt: -1 });
+productSchema.index({ order: 1 });
 
 const Product = mongoose.model('Product', productSchema);
 module.exports = Product;

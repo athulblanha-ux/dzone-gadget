@@ -60,9 +60,9 @@ exports.getProducts = asyncHandler(async (req, res) => {
     price_desc: { price: -1 },
     popular: { totalSold: -1 },
     rating: { 'ratings.average': -1 },
-    relevance: req.query.search ? { score: { $meta: 'textScore' } } : { createdAt: -1 },
+    relevance: req.query.search ? { score: { $meta: 'textScore' } } : { order: 1, createdAt: -1 },
   };
-  const sort = sortOptions[req.query.sort] || { createdAt: -1 };
+  const sort = sortOptions[req.query.sort] || { order: 1, createdAt: -1 };
 
   const filter = buildProductFilter(req.query);
 
@@ -334,7 +334,7 @@ exports.getAllProductsAdmin = asyncHandler(async (req, res) => {
   const [products, total] = await Promise.all([
     Product.find(search)
       .populate('category', 'name')
-      .sort({ createdAt: -1 })
+      .sort({ order: 1, createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .lean(),
@@ -342,4 +342,24 @@ exports.getAllProductsAdmin = asyncHandler(async (req, res) => {
   ]);
 
   res.json({ success: true, products, pagination: { page, limit, total, pages: Math.ceil(total / limit) } });
+});
+
+/**
+ * @route   PUT /api/products/reorder
+ * @access  Admin
+ */
+exports.reorderProducts = asyncHandler(async (req, res) => {
+  const { productIds } = req.body;
+
+  if (!Array.isArray(productIds)) {
+    return res.status(400).json({ success: false, message: 'productIds must be an array of product IDs' });
+  }
+
+  const promises = productIds.map((id, index) => {
+    return Product.findByIdAndUpdate(id, { order: index }, { new: true });
+  });
+
+  await Promise.all(promises);
+
+  res.json({ success: true, message: 'Products reordered successfully' });
 });

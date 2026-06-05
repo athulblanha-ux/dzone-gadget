@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { useQuery } from '@tanstack/react-query';
 import { FiHeart, FiShoppingCart, FiTruck, FiShield, FiStar, FiMinus, FiPlus, FiCheck, FiChevronDown, FiChevronUp, FiRotateCcw, FiCreditCard } from 'react-icons/fi';
 import { motion } from 'framer-motion';
-import { useCartStore, useWishlistStore } from '../store';
+import { useCartStore, useWishlistStore, useAuthStore } from '../store';
 import api from '../lib/api';
 import toast from 'react-hot-toast';
 
@@ -21,6 +21,34 @@ export default function ProductDetail() {
   const { toggle, isInWishlist } = useWishlistStore();
 
   const { data, isLoading } = useQuery({ queryKey: ['product', slug], queryFn: () => api.get(`/products/${slug}`).then(r => r.data.product) });
+
+  const { isAuthenticated } = useAuthStore();
+  const [rating, setRating] = useState(5);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [reviewTitle, setReviewTitle] = useState('');
+  const [reviewComment, setReviewComment] = useState('');
+
+  const { data: reviewsData, isLoading: reviewsLoading, refetch: refetchReviews } = useQuery({
+    queryKey: ['reviews', data?._id],
+    queryFn: () => api.get(`/reviews/product/${data._id}`).then(r => r.data),
+    enabled: !!data?._id,
+  });
+
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+    if (!rating) return toast.error('Please select a rating');
+    if (!reviewComment.trim()) return toast.error('Please enter your review comment');
+    try {
+      await api.post(`/reviews/product/${data._id}`, { rating, title: reviewTitle, comment: reviewComment });
+      toast.success('Review submitted! It will appear once approved by the admin. ✨');
+      setRating(5);
+      setReviewTitle('');
+      setReviewComment('');
+      refetchReviews();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to submit review');
+    }
+  };
 
   const toggleAccordion = (id) => {
     setOpenAccordion(openAccordion === id ? null : id);
@@ -242,6 +270,131 @@ export default function ProductDetail() {
                 <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded bg-indigo-50 text-indigo-700 dark:bg-indigo-950/20 dark:text-indigo-400 border border-indigo-100/50 dark:border-indigo-900/30">Visa</span>
                 <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded bg-red-50 text-red-700 dark:bg-red-950/20 dark:text-red-400 border border-red-100/50 dark:border-red-900/30">Mastercard</span>
                 <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded bg-purple-50 text-purple-700 dark:bg-purple-950/20 dark:text-purple-400 border border-purple-100/50 dark:border-purple-900/30">UPI</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Reviews Section */}
+        <div className="mt-16 pt-16 border-t border-gray-100 dark:border-dark-border">
+          <div className="grid md:grid-cols-3 gap-12">
+            {/* Reviews Summary */}
+            <div>
+              <h2 className="font-display font-bold text-2xl dark:text-dark-text mb-6">Customer Reviews</h2>
+              <div className="bg-gray-50/50 dark:bg-dark-card/30 border border-gray-100/50 dark:border-dark-border rounded-3xl p-6 text-center">
+                <div className="text-5xl font-bold text-primary-500 mb-2">
+                  {data.ratings?.average || '0.0'}
+                </div>
+                <div className="flex justify-center gap-1 text-yellow-400 mb-2 text-xl">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <FiStar key={star} className={star <= Math.round(data.ratings?.average || 0) ? 'fill-current' : ''} />
+                  ))}
+                </div>
+                <p className="text-sm text-gray-500 dark:text-dark-muted">
+                  Based on {data.ratings?.count || 0} reviews
+                </p>
+              </div>
+            </div>
+
+            {/* Reviews List & Write Review */}
+            <div className="md:col-span-2 space-y-8">
+              {/* Write Review Form or Prompt */}
+              <div className="bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-3xl p-6">
+                <h3 className="font-display font-semibold text-lg dark:text-dark-text mb-4">Write a Review</h3>
+                {isAuthenticated ? (
+                  <form onSubmit={handleSubmitReview} className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-dark-muted mb-2">Rating</label>
+                      <div className="flex gap-2 text-2xl text-yellow-400">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <button
+                            type="button"
+                            key={star}
+                            onClick={() => setRating(star)}
+                            onMouseEnter={() => setHoverRating(star)}
+                            onMouseLeave={() => setHoverRating(0)}
+                            className="hover:scale-110 active:scale-95 transition-all"
+                          >
+                            <FiStar className={(hoverRating || rating) >= star ? 'fill-current' : ''} />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <label htmlFor="review-title" className="block text-sm font-medium text-gray-700 dark:text-dark-muted mb-2">Review Title</label>
+                      <input
+                        id="review-title"
+                        type="text"
+                        value={reviewTitle}
+                        onChange={(e) => setReviewTitle(e.target.value)}
+                        placeholder="Summarize your experience (optional)"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-400 dark:bg-dark-bg dark:border-dark-border dark:text-dark-text"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="review-comment" className="block text-sm font-medium text-gray-700 dark:text-dark-muted mb-2">Review Details</label>
+                      <textarea
+                        id="review-comment"
+                        rows={4}
+                        required
+                        value={reviewComment}
+                        onChange={(e) => setReviewComment(e.target.value)}
+                        placeholder="Tell us what you liked or disliked about this toy..."
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-400 dark:bg-dark-bg dark:border-dark-border dark:text-dark-text"
+                      />
+                    </div>
+                    <button type="submit" className="btn-primary py-3 px-6">Submit Review</button>
+                  </form>
+                ) : (
+                  <div className="text-center py-6">
+                    <p className="text-gray-500 dark:text-dark-muted mb-4">You must be signed in to leave a review.</p>
+                    <Link to="/login" className="btn-primary inline-flex py-2 px-6">Sign In</Link>
+                  </div>
+                )}
+              </div>
+
+              {/* Reviews List */}
+              <div className="space-y-4">
+                <h3 className="font-display font-semibold text-lg dark:text-dark-text border-b border-gray-100 dark:border-dark-border pb-3">Reviews</h3>
+                {reviewsLoading ? (
+                  <div className="space-y-4">
+                    <div className="skeleton h-24 w-full rounded-2xl" />
+                    <div className="skeleton h-24 w-full rounded-2xl" />
+                  </div>
+                ) : reviewsData?.reviews?.length > 0 ? (
+                  <div className="space-y-4">
+                    {reviewsData.reviews.map((rev) => (
+                      <div key={rev._id} className="border border-gray-100 dark:border-dark-border rounded-2xl p-5 bg-gray-50/10 dark:bg-dark-card/10">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-1.5 text-yellow-400 text-sm">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <FiStar key={star} className={star <= rev.rating ? 'fill-current' : ''} />
+                            ))}
+                          </div>
+                          <span className="text-xs text-gray-400">
+                            {new Date(rev.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', date: 'numeric' })}
+                          </span>
+                        </div>
+                        {rev.title && <h4 className="font-semibold text-base dark:text-dark-text mb-1">{rev.title}</h4>}
+                        <p className="text-sm text-gray-600 dark:text-dark-muted leading-relaxed mb-3">{rev.comment}</p>
+                        <div className="flex items-center gap-2 text-xs">
+                          <span className="font-bold text-gray-700 dark:text-dark-text">
+                            {rev.user?.name || 'Anonymous User'}
+                          </span>
+                          {rev.isVerifiedPurchase && (
+                            <span className="text-green-600 bg-green-50 dark:bg-green-950/20 px-2 py-0.5 rounded font-semibold">
+                              Verified Purchase
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-center py-8 text-gray-500 dark:text-dark-muted">
+                    No reviews yet. Be the first to leave a review!
+                  </p>
+                )}
               </div>
             </div>
           </div>
