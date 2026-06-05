@@ -8,6 +8,7 @@ import Layout from './Layout';
 const Login = React.lazy(() => import('./pages/Login'));
 const Dashboard = React.lazy(() => import('./pages/Dashboard'));
 const Products = React.lazy(() => import('./pages/Products'));
+const ArrangeProducts = React.lazy(() => import('./pages/ArrangeProducts'));
 const Categories = React.lazy(() => import('./pages/Categories'));
 const Orders = React.lazy(() => import('./pages/Orders'));
 const Customers = React.lazy(() => import('./pages/Customers'));
@@ -43,6 +44,7 @@ export default function App() {
             <Route path="/" element={<ProtectedRoute />}>
               <Route index element={<Dashboard />} />
               <Route path="products" element={<Products />} />
+              <Route path="arrange-products" element={<ArrangeProducts />} />
               <Route path="categories" element={<Categories />} />
               <Route path="orders" element={<Orders />} />
               <Route path="customers" element={<Customers />} />

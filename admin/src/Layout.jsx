@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { FiHome, FiBox, FiShoppingCart, FiUsers, FiSettings, FiLogOut, FiMenu, FiMoon, FiSun, FiLayers, FiFileText, FiTrendingUp, FiEdit3, FiStar, FiTruck, FiX } from 'react-icons/fi';
+import { FiHome, FiBox, FiShoppingCart, FiUsers, FiSettings, FiLogOut, FiMenu, FiMoon, FiSun, FiLayers, FiFileText, FiTrendingUp, FiEdit3, FiStar, FiTruck, FiX, FiSliders } from 'react-icons/fi';
 import { useAuthStore, useThemeStore } from './store';
 
 const NAV_ITEMS = [
   { icon: FiHome, label: 'Dashboard', path: '/' },
   { icon: FiBox, label: 'Products', path: '/products' },
+  { icon: FiSliders, label: 'Arrange Products', path: '/arrange-products' },
   { icon: FiLayers, label: 'Categories', path: '/categories' },
   { icon: FiShoppingCart, label: 'Orders', path: '/orders' },
   { icon: FiUsers, label: 'Customers', path: '/customers' },

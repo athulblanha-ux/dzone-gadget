@@ -54,6 +54,7 @@ exports.getProducts = asyncHandler(async (req, res) => {
 
   // Sort
   const sortOptions = {
+    recommended: { order: 1, createdAt: -1 },
     newest: { createdAt: -1 },
     oldest: { createdAt: 1 },
     price_asc: { price: 1 },

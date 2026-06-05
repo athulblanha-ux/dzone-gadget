@@ -8,6 +8,7 @@ import ProductCard from '../components/product/ProductCard';
 import api from '../lib/api';
 
 const SORTS = [
+  { value: 'recommended', label: 'Recommended' },
   { value: 'newest', label: 'Newest First' },
   { value: 'popular', label: 'Most Popular' },
   { value: 'price_asc', label: 'Price: Low to High' },
@@ -23,7 +24,7 @@ export default function Shop() {
   const [filters, setFilters] = useState({
     search: searchParams.get('search') || '',
     category: searchParams.get('category') || '',
-    sort: searchParams.get('sort') || 'newest',
+    sort: searchParams.get('sort') || 'recommended',
     minPrice: '', maxPrice: '',
     ageGroup: '', inStock: '',
     isFeatured: searchParams.get('isFeatured') || '',
@@ -48,7 +49,7 @@ export default function Shop() {
   });
 
   const updateFilter = (key, value) => setFilters(prev => ({ ...prev, [key]: value }));
-  const clearFilters = () => setFilters({ search: '', category: '', sort: 'newest', minPrice: '', maxPrice: '', ageGroup: '', inStock: '', isFeatured: '', isTrending: '', isNewArrival: '', limit: 'all' });
+  const clearFilters = () => setFilters({ search: '', category: '', sort: 'recommended', minPrice: '', maxPrice: '', ageGroup: '', inStock: '', isFeatured: '', isTrending: '', isNewArrival: '', limit: 'all' });
   const activeCount = [filters.category, filters.minPrice, filters.maxPrice, filters.ageGroup, filters.inStock].filter(Boolean).length;
 
   return (
