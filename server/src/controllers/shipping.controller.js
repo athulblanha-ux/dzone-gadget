@@ -62,11 +62,6 @@ exports.calculateShippingFee = async (items, state, subtotal) => {
     isKerala = state.trim().toLowerCase() === 'kerala';
   }
 
-  if (isKerala) {
-    return 0; // Kerala. Del = 0
-  }
-
-  // Not Kerala
   let totalShippingFee = 0;
   let hasProductDeliveryCharge = false;
 
@@ -78,19 +73,24 @@ exports.calculateShippingFee = async (items, state, subtotal) => {
         if (product && product.deliveryCharge && product.deliveryCharge > 0) {
           hasProductDeliveryCharge = true;
           let charge = product.deliveryCharge;
-          if (charge === 60) {
-            charge = 120;
-          } else if (charge === 120) {
-            charge = 200;
+          
+          if (!isKerala) {
+            // Mapping for destinations outside Kerala
+            if (charge === 60) {
+              charge = 120;
+            } else if (charge === 120) {
+              charge = 200;
+            }
           }
+          
           totalShippingFee += charge * item.quantity;
         }
       }
     }
   }
 
-  // Fallback to default base fee only if no products have a delivery charge
-  if (!hasProductDeliveryCharge) {
+  // Fallback to default base fee only if no products have a delivery charge and it's not Kerala
+  if (!hasProductDeliveryCharge && !isKerala) {
     const rule = await ShippingRule.findOne({ state: new RegExp('^default$', 'i') });
     totalShippingFee = rule ? rule.baseFee : 49;
   }
