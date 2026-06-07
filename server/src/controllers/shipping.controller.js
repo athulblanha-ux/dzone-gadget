@@ -57,23 +57,18 @@ exports.deleteRule = asyncHandler(async (req, res) => {
 });
 
 exports.calculateShippingFee = async (items, state, subtotal) => {
-  let rule;
+  let isKerala = false;
   if (state) {
-    rule = await ShippingRule.findOne({ state: new RegExp(`^${state}$`, 'i') });
-  }
-  
-  if (!rule) {
-    rule = await ShippingRule.findOne({ state: new RegExp('^default$', 'i') });
+    isKerala = state.trim().toLowerCase() === 'kerala';
   }
 
-  let baseFee = 49;
-  let freeThreshold = 499;
-  if (rule) {
-    baseFee = rule.baseFee;
-    freeThreshold = rule.freeShippingThreshold;
+  if (isKerala) {
+    return 0; // Kerala. Del = 0
   }
 
-  let totalShippingFee = baseFee;
+  // Not Kerala
+  let totalShippingFee = 0;
+  let hasProductDeliveryCharge = false;
 
   if (items && items.length > 0) {
     for (const item of items) {
@@ -81,10 +76,23 @@ exports.calculateShippingFee = async (items, state, subtotal) => {
       if (productId) {
         const product = await Product.findById(productId);
         if (product && product.deliveryCharge && product.deliveryCharge > 0) {
-          totalShippingFee += product.deliveryCharge * item.quantity;
+          hasProductDeliveryCharge = true;
+          let charge = product.deliveryCharge;
+          if (charge === 60) {
+            charge = 120;
+          } else if (charge === 120) {
+            charge = 200;
+          }
+          totalShippingFee += charge * item.quantity;
         }
       }
     }
+  }
+
+  // Fallback to default base fee only if no products have a delivery charge
+  if (!hasProductDeliveryCharge) {
+    const rule = await ShippingRule.findOne({ state: new RegExp('^default$', 'i') });
+    totalShippingFee = rule ? rule.baseFee : 49;
   }
 
   return totalShippingFee;
