@@ -128,6 +128,11 @@ export default function ProductDetail() {
               ) : (
                 <span className="text-sm font-semibold text-red-600 bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded-lg">Out of Stock</span>
               )}
+              {data.weight && (
+                <span className="text-sm font-semibold text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-lg flex items-center gap-1">
+                  ⚖️ {data.weight >= 1000 ? `${(data.weight / 1000).toFixed(1)} kg` : `${data.weight} g`}
+                </span>
+              )}
             </div>
 
             <div className="flex items-end gap-3 mb-8">
