@@ -21,7 +21,11 @@
   }
 
   body {
-    @apply font-sans text-dark-text transition-colors duration-300;
+    @apply font-sans text-gray-900 bg-white transition-colors duration-300;
+  }
+
+  html.dark body {
+    @apply text-dark-text bg-dark-bg;
     background: radial-gradient(circle at 50% 0%, rgba(108, 92, 231, 0.08) 0%, rgba(6, 6, 8, 0) 50%), #060608;
   }
 

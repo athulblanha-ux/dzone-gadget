@@ -193,12 +193,12 @@ function CategoryGrid({ categories }) {
           >
             <Link
               to={`/category/${cat.slug}`}
-              className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-white/5 border border-white/[0.06] backdrop-blur-md hover:shadow-framer-shadow-hover hover:-translate-y-1 transition-all duration-300 text-center group"
+              className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/[0.06] hover:shadow-framer-shadow-hover hover:-translate-y-1 transition-all duration-300 text-center group"
             >
-              <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/[0.08] backdrop-blur-md flex items-center justify-center text-primary-400 group-hover:scale-110 transition-transform duration-300">
+              <div className="w-14 h-14 rounded-2xl bg-primary-50 dark:bg-white/5 border border-primary-100/50 dark:border-white/[0.08] flex items-center justify-center text-primary-500 dark:text-primary-400 group-hover:scale-110 transition-transform duration-300">
                 {getCategoryIcon(cat.slug)}
               </div>
-              <span className="text-xs font-bold text-dark-text leading-tight uppercase tracking-wider">
+              <span className="text-xs font-bold text-gray-900 dark:text-dark-text leading-tight uppercase tracking-wider">
                 {cat.name}
               </span>
             </Link>
@@ -272,18 +272,18 @@ function FlashSaleBanner({ products }) {
 
   return (
     <section className="section !py-0">
-      <div className="card px-8 py-10 flex flex-col lg:flex-row items-center gap-8">
-        <div className="text-white text-center lg:text-left flex-shrink-0">
+      <div className="card px-8 py-10 flex flex-col lg:flex-row items-center gap-8 bg-gray-50 dark:bg-dark-card border-gray-100 dark:border-dark-border">
+        <div className="text-gray-900 dark:text-white text-center lg:text-left flex-shrink-0">
           <div className="flex items-center justify-center lg:justify-start gap-2 mb-2">
-            <FiZap className="text-primary-400 fill-current animate-pulse-slow text-2xl" />
-            <span className="font-display font-bold text-2xl text-dark-text">Flash Sale!</span>
+            <FiZap className="text-primary-500 dark:text-primary-400 fill-current animate-pulse-slow text-2xl" />
+            <span className="font-display font-bold text-2xl text-gray-900 dark:text-dark-text">Flash Sale!</span>
           </div>
-          <p className="text-dark-muted mb-4">Limited time deals — don't miss out!</p>
+          <p className="text-gray-500 dark:text-dark-muted mb-4">Limited time deals — don't miss out!</p>
           <div className="flex gap-3 justify-center lg:justify-start">
             {[{ label: 'Hours', value: pad(timeLeft.h) }, { label: 'Mins', value: pad(timeLeft.m) }, { label: 'Secs', value: pad(timeLeft.s) }].map(({ label, value }) => (
-              <div key={label} className="bg-white/5 border border-white/[0.06] rounded-xl px-4 py-3 text-center min-w-[60px] backdrop-blur-md">
-                <div className="font-display font-bold text-2xl text-dark-text">{value}</div>
-                <div className="text-xs text-dark-muted">{label}</div>
+              <div key={label} className="bg-white dark:bg-white/5 border border-gray-100 dark:border-white/[0.06] rounded-xl px-4 py-3 text-center min-w-[60px] shadow-sm dark:shadow-none">
+                <div className="font-display font-bold text-2xl text-gray-900 dark:text-dark-text">{value}</div>
+                <div className="text-xs text-gray-500 dark:text-dark-muted">{label}</div>
               </div>
             ))}
           </div>
@@ -294,17 +294,17 @@ function FlashSaleBanner({ products }) {
               <Link
                 key={p._id}
                 to={`/product/${p.slug}`}
-                className="bg-[#121217]/50 border border-white/[0.06] rounded-2xl p-3 flex-shrink-0 w-36 hover:shadow-framer-shadow-hover hover:scale-[1.02] active:scale-95 transition-all duration-300 backdrop-blur-md"
+                className="bg-white dark:bg-[#121217]/50 border border-gray-100 dark:border-white/[0.06] rounded-2xl p-3 flex-shrink-0 w-36 hover:shadow-framer-shadow-hover hover:scale-[1.02] active:scale-95 transition-all duration-300 shadow-sm dark:shadow-none"
               >
-                <div className="aspect-square bg-white/5 rounded-xl mb-2 overflow-hidden border border-white/[0.03]">
+                <div className="aspect-square bg-gray-50 dark:bg-white/5 rounded-xl mb-2 overflow-hidden border border-gray-100 dark:border-white/[0.03]">
                   {p.images?.[0]?.url ? (
                     <img src={p.images[0].url} alt={p.name} className="w-full h-full object-contain" loading="lazy" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center"><img src="/logo.png" className="w-12 h-12 object-contain opacity-50" alt="logo" /></div>
                   )}
                 </div>
-                <p className="text-xs font-medium text-dark-text line-clamp-1">{p.name}</p>
-                <p className="text-primary-400 font-bold text-sm">₹{(p.salePrice || p.price).toLocaleString()}</p>
+                <p className="text-xs font-medium text-gray-800 dark:text-dark-text line-clamp-1">{p.name}</p>
+                <p className="text-primary-500 dark:text-primary-400 font-bold text-sm">₹{(p.salePrice || p.price).toLocaleString()}</p>
               </Link>
             ))}
           </div>
