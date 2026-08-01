@@ -53,7 +53,7 @@ exports.createOrder = asyncHandler(async (req, res) => {
   let advanceAmount = 0;
   let codBalance = 0;
   if (paymentMethod === 'partial_cod') {
-    advanceAmount = Math.min(200, total);
+    advanceAmount = Math.round(codFee + shippingFee + 0.1 * (subtotal - discountAmount));
     codBalance = total - advanceAmount;
   } else if (paymentMethod === 'cod') {
     codBalance = total;

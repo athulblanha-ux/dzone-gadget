@@ -42,7 +42,9 @@ export default function Checkout() {
 
   const codFee = form.paymentMethod === 'partial_cod' ? 50 : 0;
   const grandTotal = total + shippingFee + codFee;
-  const advanceAmount = form.paymentMethod === 'partial_cod' ? Math.min(200, grandTotal) : grandTotal;
+  const advanceAmount = form.paymentMethod === 'partial_cod'
+    ? Math.round(codFee + shippingFee + 0.1 * total)
+    : grandTotal;
   const codBalance = form.paymentMethod === 'partial_cod' ? grandTotal - advanceAmount : 0;
 
   if (items.length === 0) {
