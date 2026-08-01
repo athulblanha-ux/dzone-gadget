@@ -105,7 +105,7 @@ function HeroBanner({ banners, latestProducts }) {
   };
 
   return (
-    <div className="relative h-[50vh] sm:h-[70vh] min-h-[380px] sm:min-h-[500px] overflow-hidden rounded-none">
+    <div className="relative h-[25vh] sm:h-[35vh] min-h-[200px] sm:min-h-[280px] overflow-hidden rounded-none">
       <AnimatePresence mode="wait">
         <motion.div
           key={current}
@@ -121,32 +121,32 @@ function HeroBanner({ banners, latestProducts }) {
             <div className="max-w-7xl mx-auto px-4 sm:px-8 w-full">
               <div className="max-w-xl">
                 <motion.h1
-                  initial={{ opacity: 0, y: 30 }}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
-                  className="font-display font-bold text-3xl sm:text-4xl md:text-5xl text-white leading-tight mb-4"
+                  className="font-display font-bold text-xl sm:text-2xl md:text-3xl text-white leading-tight mb-2"
                 >
                   {slides[current]?.title}
                 </motion.h1>
                 <motion.p
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
-                  className="text-white/90 text-sm sm:text-base md:text-lg mb-6 sm:mb-8"
+                  className="text-white/90 text-xs sm:text-sm md:text-base mb-4 sm:mb-5"
                 >
                   {slides[current]?.subtitle}
                 </motion.p>
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 }}
                 >
                   <Link
                     to={slides[current]?.ctaLink || '/shop'}
-                    className="inline-flex items-center gap-2 bg-white text-primary-500 font-bold px-6 py-3 sm:px-8 sm:py-4 text-sm sm:text-base rounded-2xl hover:shadow-xl transition-all duration-200 hover:-translate-y-1"
+                    className="inline-flex items-center gap-1.5 bg-white text-primary-500 font-bold px-4 py-2 sm:px-6 sm:py-2.5 text-xs sm:text-sm rounded-xl hover:shadow-xl transition-all duration-200 hover:-translate-y-1"
                   >
                     {slides[current]?.ctaText || 'Shop Now'}
-                    <FiArrowRight />
+                    <FiArrowRight size={14} />
                   </Link>
                 </motion.div>
               </div>
