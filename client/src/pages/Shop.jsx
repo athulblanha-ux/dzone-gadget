@@ -118,29 +118,29 @@ export default function Shop() {
             <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 25 }} className="fixed right-0 inset-y-0 w-80 bg-white dark:bg-dark-card shadow-2xl z-50 overflow-y-auto">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="font-display font-bold text-lg dark:text-dark-text">Filters</h3>
+                  <h3 className="font-display font-bold text-lg text-gray-900 dark:text-dark-text">Filters</h3>
                   <div className="flex gap-2"><button onClick={clearFilters} className="text-sm text-red-500 hover:underline">Clear all</button><button onClick={() => setFiltersOpen(false)} className="btn-icon"><FiX /></button></div>
                 </div>
                 <div className="mb-6">
-                  <h4 className="font-semibold mb-3 dark:text-dark-text">Category</h4>
+                  <h4 className="font-semibold mb-3 text-gray-800 dark:text-dark-text">Category</h4>
                   <div className="space-y-2">
                     {categoriesData?.map(cat => (
                       <label key={cat._id} className="flex items-center gap-2 cursor-pointer">
                         <input type="radio" name="category" checked={filters.category === cat._id} onChange={() => updateFilter('category', cat._id)} className="accent-primary-500" />
-                        <span className="text-sm dark:text-dark-text">{cat.name}</span>
+                        <span className="text-sm text-gray-600 dark:text-dark-text">{cat.name}</span>
                       </label>
                     ))}
                   </div>
                 </div>
                 <div className="mb-6">
-                  <h4 className="font-semibold mb-3 dark:text-dark-text">Price Range (₹)</h4>
+                  <h4 className="font-semibold mb-3 text-gray-800 dark:text-dark-text">Price Range (₹)</h4>
                   <div className="flex gap-2">
                     <input type="number" placeholder="Min" value={filters.minPrice} onChange={e => updateFilter('minPrice', e.target.value)} className="input text-sm py-2" />
                     <input type="number" placeholder="Max" value={filters.maxPrice} onChange={e => updateFilter('maxPrice', e.target.value)} className="input text-sm py-2" />
                   </div>
                 </div>
                 <div className="mb-6">
-                  <h4 className="font-semibold mb-3 dark:text-dark-text">Age Group</h4>
+                  <h4 className="font-semibold mb-3 text-gray-800 dark:text-dark-text">Age Group</h4>
                   <div className="flex flex-wrap gap-2">
                     {AGE_GROUPS.map(age => (
                       <button key={age} onClick={() => updateFilter('ageGroup', filters.ageGroup === age ? '' : age)} className={`px-3 py-1.5 rounded-xl text-sm font-medium border transition-all ${filters.ageGroup === age ? 'bg-primary-500 text-white border-primary-500' : 'border-gray-200 dark:border-dark-border text-gray-600 dark:text-dark-muted'}`}>
@@ -151,7 +151,7 @@ export default function Shop() {
                 </div>
                 <label className="flex items-center gap-2 cursor-pointer mb-6">
                   <input type="checkbox" checked={filters.inStock === 'true'} onChange={e => updateFilter('inStock', e.target.checked ? 'true' : '')} className="accent-primary-500 w-4 h-4" />
-                  <span className="font-medium dark:text-dark-text">In Stock Only</span>
+                  <span className="font-medium text-gray-700 dark:text-dark-text">In Stock Only</span>
                 </label>
                 <button onClick={() => setFiltersOpen(false)} className="btn-primary w-full">Apply Filters</button>
               </div>
