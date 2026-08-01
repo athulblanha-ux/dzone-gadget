@@ -1,14 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiShoppingCart, FiHeart, FiSearch, FiSun, FiMoon, FiMenu, FiX } from 'react-icons/fi';
+import { FiShoppingCart, FiHeart, FiSearch, FiSun, FiMoon, FiX } from 'react-icons/fi';
 import { useCartStore, useWishlistStore, useAuthStore, useThemeStore } from '../../store';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../lib/api';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -31,11 +30,7 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    if (mobileOpen) {
-      setTimeout(() => setMobileOpen(false), 0);
-    }
-  }, [location.pathname, mobileOpen]);
+
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -149,14 +144,6 @@ export default function Navbar() {
                 </Link>
               )}
 
-              {/* Mobile Menu */}
-              <button
-                onClick={() => setMobileOpen(!mobileOpen)}
-                className="lg:hidden btn-icon text-gray-600 dark:text-dark-muted"
-                aria-label="Menu"
-              >
-                {mobileOpen ? <FiX size={22} /> : <FiMenu size={22} />}
-              </button>
             </div>
           </div>
         </div>
@@ -202,102 +189,6 @@ export default function Navbar() {
         )}
       </AnimatePresence>
 
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0, x: '100%' }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: '100%' }}
-            transition={{ type: 'spring', damping: 25 }}
-            className="fixed inset-y-0 right-0 w-72 bg-white dark:bg-dark-card shadow-2xl z-50 flex flex-col pt-20 px-6 gap-4 overflow-y-auto"
-          >
-            <button
-              onClick={() => setMobileOpen(false)}
-              className="absolute top-4 right-4 btn-icon"
-            >
-              <FiX size={24} />
-            </button>
-
-            {isAuthenticated && (
-              <div className="flex items-center gap-3 pb-4 mb-2 border-b border-gray-100 dark:border-dark-border">
-                {user?.avatar?.url ? (
-                  <img src={user.avatar.url} alt={user.name} className="w-10 h-10 rounded-full object-cover" />
-                ) : (
-                  <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-white font-bold text-base flex-shrink-0">
-                    {user?.name?.[0]?.toUpperCase()}
-                  </div>
-                )}
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-gray-800 dark:text-dark-text truncate">{user?.name}</p>
-                  <p className="text-xs text-gray-500 truncate">{user?.email}</p>
-                </div>
-              </div>
-            )}
-
-            {navLinks.map((link) => (
-              <Link
-                key={link.label}
-                to={link.to}
-                onClick={() => setMobileOpen(false)}
-                className="text-lg font-medium py-2 border-b border-gray-100 dark:border-dark-border text-gray-800 dark:text-dark-text hover:text-primary-500 transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
-
-            {isAuthenticated ? (
-              <>
-                <Link
-                  to="/profile"
-                  onClick={() => setMobileOpen(false)}
-                  className="text-lg font-medium py-2 border-b border-gray-100 dark:border-dark-border text-gray-800 dark:text-dark-text hover:text-primary-500 transition-colors"
-                >
-                  My Profile
-                </Link>
-                <Link
-                  to="/orders"
-                  onClick={() => setMobileOpen(false)}
-                  className="text-lg font-medium py-2 border-b border-gray-100 dark:border-dark-border text-gray-800 dark:text-dark-text hover:text-primary-500 transition-colors"
-                >
-                  My Orders
-                </Link>
-                <Link
-                  to="/wishlist"
-                  onClick={() => setMobileOpen(false)}
-                  className="text-lg font-medium py-2 border-b border-gray-100 dark:border-dark-border text-gray-800 dark:text-dark-text hover:text-primary-500 transition-colors"
-                >
-                  Wishlist
-                </Link>
-                {(user?.role === 'admin' || user?.role === 'moderator') && (
-                  <a
-                    href="https://admin.dstoreindia.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => setMobileOpen(false)}
-                    className="text-lg font-medium py-2 border-b border-gray-100 dark:border-dark-border text-gray-800 dark:text-dark-text hover:text-primary-500 transition-colors"
-                  >
-                    Admin Panel
-                  </a>
-                )}
-                <button
-                  onClick={() => {
-                    logout();
-                    setMobileOpen(false);
-                  }}
-                  className="w-full text-left text-lg font-medium py-2 text-red-500 hover:text-red-600 transition-colors"
-                >
-                  Log Out
-                </button>
-              </>
-            ) : (
-              <Link to="/login" onClick={() => setMobileOpen(false)} className="btn-primary mt-4 text-center">
-                Sign In
-              </Link>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Spacer */}
       <div className="h-16" />
