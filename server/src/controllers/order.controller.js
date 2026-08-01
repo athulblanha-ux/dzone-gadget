@@ -129,7 +129,13 @@ exports.updateOrderStatus = asyncHandler(async (req, res) => {
     for (const item of order.items) await Product.findByIdAndUpdate(item.product, { $inc: { stock: item.quantity, totalSold: -item.quantity } });
   }
   await order.save();
-  try { await sendEmail({ to: order.user.email, subject: `📦 Order Update — ${order.orderNumber}`, template: 'orderStatusUpdate', data: { name: order.user.name, order, status } }); } catch (_) {}
+  try {
+    const emailTo = order.user ? order.user.email : order.shippingAddress.email;
+    const nameTo = order.user ? order.user.name : order.shippingAddress.fullName;
+    if (emailTo) {
+      await sendEmail({ to: emailTo, subject: `📦 Order Update — ${order.orderNumber}`, template: 'orderStatusUpdate', data: { name: nameTo, order, status } });
+    }
+  } catch (_) {}
   res.json({ success: true, order });
 });
 
@@ -150,7 +156,13 @@ exports.cancelOrder = asyncHandler(async (req, res) => {
 exports.downloadInvoice = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id).populate('user', 'name email phone');
   if (!order) return res.status(404).json({ success: false, message: 'Order not found.' });
-  if (order.user._id.toString() !== req.user._id.toString() && req.user.role === 'user') return res.status(403).json({ success: false, message: 'Access denied.' });
+  
+  if (req.user.role === 'user') {
+    if (!order.user || order.user._id.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: 'Access denied.' });
+    }
+  }
+
   const pdfBuffer = await generateInvoicePDF(order);
   res.set({ 'Content-Type': 'application/pdf', 'Content-Disposition': `attachment; filename=invoice-${order.orderNumber}.pdf` });
   res.send(pdfBuffer);
