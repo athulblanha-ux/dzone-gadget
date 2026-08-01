@@ -81,13 +81,13 @@ function App() {
                 <Route path="register" element={<Register />} />
                 <Route path="forgot-password" element={<ForgotPassword />} />
                 <Route path="checkout" element={<Checkout />} />
+                <Route path="wishlist" element={<Wishlist />} />
 
                 {/* Protected */}
                 <Route element={<ProtectedRoute />}>
                   <Route path="profile" element={<Profile />} />
                   <Route path="orders" element={<Orders />} />
                   <Route path="orders/:id" element={<OrderDetail />} />
-                  <Route path="wishlist" element={<Wishlist />} />
                 </Route>
               </Route>
 
