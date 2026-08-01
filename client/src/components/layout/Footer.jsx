@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FiInstagram, FiFacebook, FiTwitter, FiYoutube, FiMail, FiPhone, FiMapPin } from 'react-icons/fi';
+import { FiInstagram, FiTwitter, FiYoutube, FiMail, FiPhone, FiMapPin } from 'react-icons/fi';
 
 export default function Footer() {
   const links = {
@@ -41,7 +41,6 @@ export default function Footer() {
             <div className="flex gap-3 mt-6">
               {[
                 { icon: FiInstagram, href: 'https://www.instagram.com/dstore.in/', label: 'Instagram' },
-                { icon: FiFacebook, href: 'https://facebook.com/d-store', label: 'Facebook' },
                 { icon: FiTwitter, href: 'https://twitter.com/d-store', label: 'Twitter' },
                 { icon: FiYoutube, href: 'https://youtube.com/d-store', label: 'YouTube' },
               ].map(({ icon: Icon, href, label }) => (
