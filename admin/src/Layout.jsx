@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { FiHome, FiBox, FiShoppingCart, FiUsers, FiSettings, FiLogOut, FiMenu, FiMoon, FiSun, FiLayers, FiFileText, FiTrendingUp, FiEdit3, FiStar, FiTruck, FiX, FiSliders } from 'react-icons/fi';
+import { FiHome, FiBox, FiShoppingCart, FiUsers, FiSettings, FiLogOut, FiMenu, FiMoon, FiSun, FiLayers, FiFileText, FiTrendingUp, FiStar, FiTruck, FiX, FiSliders } from 'react-icons/fi';
 import { useAuthStore, useThemeStore } from './store';
 
 const NAV_ITEMS = [
@@ -12,7 +12,6 @@ const NAV_ITEMS = [
   { icon: FiUsers, label: 'Customers', path: '/customers' },
   { icon: FiFileText, label: 'CMS', path: '/cms' },
   { icon: FiTrendingUp, label: 'Marketing', path: '/marketing' },
-  { icon: FiEdit3, label: 'Blogs', path: '/blogs' },
   { icon: FiStar, label: 'Reviews', path: '/reviews' },
   { icon: FiTruck, label: 'Shipping', path: '/shipping' },
   { icon: FiSettings, label: 'Settings', path: '/settings' },

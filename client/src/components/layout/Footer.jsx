@@ -8,7 +8,6 @@ export default function Footer() {
       { label: 'Shop All', to: '/shop' },
       { label: 'New Arrivals', to: '/shop?sort=newest' },
       { label: 'Trending', to: '/shop?sort=popular' },
-      { label: 'Blog', to: '/blog' },
       { label: 'About Us', to: '/about' },
     ],
     'Support': [

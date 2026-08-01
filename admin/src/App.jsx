@@ -15,7 +15,6 @@ const Customers = React.lazy(() => import('./pages/Customers'));
 const CMS = React.lazy(() => import('./pages/CMS'));
 const Settings = React.lazy(() => import('./pages/Settings'));
 const Marketing = React.lazy(() => import('./pages/Marketing'));
-const Blogs = React.lazy(() => import('./pages/Blogs'));
 const Reviews = React.lazy(() => import('./pages/Reviews'));
 const Shipping = React.lazy(() => import('./pages/Shipping'));
 
@@ -50,7 +49,6 @@ export default function App() {
               <Route path="customers" element={<Customers />} />
               <Route path="cms" element={<CMS />} />
               <Route path="marketing" element={<Marketing />} />
-              <Route path="blogs" element={<Blogs />} />
               <Route path="reviews" element={<Reviews />} />
               <Route path="settings" element={<Settings />} />
               <Route path="shipping" element={<Shipping />} />

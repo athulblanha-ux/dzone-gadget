@@ -14,7 +14,6 @@ const homepageSectionSchema = new mongoose.Schema(
         'instagram_feed',
         'promotional_banner',
         'testimonials',
-        'blog_posts',
         'newsletter',
         'brands',
         'custom_html',

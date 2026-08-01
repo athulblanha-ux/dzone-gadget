@@ -50,7 +50,6 @@ export default function Navbar() {
     { label: 'Home', to: '/' },
     { label: 'Shop', to: '/shop' },
     { label: 'Categories', to: '/shop', dropdown: categoriesData?.slice(0, 6) },
-    { label: 'Blog', to: '/blog' },
     { label: 'About', to: '/about' },
   ];
 
