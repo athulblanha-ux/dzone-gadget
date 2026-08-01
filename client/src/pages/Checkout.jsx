@@ -243,7 +243,7 @@ export default function Checkout() {
                   <div>
                     <span className="font-semibold block dark:text-dark-text text-sm">Partial Cash on Delivery (COD)</span>
                     <span className="text-xs text-gray-500 dark:text-dark-muted block mt-1">
-                      Pay ₹{Math.min(200, grandTotal).toLocaleString()} advance online to confirm order, balance ₹{Math.max(0, grandTotal - Math.min(200, grandTotal)).toLocaleString()} on delivery.
+                      Pay ₹{advanceAmount.toLocaleString()} advance online to confirm order, balance ₹{codBalance.toLocaleString()} on delivery.
                     </span>
                   </div>
                 </label>

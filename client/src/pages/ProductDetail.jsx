@@ -228,7 +228,7 @@ export default function ProductDetail() {
                 </button>
                 {openAccordion === 'cod' && (
                   <div className="p-4 border-t border-gray-100 dark:border-dark-border text-sm text-gray-600 dark:text-dark-muted bg-gray-50/50 dark:bg-dark-bg/20 leading-relaxed animate-fade-in">
-                    For Cash on Delivery orders, we require a small advance payment of ₹200 to confirm your order and protect against fake/undelivered shipments. The remaining balance amount is payable in cash or UPI at the time of delivery. The advance payment is secure and processed via Razorpay.
+                    For Cash on Delivery orders, we require a small advance payment (10% of product price + shipping + COD charge) to confirm your order and protect against fake/undelivered shipments. The remaining balance amount is payable in cash or UPI at the time of delivery. The advance payment is secure and processed via Razorpay.
                   </div>
                 )}
               </div>
