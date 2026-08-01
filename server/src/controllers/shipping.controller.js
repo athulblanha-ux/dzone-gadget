@@ -57,6 +57,11 @@ exports.deleteRule = asyncHandler(async (req, res) => {
 });
 
 exports.calculateShippingFee = async (items, state, subtotal) => {
+  let isKerala = false;
+  if (state) {
+    isKerala = state.trim().toLowerCase() === 'kerala';
+  }
+
   let totalShippingFee = 0;
 
   if (items && items.length > 0) {
@@ -64,8 +69,33 @@ exports.calculateShippingFee = async (items, state, subtotal) => {
       const productId = item.product && item.product._id ? item.product._id : item.product;
       if (productId) {
         const product = await Product.findById(productId);
-        if (product && product.deliveryCharge && product.deliveryCharge > 0) {
-          totalShippingFee += product.deliveryCharge * item.quantity;
+        if (product) {
+          const weight = product.weight || 0; // weight in grams
+          let charge = 0;
+
+          if (isKerala) {
+            if (weight === 0 && product.deliveryCharge && product.deliveryCharge > 0) {
+              charge = product.deliveryCharge;
+            } else if (weight < 500) {
+              charge = 50;
+            } else if (weight <= 1000) {
+              charge = 70;
+            } else {
+              charge = Math.ceil(weight / 1000) * 70;
+            }
+          } else {
+            if (weight === 0 && product.deliveryCharge && product.deliveryCharge > 0) {
+              charge = product.deliveryCharge;
+            } else if (weight < 500) {
+              charge = 80;
+            } else if (weight <= 1000) {
+              charge = 120;
+            } else {
+              charge = Math.ceil(weight / 1000) * 120;
+            }
+          }
+
+          totalShippingFee += charge * item.quantity;
         }
       }
     }
