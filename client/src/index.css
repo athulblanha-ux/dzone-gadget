@@ -45,7 +45,7 @@
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full font-medium text-dark-text hover:bg-white/5 active:scale-95 transition-all duration-300;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full font-medium text-gray-700 dark:text-dark-text hover:bg-black/5 dark:hover:bg-white/5 active:scale-95 transition-all duration-300;
   }
 
   .btn-icon {
@@ -63,11 +63,11 @@
 
   /* ─── Inputs ─────────────────────────────────────────────────────────── */
   .input {
-    @apply w-full px-4 py-3 rounded-xl border border-white/[0.05] bg-[#121217]/40 backdrop-blur-md text-dark-text placeholder-dark-muted focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-transparent transition-all duration-300;
+    @apply w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-white/[0.05] bg-white dark:bg-[#121217]/40 backdrop-blur-md text-gray-900 dark:text-dark-text placeholder-gray-400 dark:placeholder-dark-muted focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-transparent transition-all duration-300;
   }
 
   .label {
-    @apply block text-sm font-medium text-dark-text mb-1.5;
+    @apply block text-sm font-medium text-gray-700 dark:text-dark-text mb-1.5;
   }
 
   /* ─── Badge ──────────────────────────────────────────────────────────── */
@@ -91,7 +91,7 @@
   }
 
   .section-title {
-    @apply text-3xl font-display font-bold text-dark-text;
+    @apply text-3xl font-display font-bold text-gray-900 dark:text-dark-text;
   }
 
   /* ─── Scrollbar ──────────────────────────────────────────────────────── */

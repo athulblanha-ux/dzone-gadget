@@ -179,7 +179,7 @@ function CategoryGrid({ categories }) {
   return (
     <section className="section">
       <div className="text-center mb-10">
-        <h2 className="section-title">Shop by Category</h2>
+        <h2 className="section-title uppercase tracking-wider">Shop by Category</h2>
         <p className="text-gray-500 dark:text-dark-muted mt-2">Explore our wide range of toy categories</p>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8 gap-4">
