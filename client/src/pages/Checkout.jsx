@@ -12,7 +12,7 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
   const [mockPaymentData, setMockPaymentData] = useState(null);
   const [form, setForm] = useState({ fullName: user?.name || '', email: user?.email || '', phone: user?.phone || '', addressLine1: '', addressLine2: '', city: '', state: '', pincode: '', paymentMethod: 'razorpay' });
-  const [shippingFee, setShippingFee] = useState(49);
+  const [shippingFee, setShippingFee] = useState(0);
   const [calculatingShipping, setCalculatingShipping] = useState(false);
 
   useEffect(() => {
