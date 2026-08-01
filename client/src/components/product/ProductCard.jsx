@@ -1,6 +1,6 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiHeart, FiShoppingCart, FiStar } from 'react-icons/fi';
+import { FiHeart, FiShoppingCart, FiStar, FiCreditCard } from 'react-icons/fi';
 import { useCartStore, useWishlistStore, useAuthStore } from '../../store';
 import toast from 'react-hot-toast';
 import api from '../../lib/api';
@@ -10,6 +10,14 @@ export default function ProductCard({ product, view }) {
   const { toggle, isInWishlist } = useWishlistStore();
   const { isAuthenticated } = useAuthStore();
   const inWishlist = isInWishlist(product._id);
+  const navigate = useNavigate();
+
+  const handleBuyNow = (e) => {
+    e.preventDefault();
+    if (product.stock === 0) return toast.error('Out of stock');
+    addItem(product);
+    navigate('/checkout');
+  };
 
   const handleAddToCart = (e) => {
     e.preventDefault();
@@ -90,16 +98,16 @@ export default function ProductCard({ product, view }) {
             </motion.button>
           </div>
 
-          {/* Quick Add to Cart for Grid View */}
+          {/* Buy Now for Grid View */}
           {!isList && (
             <div className="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
               <button
-                onClick={handleAddToCart}
+                onClick={handleBuyNow}
                 disabled={product.stock === 0}
                 className="w-full py-3 bg-gradient-primary text-white font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-opacity"
               >
-                <FiShoppingCart size={16} />
-                {product.stock === 0 ? 'Out of Stock' : 'Quick Add'}
+                <FiCreditCard size={16} />
+                {product.stock === 0 ? 'Out of Stock' : 'Buy Now'}
               </button>
             </div>
           )}
