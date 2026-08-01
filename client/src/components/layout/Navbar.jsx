@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiShoppingCart, FiHeart, FiSearch, FiSun, FiMoon, FiX } from 'react-icons/fi';
+import { FiShoppingCart, FiHeart, FiSearch, FiSun, FiMoon, FiX, FiMenu } from 'react-icons/fi';
 import { useCartStore, useWishlistStore, useAuthStore, useThemeStore } from '../../store';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../lib/api';
@@ -10,6 +10,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const { itemCount } = useCartStore();
   const { items: wishlistItems } = useWishlistStore();
@@ -30,8 +31,6 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-
-
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -44,8 +43,10 @@ export default function Navbar() {
   const navLinks = [
     { label: 'Home', to: '/' },
     { label: 'Shop', to: '/shop' },
-    { label: 'Categories', to: '/shop', dropdown: categoriesData?.slice(0, 6) },
-    { label: 'About', to: '/about' },
+    { label: 'Categories', to: '/shop' },
+    { label: 'About Us', to: '/about' },
+    { label: 'Contact', to: '/contact' },
+    { label: 'Cart', to: '/cart' },
   ];
 
   return (
@@ -144,10 +145,49 @@ export default function Navbar() {
                 </Link>
               )}
 
+              {/* Hamburger Menu Icon */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="btn-icon text-gray-600 dark:text-dark-muted lg:hidden"
+                aria-label="Toggle menu"
+              >
+                {mobileMenuOpen ? <FiX size={22} /> : <FiMenu size={22} />}
+              </button>
+
             </div>
           </div>
         </div>
       </motion.nav>
+
+      {/* Mobile Slide-down Navigation Menu */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className="lg:hidden fixed top-16 left-0 right-0 bg-white/95 dark:bg-dark-card/95 backdrop-blur-md border-b border-gray-200 dark:border-[#2c2c2e]/50 z-40 overflow-hidden shadow-lg"
+          >
+            <div className="px-4 py-6 space-y-4 flex flex-col">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.label}
+                  to={link.to}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`font-semibold text-base py-2 transition-colors duration-200 hover:text-primary-500 ${
+                    location.pathname === link.to
+                      ? 'text-primary-500'
+                      : 'text-gray-800 dark:text-dark-text'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Search Overlay */}
       <AnimatePresence>
