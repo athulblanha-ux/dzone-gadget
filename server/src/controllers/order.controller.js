@@ -163,6 +163,10 @@ exports.downloadInvoice = asyncHandler(async (req, res) => {
     }
   }
 
+  if (!['paid', 'partially_paid'].includes(order.paymentStatus)) {
+    return res.status(400).json({ success: false, message: 'Invoice is only available for confirmed payments.' });
+  }
+
   const pdfBuffer = await generateInvoicePDF(order);
   res.set({ 'Content-Type': 'application/pdf', 'Content-Disposition': `attachment; filename=invoice-${order.orderNumber}.pdf` });
   res.send(pdfBuffer);
