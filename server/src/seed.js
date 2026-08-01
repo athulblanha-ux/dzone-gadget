@@ -32,7 +32,7 @@ const seed = async () => {
   // ─── Admin User ────────────────────────────────────────────────────────────
   await User.create({
     name: 'D-STORE Admin',
-    email: process.env.ADMIN_EMAIL || 'admin@d-store.store',
+    email: process.env.ADMIN_EMAIL || 'admin@dstoreindia.com',
     password: process.env.ADMIN_PASSWORD || 'Admin@123456',
     role: 'superadmin',
     isActive: true,
@@ -114,7 +114,7 @@ const seed = async () => {
   await Setting.insertMany([
     { key: 'site_name', value: 'D-STORE', label: 'Site Name', group: 'general', type: 'text' },
     { key: 'site_tagline', value: 'Where Play Comes to Life', label: 'Tagline', group: 'general', type: 'text' },
-    { key: 'contact_email', value: 'support@d-store.store', label: 'Support Email', group: 'contact', type: 'text' },
+    { key: 'contact_email', value: 'support@dstoreindia.com', label: 'Support Email', group: 'contact', type: 'text' },
     { key: 'contact_phone', value: '+91 94953 02826', label: 'Phone', group: 'contact', type: 'text' },
     { key: 'contact_address', value: '123, Toy Street, Mukkam, Kozhikode, Kerala - 673602', label: 'Address', group: 'contact', type: 'textarea' },
     { key: 'whatsapp_number', value: '919495302826', label: 'WhatsApp Number', group: 'contact', type: 'text' },
@@ -237,7 +237,7 @@ D-STORE is not responsible for:
 ### Customer Support
 Need help? Contact us:
 Phone / WhatsApp: 📱 +91 94953 02826
-Email: 📧 support@d-store.store
+Email: 📧 support@dstoreindia.com
 
 ### Our Address
 D-STORE, Mukkam, Kozhikode, Kerala, India
@@ -278,7 +278,7 @@ D-STORE, Mukkam, Kozhikode, Kerala, India
   console.log('💬 Testimonials seeded');
 
   console.log('\n✅ Database seeded successfully!');
-  console.log(`📧 Admin login: ${process.env.ADMIN_EMAIL || 'admin@d-store.store'}`);
+  console.log(`📧 Admin login: ${process.env.ADMIN_EMAIL || 'admin@dstoreindia.com'}`);
   console.log(`🔑 Admin password: ${process.env.ADMIN_PASSWORD || 'Admin@123456'}`);
   process.exit(0);
 };

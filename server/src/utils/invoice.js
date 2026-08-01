@@ -23,7 +23,7 @@ const generateInvoicePDF = (order) => {
         .fontSize(10)
         .fillColor('#666')
         .text('Where Play Comes to Life', 50, 80)
-        .text('www.d-store.store | support@d-store.store', 50, 95);
+        .text('www.dstoreindia.com | support@dstoreindia.com', 50, 95);
 
       doc
         .fontSize(20)

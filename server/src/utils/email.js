@@ -103,7 +103,7 @@ const templates = {
 const sendEmail = async ({ to, subject, template, data, html }) => {
   const content = template && templates[template] ? templates[template](data) : { subject, html };
   await transporter.sendMail({
-    from: process.env.EMAIL_FROM || 'D-STORE <noreply@d-store.store>',
+    from: process.env.EMAIL_FROM || 'D-STORE <noreply@dstoreindia.com>',
     to,
     subject: content.subject || subject,
     html: content.html || html,
