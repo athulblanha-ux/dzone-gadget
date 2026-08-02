@@ -21,6 +21,7 @@ const getCategoryIcon = (slug, size = 24) => {
     case 'gadgets': return <FiTv size={size} />;
     case 'hobbygrade': return <FiTool size={size} />;
     case 'diecast': return <FiTruck size={size} />;
+    case 'hotwheels': return <FiTruck size={size} />;
     case 'drift-rc': return <FiWind size={size} />;
     default: return <FiBox size={size} />;
   }
@@ -184,6 +185,15 @@ function HeroBanner({ banners, latestProducts }) {
 function CategoryGrid({ categories }) {
   if (!categories?.length) return null;
 
+  const categoryBgs = {
+    'toys': '/images/banners/toys.jpg',
+    'gadgets': '/images/banners/gadgets.jpg',
+    'hobbygrade': '/images/banners/banner3.png',
+    'diecast': '/images/banners/hotwheels.jpg',
+    'hotwheels': '/images/banners/hotwheels.jpg',
+    'drift-rc': '/images/banners/drift_rc.png'
+  };
+
   return (
     <section className="section">
       <div className="text-center mb-10">
@@ -203,26 +213,26 @@ function CategoryGrid({ categories }) {
               to={`/category/${cat.slug}`}
               className="relative flex flex-col items-center gap-3 p-6 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/[0.06] hover:shadow-framer-shadow-hover hover:-translate-y-1 transition-all duration-300 text-center group overflow-hidden"
             >
-              {/* Background Image Layer for Hobbygrade & Drift RC */}
-              {(cat.slug === 'hobbygrade' || cat.slug === 'drift-rc') && (
+              {/* Background Image Layer */}
+              {categoryBgs[cat.slug] && (
                 <>
                   <div 
                     className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
-                    style={{ backgroundImage: `url(${cat.slug === 'hobbygrade' ? '/images/banners/banner3.png' : '/images/banners/drift_rc.png'})` }}
+                    style={{ backgroundImage: `url(${categoryBgs[cat.slug]})` }}
                   />
                   <div className="absolute inset-0 bg-black/65 group-hover:bg-black/55 transition-colors duration-300" />
                 </>
               )}
 
               <div className={`relative z-10 w-14 h-14 rounded-2xl border flex items-center justify-center group-hover:scale-110 transition-transform duration-300 ${
-                (cat.slug === 'hobbygrade' || cat.slug === 'drift-rc')
+                categoryBgs[cat.slug]
                   ? 'bg-white/10 border-white/20 text-white'
                   : 'bg-primary-50 dark:bg-white/5 border-primary-100/50 dark:border-white/[0.08] text-primary-500 dark:text-primary-400'
               }`}>
                 {getCategoryIcon(cat.slug)}
               </div>
               <span className={`relative z-10 text-xs font-bold leading-tight uppercase tracking-wider ${
-                (cat.slug === 'hobbygrade' || cat.slug === 'drift-rc')
+                categoryBgs[cat.slug]
                   ? 'text-white drop-shadow-md'
                   : 'text-gray-900 dark:text-dark-text'
               }`}>

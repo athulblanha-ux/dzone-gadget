@@ -20,6 +20,7 @@ const getCategoryIcon = (slug, size = 24) => {
     case 'gadgets': return <FiTv size={size} />;
     case 'hobbygrade': return <FiTool size={size} />;
     case 'diecast': return <FiTruck size={size} />;
+    case 'hotwheels': return <FiTruck size={size} />;
     case 'drift-rc': return <FiWind size={size} />;
     default: return <FiBox size={size} />;
   }
