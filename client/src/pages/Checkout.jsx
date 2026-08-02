@@ -47,6 +47,10 @@ export default function Checkout() {
     : grandTotal;
   const codBalance = form.paymentMethod === 'partial_cod' ? grandTotal - advanceAmount : 0;
 
+  // Static calculations for the COD description text
+  const codAdvanceStatic = Math.round(50 + shippingFee + 0.1 * total);
+  const codBalanceStatic = (total + shippingFee + 50) - codAdvanceStatic;
+
   if (items.length === 0) {
     navigate('/cart');
     return null;
@@ -243,7 +247,7 @@ export default function Checkout() {
                   <div>
                     <span className="font-semibold block dark:text-dark-text text-sm">Partial Cash on Delivery (COD)</span>
                     <span className="text-xs text-gray-500 dark:text-dark-muted block mt-1">
-                      Pay ₹{advanceAmount.toLocaleString()} advance online to confirm order, balance ₹{codBalance.toLocaleString()} on delivery.
+                      Pay ₹{codAdvanceStatic.toLocaleString()} advance online to confirm order, balance ₹{codBalanceStatic.toLocaleString()} on delivery.
                     </span>
                   </div>
                 </label>
