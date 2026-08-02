@@ -208,7 +208,7 @@ function CategoryGrid({ categories }) {
                 <>
                   <div 
                     className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
-                    style={{ backgroundImage: "url('/images/banners/banner1.png')" }}
+                    style={{ backgroundImage: "url('/images/banners/banner3.png')" }}
                   />
                   <div className="absolute inset-0 bg-black/65 group-hover:bg-black/55 transition-colors duration-300" />
                 </>
