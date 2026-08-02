@@ -247,8 +247,10 @@ function CategoryGrid({ categories }) {
 }
 
 // ─── Products Section ──────────────────────────────────────────────────────────
-function ProductsSection({ title, subtitle, products, viewAllLink }) {
+function ProductsSection({ title, subtitle, products, viewAllLink, showAll = false }) {
   if (!products?.length) return null;
+
+  const displayProducts = showAll ? products : products.slice(0, 8);
 
   return (
     <section className="section">
@@ -267,7 +269,7 @@ function ProductsSection({ title, subtitle, products, viewAllLink }) {
         )}
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 sm:gap-6">
-        {products.slice(0, 8).map((product, i) => (
+        {displayProducts.map((product, i) => (
           <motion.div
             key={product._id}
             initial={{ opacity: 0, y: 20 }}
@@ -354,52 +356,6 @@ function FlashSaleBanner({ products }) {
   );
 }
 
-// ─── Instagram Section ─────────────────────────────────────────────────────────
-function InstagramSection({ posts }) {
-  return (
-    <section className="section">
-      <div className="text-center mb-8">
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <FiInstagram className="text-primary-500" size={24} />
-          <h2 className="section-title">Follow @dstore.in</h2>
-        </div>
-        <p className="text-gray-500 dark:text-dark-muted">Shop directly from our Instagram</p>
-        <a
-          href="https://www.instagram.com/dstore.in/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 mt-3 text-primary-500 font-semibold text-sm hover:underline"
-        >
-          <FiInstagram /> Follow Us on Instagram
-        </a>
-      </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        {(posts?.length ? posts : Array(6).fill(null)).map((post, i) => (
-          <motion.a
-            key={post?.id || i}
-            href={post?.permalink || 'https://www.instagram.com/dstore.in/'}
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.05 }}
-            className="aspect-square rounded-2xl overflow-hidden bg-gray-100 dark:bg-dark-card"
-          >
-            {post?.media_url ? (
-              post.media_type === 'VIDEO' ? (
-                <video src={post.media_url} className="w-full h-full object-cover" muted loop playsInline />
-              ) : (
-                <img src={post.media_url} alt="Instagram post" className="w-full h-full object-cover" loading="lazy" />
-              )
-            ) : (
-              <div className="w-full h-full bg-gradient-primary opacity-30 flex items-center justify-center">
-                <FiInstagram size={24} className="text-white" />
-              </div>
-            )}
-          </motion.a>
-        ))}
-      </div>
-    </section>
-  );
-}
 
 // ─── Testimonials ─────────────────────────────────────────────────────────────
 function Testimonials({ testimonials }) {
@@ -487,10 +443,9 @@ export default function Home() {
     queryFn: () => api.get('/products?sort=popular&limit=4').then((r) => r.data.products),
   });
 
-  const { data: instagramData } = useQuery({
-    queryKey: ['instagram-feed'],
-    queryFn: () => api.get('/instagram/feed').then((r) => r.data.posts),
-    staleTime: 30 * 60 * 1000,
+  const { data: allProducts } = useQuery({
+    queryKey: ['products-all'],
+    queryFn: () => api.get('/products?limit=all').then((r) => r.data.products),
   });
 
   const { data: testimonials } = useQuery({
@@ -528,7 +483,12 @@ export default function Home() {
         products={newArrivals}
         viewAllLink="/shop?sort=newest"
       />
-      <InstagramSection posts={instagramData} />
+      <ProductsSection
+        title="All Products"
+        subtitle="Explore our full collection of premium hobby models"
+        products={allProducts}
+        showAll={true}
+      />
       <Testimonials testimonials={testimonials} />
     </>
   );
