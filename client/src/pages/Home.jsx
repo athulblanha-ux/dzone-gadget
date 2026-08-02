@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
-import { FiArrowRight, FiTruck, FiShield, FiInstagram, FiZap, FiBox, FiUsers, FiGrid, FiBookOpen, FiHeart, FiActivity, FiTarget, FiCpu, FiFeather, FiTv, FiSmile, FiTool } from 'react-icons/fi';
+import { FiArrowRight, FiTruck, FiShield, FiInstagram, FiZap, FiBox, FiUsers, FiGrid, FiBookOpen, FiHeart, FiActivity, FiTarget, FiCpu, FiFeather, FiTv, FiSmile, FiTool, FiWind } from 'react-icons/fi';
 import ProductCard from '../components/product/ProductCard';
 import api from '../lib/api';
 
@@ -21,6 +21,7 @@ const getCategoryIcon = (slug, size = 24) => {
     case 'gadgets': return <FiTv size={size} />;
     case 'hobbygrade': return <FiTool size={size} />;
     case 'diecast': return <FiTruck size={size} />;
+    case 'drift-rc': return <FiWind size={size} />;
     default: return <FiBox size={size} />;
   }
 };

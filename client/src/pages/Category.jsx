@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import api from '../lib/api';
 import ProductCard from '../components/product/ProductCard';
 
-import { FiBox, FiUsers, FiGrid, FiBookOpen, FiHeart, FiActivity, FiTarget, FiCpu, FiFeather, FiTv, FiSmile, FiTool, FiTruck } from 'react-icons/fi';
+import { FiBox, FiUsers, FiGrid, FiBookOpen, FiHeart, FiActivity, FiTarget, FiCpu, FiFeather, FiTv, FiSmile, FiTool, FiTruck, FiWind } from 'react-icons/fi';
 
 const getCategoryIcon = (slug, size = 24) => {
   switch (slug) {
@@ -20,6 +20,7 @@ const getCategoryIcon = (slug, size = 24) => {
     case 'gadgets': return <FiTv size={size} />;
     case 'hobbygrade': return <FiTool size={size} />;
     case 'diecast': return <FiTruck size={size} />;
+    case 'drift-rc': return <FiWind size={size} />;
     default: return <FiBox size={size} />;
   }
 };
