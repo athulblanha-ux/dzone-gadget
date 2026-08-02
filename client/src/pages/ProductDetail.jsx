@@ -140,8 +140,6 @@ export default function ProductDetail() {
               {data.isOnSale && <span className="text-xl text-gray-400 line-through mb-1">₹{data.price.toLocaleString()}</span>}
             </div>
 
-            <p className="text-gray-600 dark:text-dark-muted leading-relaxed mb-8">{data.description}</p>
-
             {/* Variants */}
             {data.variants?.length > 0 && (
               <div className="mb-8">
@@ -180,6 +178,8 @@ export default function ProductDetail() {
             >
               ⚡ Buy It Now
             </motion.button>
+
+            <p className="text-gray-600 dark:text-dark-muted leading-relaxed mb-8">{data.description}</p>
 
             {/* Policies Accordions */}
             <div className="space-y-3 mb-6">
