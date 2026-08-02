@@ -16,7 +16,8 @@ const connectDB = async () => {
       const Category = require('../models/Category');
       const defaultCategories = [
         { name: 'Hobbygrade', slug: 'hobbygrade', icon: '⚙️', order: 9, isFeatured: true },
-        { name: 'Diecast', slug: 'diecast', icon: '🚗', order: 10, isFeatured: true }
+        { name: 'Diecast', slug: 'diecast', icon: '🚗', order: 10, isFeatured: true },
+        { name: 'Drift RC', slug: 'drift-rc', icon: '🏎️', order: 11, isFeatured: true }
       ];
 
       for (const cat of defaultCategories) {
