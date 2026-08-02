@@ -31,25 +31,32 @@ function HeroBanner({ banners, latestProducts }) {
 
   const defaultSlides = [
     {
-      title: 'Spark Every Imagination',
-      subtitle: 'Premium toys for growing minds — curated with love.',
-      ctaText: 'Shop Now',
-      ctaLink: '/shop',
-      bg: 'from-primary-400 to-accent-purple',
+      title: 'Super Motor Brushless 2S',
+      subtitle: 'Conquer any terrain with raw brushless power.',
+      ctaText: 'Shop RC Cars',
+      ctaLink: '/category/remote-control',
+      image: { url: '/images/banners/banner2.jpg' },
     },
     {
-      title: 'New Arrivals This Week',
-      subtitle: 'Fresh toys added weekly — be the first to explore!',
-      ctaText: 'See New Arrivals',
-      ctaLink: '/shop?sort=newest',
-      bg: 'from-accent-purple to-accent-blue',
+      title: 'Engineered for Performance',
+      subtitle: 'Explore professional hobby-grade RC chassis & build kits.',
+      ctaText: 'Explore Kits',
+      ctaLink: '/category/hobbygrade',
+      image: { url: '/images/banners/banner1.png' },
     },
     {
-      title: 'Festival Offers',
-      subtitle: 'Up to 40% off on premium toy collections.',
-      ctaText: 'View Offers',
-      ctaLink: '/shop?sale=true',
-      bg: 'from-accent-purple to-accent-pink',
+      title: 'Precision Engineering',
+      subtitle: 'Hobby-grade components designed for ultimate control.',
+      ctaText: 'View Hobby-Grade',
+      ctaLink: '/category/hobbygrade',
+      image: { url: '/images/banners/banner3.png' },
+    },
+    {
+      title: 'Where Passion Meets Precision',
+      subtitle: 'Premium scale models and detailed diecast collectibles.',
+      ctaText: 'Shop Collections',
+      ctaLink: '/category/diecast',
+      image: { url: '/images/banners/banner4.png' },
     },
   ];
 
@@ -105,7 +112,7 @@ function HeroBanner({ banners, latestProducts }) {
   };
 
   return (
-    <div className="relative h-[25vh] sm:h-[35vh] min-h-[200px] sm:min-h-[280px] overflow-hidden rounded-none">
+    <div className="relative h-[35vh] sm:h-[50vh] md:h-[60vh] min-h-[250px] sm:min-h-[400px] md:min-h-[500px] overflow-hidden rounded-none">
       <AnimatePresence mode="wait">
         <motion.div
           key={current}
@@ -116,15 +123,15 @@ function HeroBanner({ banners, latestProducts }) {
           className="absolute inset-0"
         >
           {getSlideBg(current, slides[current])}
-
-          <div className="absolute inset-0 flex items-center">
-            <div className="max-w-7xl mx-auto px-4 sm:px-8 w-full">
+ 
+          <div className="absolute inset-0 flex items-center bg-gradient-to-r from-black/60 via-black/40 to-transparent">
+            <div className="max-w-7xl mx-auto px-6 sm:px-12 w-full">
               <div className="max-w-xl">
                 <motion.h1
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
-                  className="font-display font-bold text-xl sm:text-2xl md:text-3xl text-white leading-tight mb-2"
+                  className="font-display font-extrabold text-2xl sm:text-4xl md:text-5xl text-white leading-tight mb-3 tracking-tight drop-shadow-md"
                 >
                   {slides[current]?.title}
                 </motion.h1>
@@ -132,7 +139,7 @@ function HeroBanner({ banners, latestProducts }) {
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
-                  className="text-white/90 text-xs sm:text-sm md:text-base mb-4 sm:mb-5"
+                  className="text-white/90 text-sm sm:text-base md:text-lg mb-6 sm:mb-8 max-w-lg leading-relaxed drop-shadow-sm"
                 >
                   {slides[current]?.subtitle}
                 </motion.p>
@@ -143,10 +150,10 @@ function HeroBanner({ banners, latestProducts }) {
                 >
                   <Link
                     to={slides[current]?.ctaLink || '/shop'}
-                    className="inline-flex items-center gap-1.5 bg-white text-primary-500 font-bold px-4 py-2 sm:px-6 sm:py-2.5 text-xs sm:text-sm rounded-xl hover:shadow-xl transition-all duration-200 hover:-translate-y-1"
+                    className="inline-flex items-center gap-2 bg-white text-[#060608] hover:bg-white/90 font-bold px-6 py-3 sm:px-8 sm:py-4 text-xs sm:text-base rounded-2xl hover:shadow-2xl transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
                   >
                     {slides[current]?.ctaText || 'Shop Now'}
-                    <FiArrowRight size={14} />
+                    <FiArrowRight size={16} />
                   </Link>
                 </motion.div>
               </div>
