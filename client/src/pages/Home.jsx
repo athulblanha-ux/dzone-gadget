@@ -413,40 +413,22 @@ export default function Home() {
     queryFn: () => api.get('/banners?position=hero').then((r) => r.data.banners),
   });
 
-  const { data: latestProducts } = useQuery({
-    queryKey: ['products-latest-hero'],
-    queryFn: () => api.get('/products?limit=5').then((r) => r.data.products),
-  });
-
   const { data: categoriesData } = useQuery({
     queryKey: ['categories-featured'],
     queryFn: () => api.get('/categories?featured=true').then((r) => r.data.categories),
-  });
-
-  const { data: featuredProducts } = useQuery({
-    queryKey: ['products-featured'],
-    queryFn: () => api.get('/products?isFeatured=true&limit=8').then((r) => r.data.products),
-  });
-
-  const { data: trendingProducts } = useQuery({
-    queryKey: ['products-trending'],
-    queryFn: () => api.get('/products?isTrending=true&limit=8').then((r) => r.data.products),
-  });
-
-  const { data: newArrivals } = useQuery({
-    queryKey: ['products-new'],
-    queryFn: () => api.get('/products?isNewArrival=true&limit=8').then((r) => r.data.products),
-  });
-
-  const { data: saleProducts } = useQuery({
-    queryKey: ['products-sale'],
-    queryFn: () => api.get('/products?sort=popular&limit=4').then((r) => r.data.products),
   });
 
   const { data: allProducts } = useQuery({
     queryKey: ['products-all'],
     queryFn: () => api.get('/products?limit=all').then((r) => r.data.products),
   });
+
+  // Client-side filtering for instant high-performance loading
+  const latestProducts = allProducts ? allProducts.slice(0, 5) : [];
+  const featuredProducts = allProducts ? allProducts.filter(p => p.isFeatured).slice(0, 8) : [];
+  const trendingProducts = allProducts ? allProducts.filter(p => p.isTrending).slice(0, 8) : [];
+  const newArrivals = allProducts ? allProducts.filter(p => p.isNewArrival).slice(0, 8) : [];
+  const saleProducts = allProducts ? [...allProducts].sort((a, b) => (b.totalSold || 0) - (a.totalSold || 0)).slice(0, 4) : [];
 
   const { data: testimonials } = useQuery({
     queryKey: ['testimonials'],
