@@ -201,12 +201,31 @@ function CategoryGrid({ categories }) {
           >
             <Link
               to={`/category/${cat.slug}`}
-              className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/[0.06] hover:shadow-framer-shadow-hover hover:-translate-y-1 transition-all duration-300 text-center group"
+              className="relative flex flex-col items-center gap-3 p-6 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/[0.06] hover:shadow-framer-shadow-hover hover:-translate-y-1 transition-all duration-300 text-center group overflow-hidden"
             >
-              <div className="w-14 h-14 rounded-2xl bg-primary-50 dark:bg-white/5 border border-primary-100/50 dark:border-white/[0.08] flex items-center justify-center text-primary-500 dark:text-primary-400 group-hover:scale-110 transition-transform duration-300">
+              {/* Background Image Layer for Hobbygrade */}
+              {cat.slug === 'hobbygrade' && (
+                <>
+                  <div 
+                    className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
+                    style={{ backgroundImage: "url('/images/banners/banner1.png')" }}
+                  />
+                  <div className="absolute inset-0 bg-black/65 group-hover:bg-black/55 transition-colors duration-300" />
+                </>
+              )}
+
+              <div className={`relative z-10 w-14 h-14 rounded-2xl border flex items-center justify-center group-hover:scale-110 transition-transform duration-300 ${
+                cat.slug === 'hobbygrade'
+                  ? 'bg-white/10 border-white/20 text-white'
+                  : 'bg-primary-50 dark:bg-white/5 border-primary-100/50 dark:border-white/[0.08] text-primary-500 dark:text-primary-400'
+              }`}>
                 {getCategoryIcon(cat.slug)}
               </div>
-              <span className="text-xs font-bold text-gray-900 dark:text-dark-text leading-tight uppercase tracking-wider">
+              <span className={`relative z-10 text-xs font-bold leading-tight uppercase tracking-wider ${
+                cat.slug === 'hobbygrade'
+                  ? 'text-white drop-shadow-md'
+                  : 'text-gray-900 dark:text-dark-text'
+              }`}>
                 {cat.name}
               </span>
             </Link>
