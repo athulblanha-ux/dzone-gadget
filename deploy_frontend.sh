@@ -3,5 +3,5 @@
 
 echo "🚀 Deploying client frontend to Vercel production..."
 cd client
-vercel --prod
+npx -y vercel --prod
 echo "✅ Deployment requested successfully!"

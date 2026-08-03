@@ -3,5 +3,5 @@
 
 echo "🚀 Deploying admin dashboard to Vercel production..."
 cd admin
-vercel --prod
+npx -y vercel --prod
 echo "✅ Admin deployment requested successfully!"
