@@ -108,29 +108,26 @@ exports.getAllOrders = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 20;
   
-  // By default, filter out unconfirmed/unpaid orders (status: 'placed')
-  const filter = { status: { $ne: 'placed' } };
-  if (req.query.status) filter.status = req.query.status;
+  // By default, filter out unconfirmed/unpaid orders (status: 'placed') unless searching or filtering by status
+  const filter = {};
+  if (req.query.status) {
+    filter.status = req.query.status;
+  } else if (!req.query.search) {
+    filter.status = { $ne: 'placed' };
+  }
+
   if (req.query.paymentStatus) filter.paymentStatus = req.query.paymentStatus;
 
   if (req.query.search) {
     const searchRegex = new RegExp(req.query.search, 'i');
-    const currentStatus = filter.status;
-    
-    filter.$and = [
-      currentStatus ? { status: currentStatus } : { status: { $ne: 'placed' } },
-      {
-        $or: [
-          { orderNumber: searchRegex },
-          { paymentId: searchRegex },
-          { paymentOrderId: searchRegex },
-          { 'shippingAddress.fullName': searchRegex },
-          { 'shippingAddress.phone': searchRegex },
-          { 'shippingAddress.email': searchRegex }
-        ]
-      }
+    filter.$or = [
+      { orderNumber: searchRegex },
+      { paymentId: searchRegex },
+      { paymentOrderId: searchRegex },
+      { 'shippingAddress.fullName': searchRegex },
+      { 'shippingAddress.phone': searchRegex },
+      { 'shippingAddress.email': searchRegex }
     ];
-    delete filter.status;
   }
 
   const [orders, total] = await Promise.all([
