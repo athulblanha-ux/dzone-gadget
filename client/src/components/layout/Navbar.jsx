@@ -31,13 +31,23 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Sync search input query with URL search parameter when search opens
+  useEffect(() => {
+    if (searchOpen) {
+      const params = new URLSearchParams(location.search);
+      setSearchQuery(params.get('search') || '');
+    }
+  }, [searchOpen, location.search]);
+
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchOpen(false);
-      setSearchQuery('');
+    } else {
+      navigate('/shop');
     }
+    setSearchOpen(false);
+    setSearchQuery('');
   };
 
   const navLinks = [
