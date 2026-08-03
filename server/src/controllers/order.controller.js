@@ -59,11 +59,13 @@ exports.createOrder = asyncHandler(async (req, res) => {
     codBalance = total;
   }
 
+  const orderStatus = paymentMethod === 'cod' ? 'confirmed' : 'placed';
   const order = await Order.create({
     user: req.user?._id || undefined, items: enrichedItems, shippingAddress, paymentMethod,
     subtotal, shippingFee, codFee, discountAmount, gstAmount, total, coupon: couponData, notes,
     advanceAmount, codBalance,
-    statusHistory: [{ status: 'placed', message: 'Order placed successfully.' }],
+    status: orderStatus,
+    statusHistory: [{ status: orderStatus, message: orderStatus === 'confirmed' ? 'Order confirmed (COD).' : 'Order placed successfully.' }],
   });
 
   for (const item of enrichedItems) {
@@ -81,9 +83,10 @@ exports.createOrder = asyncHandler(async (req, res) => {
 exports.getMyOrders = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
+  const filter = { user: req.user._id, status: { $ne: 'placed' } };
   const [orders, total] = await Promise.all([
-    Order.find({ user: req.user._id }).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit).lean(),
-    Order.countDocuments({ user: req.user._id }),
+    Order.find(filter).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit).lean(),
+    Order.countDocuments(filter),
   ]);
   res.json({ success: true, orders, pagination: { page, limit, total, pages: Math.ceil(total / limit) } });
 });
@@ -104,9 +107,30 @@ exports.getOrder = asyncHandler(async (req, res) => {
 exports.getAllOrders = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 20;
-  const filter = {};
+  
+  // By default, filter out unconfirmed/unpaid orders (status: 'placed')
+  const filter = { status: { $ne: 'placed' } };
   if (req.query.status) filter.status = req.query.status;
   if (req.query.paymentStatus) filter.paymentStatus = req.query.paymentStatus;
+
+  if (req.query.search) {
+    const searchRegex = new RegExp(req.query.search, 'i');
+    const currentStatus = filter.status;
+    
+    filter.$and = [
+      currentStatus ? { status: currentStatus } : { status: { $ne: 'placed' } },
+      {
+        $or: [
+          { orderNumber: searchRegex },
+          { 'shippingAddress.fullName': searchRegex },
+          { 'shippingAddress.phone': searchRegex },
+          { 'shippingAddress.email': searchRegex }
+        ]
+      }
+    ];
+    delete filter.status;
+  }
+
   const [orders, total] = await Promise.all([
     Order.find(filter).populate('user', 'name email phone').sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit).lean(),
     Order.countDocuments(filter),
