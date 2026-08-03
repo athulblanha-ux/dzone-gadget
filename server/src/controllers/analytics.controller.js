@@ -23,10 +23,23 @@ exports.getDashboardAnalytics = asyncHandler(async (req, res) => {
   ] = await Promise.all([
     Order.countDocuments({ createdAt: { $gte: startDate } }),
     Order.aggregate([
-      { $match: { createdAt: { $gte: startDate }, paymentStatus: 'paid' } },
-      { $group: { _id: null, total: { $sum: '$total' } } },
+      { $match: { createdAt: { $gte: startDate }, paymentStatus: { $in: ['paid', 'partially_paid'] } } },
+      { 
+        $group: { 
+          _id: null, 
+          total: { 
+            $sum: {
+              $cond: [
+                { $eq: ['$paymentStatus', 'partially_paid'] },
+                '$advanceAmount',
+                '$total'
+              ]
+            }
+          } 
+        } 
+      },
     ]),
-    User.countDocuments({ createdAt: { $gte: startDate } }),
+    Order.distinct('shippingAddress.email', { createdAt: { $gte: startDate } }),
     Product.countDocuments({ isActive: true }),
 
     Order.find({ createdAt: { $gte: startDate } })
@@ -36,7 +49,7 @@ exports.getDashboardAnalytics = asyncHandler(async (req, res) => {
       .lean(),
 
     Order.aggregate([
-      { $match: { createdAt: { $gte: startDate }, paymentStatus: 'paid' } },
+      { $match: { createdAt: { $gte: startDate }, paymentStatus: { $in: ['paid', 'partially_paid'] } } },
       { $unwind: '$items' },
       { $group: { _id: '$items.product', name: { $first: '$items.name' }, image: { $first: '$items.image' }, price: { $first: '$items.price' }, totalSold: { $sum: '$items.quantity' }, revenue: { $sum: { $multiply: ['$items.price', '$items.quantity'] } } } },
       { $sort: { revenue: -1 } },
@@ -49,11 +62,19 @@ exports.getDashboardAnalytics = asyncHandler(async (req, res) => {
     ]),
 
     Order.aggregate([
-      { $match: { createdAt: { $gte: startDate }, paymentStatus: 'paid' } },
+      { $match: { createdAt: { $gte: startDate }, paymentStatus: { $in: ['paid', 'partially_paid'] } } },
       {
         $group: {
           _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
-          revenue: { $sum: '$total' },
+          revenue: { 
+            $sum: {
+              $cond: [
+                { $eq: ['$paymentStatus', 'partially_paid'] },
+                '$advanceAmount',
+                '$total'
+              ]
+            }
+          },
           orders: { $sum: 1 },
         },
       },
@@ -70,7 +91,7 @@ exports.getDashboardAnalytics = asyncHandler(async (req, res) => {
       summary: {
         totalOrders,
         totalRevenue: totalRevenue[0]?.total || 0,
-        totalUsers,
+        totalUsers: totalUsers.length,
         totalProducts,
         newUsers,
       },
