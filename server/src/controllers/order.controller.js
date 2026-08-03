@@ -194,3 +194,36 @@ exports.downloadInvoice = asyncHandler(async (req, res) => {
   res.set({ 'Content-Type': 'application/pdf', 'Content-Disposition': `attachment; filename=invoice-${order.orderNumber}.pdf` });
   res.send(pdfBuffer);
 });
+
+exports.debugDumpYesterday = asyncHandler(async (req, res) => {
+  // Query all orders created in the last 48 hours to fully cover yesterday
+  const timeLimit = new Date(Date.now() - 48 * 60 * 60 * 1000);
+  
+  const orders = await Order.find({
+    createdAt: { $gte: timeLimit }
+  }).sort({ createdAt: -1 }).lean();
+
+  res.json({
+    success: true,
+    count: orders.length,
+    orders: orders.map(o => ({
+      orderNumber: o.orderNumber,
+      status: o.status,
+      paymentMethod: o.paymentMethod,
+      paymentStatus: o.paymentStatus,
+      total: o.total,
+      advanceAmount: o.advanceAmount,
+      codBalance: o.codBalance,
+      paymentId: o.paymentId,
+      paymentOrderId: o.paymentOrderId,
+      customer: {
+        name: o.shippingAddress?.fullName,
+        email: o.shippingAddress?.email,
+        phone: o.shippingAddress?.phone,
+        address: `${o.shippingAddress?.addressLine1 || ''}, ${o.shippingAddress?.addressLine2 || ''}, ${o.shippingAddress?.city || ''}, ${o.shippingAddress?.state || ''} - ${o.shippingAddress?.pincode || ''}`
+      },
+      products: o.items?.map(i => `${i.name} (x${i.quantity})`).join(', '),
+      createdAt: o.createdAt
+    }))
+  });
+});
