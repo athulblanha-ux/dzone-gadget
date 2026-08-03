@@ -21,6 +21,21 @@ export default function Orders() {
   const [selectedOrder, setSelectedOrder] = useState(null);
 
   const queryClient = useQueryClient();
+  const [syncing, setSyncing] = useState(false);
+
+  const handleSyncPayments = async () => {
+    try {
+      setSyncing(true);
+      const { data: res } = await api.post('/payments/razorpay/sync');
+      queryClient.invalidateQueries(['admin-orders']);
+      toast.success(res.message || 'Payment sync completed successfully!');
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || 'Failed to sync payments.');
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-orders', page, search],
@@ -40,6 +55,13 @@ export default function Orders() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-2xl font-bold dark:text-white">Orders</h1>
+        <button 
+          onClick={handleSyncPayments} 
+          disabled={syncing}
+          className="btn-secondary py-2 px-4 text-sm flex items-center gap-2 border border-gray-200 dark:border-dark-border dark:bg-dark-bg hover:bg-gray-50 dark:hover:bg-dark-card"
+        >
+          {syncing ? 'Syncing...' : '🔄 Sync Payments'}
+        </button>
       </div>
 
       <div className="card p-4">

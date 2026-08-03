@@ -94,3 +94,85 @@ exports.stripeWebhook = asyncHandler(async (req, res) => {
   }
   res.json({ received: true });
 });
+
+exports.syncRazorpayPayments = asyncHandler(async (req, res) => {
+  const keyId = process.env.RAZORPAY_KEY_ID;
+  const keySecret = process.env.RAZORPAY_KEY_SECRET;
+
+  if (!keyId || !keySecret) {
+    return res.status(400).json({ success: false, message: 'Razorpay credentials missing.' });
+  }
+
+  const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret });
+  
+  // Fetch payments from the last 7 days to cover any recent mismatches
+  const sevenDaysAgo = Math.floor((Date.now() - 7 * 24 * 60 * 60 * 1000) / 1000);
+  
+  const response = await razorpay.payments.all({
+    from: sevenDaysAgo,
+    count: 100
+  });
+
+  const payments = response.items || [];
+  let updatedCount = 0;
+
+  for (const payment of payments) {
+    if (payment.status !== 'captured' && payment.status !== 'authorized') {
+      continue;
+    }
+
+    const paymentId = payment.id;
+    const paymentOrderId = payment.order_id;
+    const amount = payment.amount / 100;
+
+    // Find matching order in DB
+    const order = await Order.findOne({
+      $or: [
+        { paymentOrderId: paymentOrderId },
+        { orderNumber: payment.receipt }
+      ]
+    });
+
+    if (order) {
+      let changed = false;
+
+      // Update payment details if missing
+      if (!order.paymentId || order.paymentId !== paymentId) {
+        order.paymentId = paymentId;
+        changed = true;
+      }
+      if (!order.paymentOrderId || order.paymentOrderId !== paymentOrderId) {
+        order.paymentOrderId = paymentOrderId;
+        changed = true;
+      }
+
+      // Update payment status if pending
+      if (order.paymentStatus === 'pending') {
+        order.paymentStatus = order.paymentMethod === 'partial_cod' ? 'partially_paid' : 'paid';
+        changed = true;
+      }
+
+      // Update order status if still placed
+      if (order.status === 'placed') {
+        order.status = 'confirmed';
+        if (!order.statusHistory) order.statusHistory = [];
+        order.statusHistory.push({
+          status: 'confirmed',
+          message: `Order confirmed automatically via Razorpay Sync. Received ₹${amount} online.`
+        });
+        changed = true;
+      }
+
+      if (changed) {
+        await order.save();
+        updatedCount++;
+      }
+    }
+  }
+
+  res.json({
+    success: true,
+    message: `Payment sync complete! Successfully reconciled and updated ${updatedCount} orders.`,
+    updatedCount
+  });
+});
