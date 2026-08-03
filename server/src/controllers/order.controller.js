@@ -83,7 +83,7 @@ exports.createOrder = asyncHandler(async (req, res) => {
 exports.getMyOrders = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
-  const filter = { user: req.user._id, status: { $ne: 'placed' } };
+  const filter = { user: req.user._id };
   const [orders, total] = await Promise.all([
     Order.find(filter).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit).lean(),
     Order.countDocuments(filter),
@@ -108,12 +108,9 @@ exports.getAllOrders = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 20;
   
-  // By default, filter out unconfirmed/unpaid orders (status: 'placed') unless searching or filtering by status
   const filter = {};
   if (req.query.status) {
     filter.status = req.query.status;
-  } else if (!req.query.search) {
-    filter.status = { $ne: 'placed' };
   }
 
   if (req.query.paymentStatus) filter.paymentStatus = req.query.paymentStatus;
