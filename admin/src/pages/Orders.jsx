@@ -51,10 +51,18 @@ export default function Orders() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
             <thead className="text-xs text-gray-500 uppercase bg-gray-50 dark:bg-dark-bg dark:text-gray-400">
-              <tr><th className="px-4 py-3">Order ID</th><th className="px-4 py-3">Date</th><th className="px-4 py-3">Customer</th><th className="px-4 py-3">Total</th><th className="px-4 py-3">Status</th><th className="px-4 py-3 text-right">Actions</th></tr>
+              <tr>
+                <th className="px-4 py-3">Order ID</th>
+                <th className="px-4 py-3">Date</th>
+                <th className="px-4 py-3">Customer</th>
+                <th className="px-4 py-3">Total</th>
+                <th className="px-4 py-3">Paid / Received</th>
+                <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3 text-right">Actions</th>
+              </tr>
             </thead>
             <tbody>
-              {isLoading ? <tr><td colSpan="6" className="px-4 py-8 text-center text-gray-500">Loading...</td></tr>
+              {isLoading ? <tr><td colSpan="7" className="px-4 py-8 text-center text-gray-500">Loading...</td></tr>
               : data?.orders?.map(order => (
                 <tr key={order._id} className="border-b dark:border-dark-border hover:bg-gray-50 dark:hover:bg-dark-bg/50">
                   <td className="px-4 py-3 font-medium dark:text-white">{order.orderNumber}</td>
@@ -64,6 +72,15 @@ export default function Orders() {
                     <div className="text-xs text-gray-500">{order.user?.email || 'Guest'}</div>
                   </td>
                   <td className="px-4 py-3 font-bold text-primary-600">₹{order.total.toLocaleString()}</td>
+                  <td className="px-4 py-3 font-medium">
+                    {order.paymentStatus === 'paid' ? (
+                      <span className="text-green-600 dark:text-green-400">₹{order.total.toLocaleString()}</span>
+                    ) : order.paymentStatus === 'partially_paid' ? (
+                      <span className="text-blue-600 dark:text-blue-400">₹{order.advanceAmount?.toLocaleString()}</span>
+                    ) : (
+                      <span className="text-gray-400">₹0</span>
+                    )}
+                  </td>
                   <td className="px-4 py-3">
                     <select 
                       value={order.status} 
@@ -100,7 +117,7 @@ export default function Orders() {
                   </td>
                 </tr>
               ))}
-              {!isLoading && data?.orders?.length === 0 && <tr><td colSpan="6" className="px-4 py-8 text-center text-gray-500">No orders found.</td></tr>}
+              {!isLoading && data?.orders?.length === 0 && <tr><td colSpan="7" className="px-4 py-8 text-center text-gray-500">No orders found.</td></tr>}
             </tbody>
           </table>
         </div>
@@ -135,9 +152,30 @@ export default function Orders() {
                 </div>
                 <div>
                   <h4 className="font-bold text-gray-900 dark:text-white mb-2">Payment Info</h4>
-                  <p className="text-gray-600 dark:text-gray-400">Method: <span className="uppercase">{selectedOrder.paymentMethod}</span></p>
-                  <p className="text-gray-600 dark:text-gray-400">Status: <span className={`font-semibold ${selectedOrder.paymentStatus === 'paid' ? 'text-green-500' : 'text-yellow-500'}`}>{selectedOrder.paymentStatus.toUpperCase()}</span></p>
-                  {selectedOrder.razorpayOrderId && <p className="text-gray-600 dark:text-gray-400 text-xs mt-1 border-t dark:border-dark-border pt-1">Rzp: {selectedOrder.razorpayOrderId}</p>}
+                  <p className="text-gray-600 dark:text-gray-400">Method: <span className="uppercase">{selectedOrder.paymentMethod?.replace('_', ' ')}</span></p>
+                  <p className="text-gray-600 dark:text-gray-400">Status: <span className={`font-semibold ${['paid', 'partially_paid'].includes(selectedOrder.paymentStatus) ? 'text-green-500' : 'text-yellow-500'}`}>{selectedOrder.paymentStatus?.toUpperCase()?.replace('_', ' ')}</span></p>
+                  
+                  {/* Received amount details */}
+                  <div className="mt-2 border-t dark:border-dark-border pt-2 text-xs space-y-1">
+                    <p className="text-gray-600 dark:text-gray-400">
+                      Amount Received: <span className="font-bold text-gray-900 dark:text-white text-sm">
+                        ₹{selectedOrder.paymentStatus === 'paid' ? selectedOrder.total?.toLocaleString() 
+                          : selectedOrder.paymentStatus === 'partially_paid' ? selectedOrder.advanceAmount?.toLocaleString() 
+                          : 0}
+                      </span>
+                    </p>
+                    {selectedOrder.paymentMethod === 'partial_cod' && (
+                      <>
+                        <p className="text-gray-500">Advance Required: ₹{selectedOrder.advanceAmount?.toLocaleString()}</p>
+                        <p className="text-gray-500">COD Balance Due: ₹{selectedOrder.codBalance?.toLocaleString()}</p>
+                      </>
+                    )}
+                    {selectedOrder.paymentMethod === 'cod' && (
+                      <p className="text-gray-500">COD Balance Due: ₹{selectedOrder.total?.toLocaleString()}</p>
+                    )}
+                  </div>
+                  {selectedOrder.paymentId && <p className="text-gray-600 dark:text-gray-400 text-xs mt-1 border-t dark:border-dark-border pt-1 font-mono">Payment ID: {selectedOrder.paymentId}</p>}
+                  {selectedOrder.razorpayOrderId && <p className="text-gray-600 dark:text-gray-400 text-xs font-mono">Rzp Order ID: {selectedOrder.razorpayOrderId}</p>}
                 </div>
               </div>
 

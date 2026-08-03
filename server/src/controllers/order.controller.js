@@ -141,6 +141,17 @@ exports.updateOrderStatus = asyncHandler(async (req, res) => {
 
   order.status = status;
   order.statusHistory.push({ status, message: message || `Order ${status}.` });
+  
+  if (['confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered'].includes(status)) {
+    if (order.paymentStatus === 'pending') {
+      if (order.paymentMethod === 'partial_cod') {
+        order.paymentStatus = 'partially_paid';
+      } else if (order.paymentMethod === 'razorpay' || order.paymentMethod === 'stripe') {
+        order.paymentStatus = 'paid';
+      }
+    }
+  }
+
   if (trackingNumber) order.trackingNumber = trackingNumber;
   if (trackingUrl) order.trackingUrl = trackingUrl;
   if (courierPartner) order.courierPartner = courierPartner;
