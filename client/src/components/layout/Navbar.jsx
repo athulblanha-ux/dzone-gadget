@@ -214,12 +214,12 @@ export default function Navbar() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search for toys, brands, categories..."
-                  className="w-full pl-12 pr-4 py-4 text-lg rounded-2xl border-0 shadow-xl focus:outline-none focus:ring-2 focus:ring-primary-400 dark:bg-dark-card dark:text-dark-text"
+                  className="w-full pl-12 pr-12 py-4 text-lg rounded-2xl border-0 shadow-xl focus:outline-none focus:ring-2 focus:ring-primary-400 dark:bg-dark-card dark:text-dark-text"
                 />
                 <button
                   type="button"
-                  onClick={() => setSearchOpen(false)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  onClick={() => searchQuery ? setSearchQuery('') : setSearchOpen(false)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 z-10 p-1"
                 >
                   <FiX size={20} />
                 </button>
