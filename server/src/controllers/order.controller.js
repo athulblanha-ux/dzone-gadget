@@ -122,6 +122,8 @@ exports.getAllOrders = asyncHandler(async (req, res) => {
       {
         $or: [
           { orderNumber: searchRegex },
+          { paymentId: searchRegex },
+          { paymentOrderId: searchRegex },
           { 'shippingAddress.fullName': searchRegex },
           { 'shippingAddress.phone': searchRegex },
           { 'shippingAddress.email': searchRegex }
