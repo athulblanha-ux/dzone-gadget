@@ -15,5 +15,6 @@ router.get('/:id/invoice', protect, ctrl.downloadInvoice);
 // Admin routes
 router.get('/', protect, adminOnly, ctrl.getAllOrders);
 router.patch('/:id/status', protect, adminOnly, ctrl.updateOrderStatus);
+router.patch('/:id/tracking', protect, adminOnly, ctrl.updateOrderTracking);
 
 module.exports = router;

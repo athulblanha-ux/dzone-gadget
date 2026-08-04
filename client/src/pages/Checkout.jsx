@@ -40,16 +40,16 @@ export default function Checkout() {
     return () => clearTimeout(timer);
   }, [form.state, total, items]);
 
-  const codFee = form.paymentMethod === 'partial_cod' ? 50 : 0;
+  const codFee = form.paymentMethod === 'partial_cod' ? 90 : 0;
   const grandTotal = total + shippingFee + codFee;
   const advanceAmount = form.paymentMethod === 'partial_cod'
-    ? Math.round(codFee + shippingFee + 0.1 * total)
+    ? Math.round(codFee + shippingFee + 0.3 * total)
     : grandTotal;
   const codBalance = form.paymentMethod === 'partial_cod' ? grandTotal - advanceAmount : 0;
 
   // Static calculations for the COD description text
-  const codAdvanceStatic = Math.round(50 + shippingFee + 0.1 * total);
-  const codBalanceStatic = (total + shippingFee + 50) - codAdvanceStatic;
+  const codAdvanceStatic = Math.round(90 + shippingFee + 0.3 * total);
+  const codBalanceStatic = (total + shippingFee + 90) - codAdvanceStatic;
 
   if (items.length === 0) {
     navigate('/cart');

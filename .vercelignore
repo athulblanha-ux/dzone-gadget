@@ -1,0 +1,12 @@
+node_modules
+**/node_modules
+dist
+**/dist
+.git
+.vercel
+scratch
+uploads
+**/uploads
+server/node_modules
+admin/node_modules
+client/node_modules

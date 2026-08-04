@@ -98,7 +98,29 @@ export default function OrderDetail() {
           }} className="btn-secondary text-sm py-2 px-4"><FiDownload />Invoice</button>
         </div>
         <div className="grid md:grid-cols-2 gap-6 mb-6">
-          <div className="card p-5"><h3 className="font-semibold mb-3 dark:text-dark-text">Shipping Address</h3><p className="text-sm text-gray-600 dark:text-dark-muted">{data.shippingAddress.fullName}<br/>{data.shippingAddress.addressLine1}<br/>{data.shippingAddress.city}, {data.shippingAddress.state} - {data.shippingAddress.pincode}<br/>Phone: {data.shippingAddress.phone}</p></div>
+          <div className="card p-5">
+            <h3 className="font-semibold mb-3 dark:text-dark-text">Shipping Address</h3>
+            <p className="text-sm text-gray-600 dark:text-dark-muted">
+              {data.shippingAddress.fullName}<br/>
+              {data.shippingAddress.addressLine1}<br/>
+              {data.shippingAddress.city}, {data.shippingAddress.state} - {data.shippingAddress.pincode}<br/>
+              Phone: {data.shippingAddress.phone}
+            </p>
+            {data.trackingNumber && (
+              <div className="mt-4 pt-4 border-t border-gray-100 dark:border-dark-border space-y-1.5 text-sm">
+                <p className="font-semibold text-gray-800 dark:text-dark-text">Shipment Tracking</p>
+                <p className="text-gray-600 dark:text-dark-muted">Courier: <span className="font-medium text-gray-900 dark:text-dark-text">{data.courierPartner || 'N/A'}</span></p>
+                <p className="text-gray-600 dark:text-dark-muted">Tracking ID: <span className="font-medium text-gray-900 dark:text-dark-text font-mono">{data.trackingNumber}</span></p>
+                {data.trackingUrl && (
+                  <p className="mt-2">
+                    <a href={data.trackingUrl} target="_blank" rel="noopener noreferrer" className="text-primary-500 hover:underline text-xs font-semibold">
+                      Track Order &rarr;
+                    </a>
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
           <div className="card p-5">
             <h3 className="font-semibold mb-3 dark:text-dark-text">Payment Info</h3>
             <div className="text-sm text-gray-600 dark:text-dark-muted space-y-1.5">

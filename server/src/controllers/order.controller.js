@@ -47,13 +47,13 @@ exports.createOrder = asyncHandler(async (req, res) => {
     return acc + (item.price - base) * item.quantity;
   }, 0) * 100) / 100;
 
-  const codFee = (paymentMethod === 'partial_cod' || paymentMethod === 'cod') ? 50 : 0;
+  const codFee = (paymentMethod === 'partial_cod' || paymentMethod === 'cod') ? 90 : 0;
   const total = subtotal + shippingFee + codFee - discountAmount;
 
   let advanceAmount = 0;
   let codBalance = 0;
   if (paymentMethod === 'partial_cod') {
-    advanceAmount = Math.round(codFee + shippingFee + 0.1 * (subtotal - discountAmount));
+    advanceAmount = Math.round(codFee + shippingFee + 0.3 * (subtotal - discountAmount));
     codBalance = total - advanceAmount;
   } else if (paymentMethod === 'cod') {
     codBalance = total;
@@ -210,6 +210,19 @@ exports.downloadInvoice = asyncHandler(async (req, res) => {
   const pdfBuffer = await generateInvoicePDF(order);
   res.set({ 'Content-Type': 'application/pdf', 'Content-Disposition': `attachment; filename=invoice-${order.orderNumber}.pdf` });
   res.send(pdfBuffer);
+});
+
+exports.updateOrderTracking = asyncHandler(async (req, res) => {
+  const { courierPartner, trackingNumber, trackingUrl } = req.body;
+  const order = await Order.findById(req.params.id);
+  if (!order) return res.status(404).json({ success: false, message: 'Order not found.' });
+
+  order.courierPartner = courierPartner;
+  order.trackingNumber = trackingNumber;
+  order.trackingUrl = trackingUrl;
+
+  await order.save();
+  res.json({ success: true, order });
 });
 
 exports.debugDumpYesterday = asyncHandler(async (req, res) => {

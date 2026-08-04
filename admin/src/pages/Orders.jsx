@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { FiSearch, FiEye, FiDownload } from 'react-icons/fi';
 import toast from 'react-hot-toast';
@@ -19,6 +19,18 @@ export default function Orders() {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [selectedOrder, setSelectedOrder] = useState(null);
+
+  const [courierPartner, setCourierPartner] = useState('');
+  const [trackingNumber, setTrackingNumber] = useState('');
+  const [trackingUrl, setTrackingUrl] = useState('');
+
+  useEffect(() => {
+    if (selectedOrder) {
+      setCourierPartner(selectedOrder.courierPartner || '');
+      setTrackingNumber(selectedOrder.trackingNumber || '');
+      setTrackingUrl(selectedOrder.trackingUrl || '');
+    }
+  }, [selectedOrder]);
 
   const queryClient = useQueryClient();
   const [syncing, setSyncing] = useState(false);
@@ -47,6 +59,17 @@ export default function Orders() {
     onSuccess: () => {
       queryClient.invalidateQueries(['admin-orders']);
       toast.success('Order status updated');
+    },
+    onError: (err) => toast.error(err.response?.data?.message || 'Update failed')
+  });
+
+  const updateTrackingMutation = useMutation({
+    mutationFn: ({ id, courierPartner, trackingNumber, trackingUrl }) => 
+      api.patch(`/orders/${id}/tracking`, { courierPartner, trackingNumber, trackingUrl }),
+    onSuccess: (res) => {
+      queryClient.invalidateQueries(['admin-orders']);
+      setSelectedOrder(res.data.order);
+      toast.success('Tracking details updated successfully');
     },
     onError: (err) => toast.error(err.response?.data?.message || 'Update failed')
   });
@@ -199,6 +222,55 @@ export default function Orders() {
                   {selectedOrder.paymentId && <p className="text-gray-600 dark:text-gray-400 text-xs mt-1 border-t dark:border-dark-border pt-1 font-mono">Payment ID: {selectedOrder.paymentId}</p>}
                   {selectedOrder.razorpayOrderId && <p className="text-gray-600 dark:text-gray-400 text-xs font-mono">Rzp Order ID: {selectedOrder.razorpayOrderId}</p>}
                 </div>
+              </div>
+
+              {/* Courier & Tracking Details Section */}
+              <div className="border-t border-gray-100 dark:border-dark-border pt-4 text-sm">
+                <h4 className="font-bold text-gray-900 dark:text-white mb-3">Courier & Tracking Details</h4>
+                <div className="grid grid-cols-2 gap-4 mb-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Courier Partner</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Delhivery, FedEx" 
+                      value={courierPartner} 
+                      onChange={e => setCourierPartner(e.target.value)} 
+                      className="input text-sm py-1.5" 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Tracking Number</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. AWB123456" 
+                      value={trackingNumber} 
+                      onChange={e => setTrackingNumber(e.target.value)} 
+                      className="input text-sm py-1.5" 
+                    />
+                  </div>
+                </div>
+                <div className="mb-3">
+                  <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Tracking URL (Optional)</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. https://www.delhivery.com/track?id=..." 
+                    value={trackingUrl} 
+                    onChange={e => setTrackingUrl(e.target.value)} 
+                    className="input text-sm py-1.5 w-full" 
+                  />
+                </div>
+                <button 
+                  onClick={() => updateTrackingMutation.mutate({ 
+                    id: selectedOrder._id, 
+                    courierPartner, 
+                    trackingNumber, 
+                    trackingUrl 
+                  })}
+                  disabled={updateTrackingMutation.isPending}
+                  className="btn-primary py-1.5 px-4 text-xs font-semibold"
+                >
+                  {updateTrackingMutation.isPending ? 'Saving...' : 'Save Tracking Details'}
+                </button>
               </div>
 
               <div>
