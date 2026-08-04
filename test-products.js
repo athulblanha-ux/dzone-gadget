@@ -1,5 +1,5 @@
 require('dotenv').config({ path: 'server/.env' });
-const mongoose = require('mongoose');
+const mongoose = require('./server/node_modules/mongoose');
 const Product = require('./server/src/models/Product');
 
 mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/dstore').then(async () => {
