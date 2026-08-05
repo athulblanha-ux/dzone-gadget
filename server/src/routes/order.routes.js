@@ -8,9 +8,9 @@ const { adminOnly } = require('../middleware/admin');
 router.post('/', optionalAuth, ctrl.createOrder);
 router.get('/my', protect, ctrl.getMyOrders);
 router.get('/debug-dump-yesterday', ctrl.debugDumpYesterday);
-router.get('/:id', protect, ctrl.getOrder);
+router.get('/:id', optionalAuth, ctrl.getOrder);
 router.post('/:id/cancel', protect, ctrl.cancelOrder);
-router.get('/:id/invoice', protect, ctrl.downloadInvoice);
+router.get('/:id/invoice', optionalAuth, ctrl.downloadInvoice);
 
 // Admin routes
 router.get('/', protect, adminOnly, ctrl.getAllOrders);

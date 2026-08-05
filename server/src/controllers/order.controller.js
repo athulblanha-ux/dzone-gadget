@@ -97,13 +97,21 @@ exports.getOrder = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id).populate('user', 'name email');
   if (!order) return res.status(404).json({ success: false, message: 'Order not found.' });
   
-  if (req.user.role === 'user') {
-    if (!order.user || order.user._id.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ success: false, message: 'Access denied.' });
-    }
+  // Admin bypass
+  if (req.user && req.user.role === 'admin') {
+    return res.json({ success: true, order });
   }
 
-  res.json({ success: true, order });
+  // Check if owner
+  const isOwner = req.user && order.user && order.user._id.toString() === req.user._id.toString();
+  // Check if payment is confirmed
+  const isConfirmedPayment = ['paid', 'partially_paid'].includes(order.paymentStatus);
+
+  if (isOwner || isConfirmedPayment) {
+    return res.json({ success: true, order });
+  }
+
+  return res.status(403).json({ success: false, message: 'Access denied.' });
 });
 
 exports.getAllOrders = asyncHandler(async (req, res) => {
@@ -194,19 +202,24 @@ exports.downloadInvoice = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id).populate('user', 'name email phone');
   if (!order) return res.status(404).json({ success: false, message: 'Order not found.' });
   
-  if (req.user.role === 'user') {
-    if (!order.user || order.user._id.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ success: false, message: 'Access denied.' });
+  // Admin bypass
+  const isAdmin = req.user && req.user.role === 'admin';
+  // Check if owner
+  const isOwner = req.user && order.user && order.user._id.toString() === req.user._id.toString();
+  // Check if payment is confirmed
+  const isConfirmedPayment = ['paid', 'partially_paid'].includes(order.paymentStatus);
+
+  if (isAdmin || isOwner || isConfirmedPayment) {
+    if (!isConfirmedPayment) {
+      return res.status(400).json({ success: false, message: 'Invoice is only available for confirmed payments.' });
     }
+
+    const pdfBuffer = await generateInvoicePDF(order);
+    res.set({ 'Content-Type': 'application/pdf', 'Content-Disposition': `attachment; filename=invoice-${order.orderNumber}.pdf` });
+    return res.send(pdfBuffer);
   }
 
-  if (!['paid', 'partially_paid'].includes(order.paymentStatus)) {
-    return res.status(400).json({ success: false, message: 'Invoice is only available for confirmed payments.' });
-  }
-
-  const pdfBuffer = await generateInvoicePDF(order);
-  res.set({ 'Content-Type': 'application/pdf', 'Content-Disposition': `attachment; filename=invoice-${order.orderNumber}.pdf` });
-  res.send(pdfBuffer);
+  return res.status(403).json({ success: false, message: 'Access denied.' });
 });
 
 exports.updateOrderTracking = asyncHandler(async (req, res) => {
