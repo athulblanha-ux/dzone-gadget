@@ -28,7 +28,7 @@ const generateInvoicePDF = (order) => {
       doc
         .fontSize(20)
         .fillColor('#1a1a2e')
-        .text('TAX INVOICE', 400, 50, { align: 'right' })
+        .text('INVOICE', 400, 50, { align: 'right' })
         .fontSize(10)
         .fillColor('#666')
         .text(`Invoice #: ${order.invoiceNumber || order.orderNumber}`, 400, 80, { align: 'right' })
@@ -71,10 +71,9 @@ const generateInvoicePDF = (order) => {
         .fontSize(10)
         .fillColor('#1a1a2e')
         .text('Item', 50, tableTop + 10)
-        .text('Qty', 340, tableTop + 10)
-        .text('Price', 390, tableTop + 10)
-        .text('GST', 440, tableTop + 10)
-        .text('Total', 490, tableTop + 10);
+        .text('Qty', 350, tableTop + 10)
+        .text('Price', 410, tableTop + 10)
+        .text('Total', 480, tableTop + 10);
 
       doc.moveTo(50, tableTop + 28).lineTo(545, tableTop + 28).strokeColor('#eee').stroke();
 
@@ -82,16 +81,13 @@ const generateInvoicePDF = (order) => {
       doc.font('Helvetica').fillColor('#444');
 
       for (const item of order.items) {
-        const basePrice = item.price / (1 + item.gstRate / 100);
-        const gstAmt = (item.price - basePrice) * item.quantity;
         const lineTotal = item.price * item.quantity;
 
         doc
-          .text(item.name.substring(0, 35), 50, y)
-          .text(item.quantity.toString(), 340, y)
-          .text(`₹${item.price.toFixed(2)}`, 390, y)
-          .text(`₹${gstAmt.toFixed(2)}`, 440, y)
-          .text(`₹${lineTotal.toFixed(2)}`, 490, y);
+          .text(item.name.substring(0, 45), 50, y)
+          .text(item.quantity.toString(), 350, y)
+          .text(`₹${item.price.toFixed(2)}`, 410, y)
+          .text(`₹${lineTotal.toFixed(2)}`, 480, y);
 
         y += 22;
         if (y > 700) { doc.addPage(); y = 50; }
@@ -106,7 +102,7 @@ const generateInvoicePDF = (order) => {
           .font(bold ? 'Helvetica-Bold' : 'Helvetica')
           .fillColor(bold ? '#1a1a2e' : '#555')
           .text(label, 380, y)
-          .text(value, 490, y);
+          .text(value, 480, y);
         y += 20;
       };
 
@@ -114,7 +110,6 @@ const generateInvoicePDF = (order) => {
       addRow('Shipping:', order.shippingFee === 0 ? 'FREE' : `₹${order.shippingFee.toFixed(2)}`);
       if (order.codFee > 0) addRow('COD Fee:', `₹${order.codFee.toFixed(2)}`);
       if (order.discountAmount > 0) addRow('Discount:', `-₹${order.discountAmount.toFixed(2)}`);
-      addRow('GST:', `₹${order.gstAmount.toFixed(2)}`);
       doc.moveTo(380, y).lineTo(545, y).strokeColor('#ccc').stroke();
       y += 8;
       addRow('TOTAL:', `₹${order.total.toFixed(2)}`, true);

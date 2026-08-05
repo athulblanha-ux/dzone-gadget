@@ -42,10 +42,7 @@ exports.createOrder = asyncHandler(async (req, res) => {
     }
   }
 
-  const gstAmount = Math.round(enrichedItems.reduce((acc, item) => {
-    const base = item.price / (1 + item.gstRate / 100);
-    return acc + (item.price - base) * item.quantity;
-  }, 0) * 100) / 100;
+  const gstAmount = 0;
 
   const codFee = (paymentMethod === 'partial_cod' || paymentMethod === 'cod') ? 90 : 0;
   const total = subtotal + shippingFee + codFee - discountAmount;
