@@ -62,7 +62,9 @@ exports.calculateShippingFee = async (items, state, subtotal) => {
     isKerala = state.trim().toLowerCase() === 'kerala';
   }
 
-  let totalShippingFee = 0;
+  let totalWeight = 0;
+  let customDeliveryCharges = 0;
+  let hasWeightBasedItems = false;
 
   if (items && items.length > 0) {
     for (const item of items) {
@@ -71,37 +73,40 @@ exports.calculateShippingFee = async (items, state, subtotal) => {
         const product = await Product.findById(productId);
         if (product) {
           const weight = product.weight || 0; // weight in grams
-          let charge = 0;
-
-          if (isKerala) {
-            if (weight === 0 && product.deliveryCharge && product.deliveryCharge > 0) {
-              charge = product.deliveryCharge;
-            } else if (weight < 500) {
-              charge = 50;
-            } else if (weight <= 1000) {
-              charge = 70;
-            } else {
-              charge = Math.ceil(weight / 1000) * 70;
-            }
+          
+          if (weight === 0 && product.deliveryCharge && product.deliveryCharge > 0) {
+            customDeliveryCharges += product.deliveryCharge * item.quantity;
           } else {
-            if (weight === 0 && product.deliveryCharge && product.deliveryCharge > 0) {
-              charge = product.deliveryCharge;
-            } else if (weight < 500) {
-              charge = 80;
-            } else if (weight <= 1000) {
-              charge = 120;
-            } else {
-              charge = Math.ceil(weight / 1000) * 120;
-            }
+            totalWeight += weight * item.quantity;
+            hasWeightBasedItems = true;
           }
-
-          totalShippingFee += charge * item.quantity;
         }
       }
     }
   }
 
-  return totalShippingFee;
+  let weightBasedShippingFee = 0;
+  if (hasWeightBasedItems) {
+    if (isKerala) {
+      if (totalWeight <= 500) {
+        weightBasedShippingFee = 60;
+      } else if (totalWeight <= 1000) {
+        weightBasedShippingFee = 80;
+      } else {
+        weightBasedShippingFee = Math.ceil(totalWeight / 1000) * 80;
+      }
+    } else {
+      if (totalWeight <= 500) {
+        weightBasedShippingFee = 90;
+      } else if (totalWeight <= 1000) {
+        weightBasedShippingFee = 120;
+      } else {
+        weightBasedShippingFee = Math.ceil(totalWeight / 1000) * 120;
+      }
+    }
+  }
+
+  return weightBasedShippingFee + customDeliveryCharges;
 };
 
 exports.calculateFee = asyncHandler(async (req, res) => {
