@@ -21,7 +21,7 @@ exports.getDashboardAnalytics = asyncHandler(async (req, res) => {
     newUsers,
     lowStockProducts,
   ] = await Promise.all([
-    Order.countDocuments({ createdAt: { $gte: startDate } }),
+    Order.countDocuments({ status: { $ne: 'placed' }, createdAt: { $gte: startDate } }),
     Order.aggregate([
       { $match: { createdAt: { $gte: startDate }, paymentStatus: { $in: ['paid', 'partially_paid'] } } },
       { 
@@ -39,10 +39,10 @@ exports.getDashboardAnalytics = asyncHandler(async (req, res) => {
         } 
       },
     ]),
-    Order.distinct('shippingAddress.email', { createdAt: { $gte: startDate } }),
+    Order.distinct('shippingAddress.email', { status: { $ne: 'placed' }, createdAt: { $gte: startDate } }),
     Product.countDocuments({ isActive: true }),
 
-    Order.find({ createdAt: { $gte: startDate } })
+    Order.find({ status: { $ne: 'placed' }, createdAt: { $gte: startDate } })
       .populate('user', 'name email')
       .sort({ createdAt: -1 })
       .limit(10)
@@ -57,7 +57,7 @@ exports.getDashboardAnalytics = asyncHandler(async (req, res) => {
     ]),
 
     Order.aggregate([
-      { $match: { createdAt: { $gte: startDate } } },
+      { $match: { status: { $ne: 'placed' }, createdAt: { $gte: startDate } } },
       { $group: { _id: '$status', count: { $sum: 1 } } },
     ]),
 

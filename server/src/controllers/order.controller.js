@@ -118,13 +118,9 @@ exports.getAllOrders = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 20;
   
-  const filter = {};
+  const filter = { status: { $ne: 'placed' } };
   if (req.query.status) {
     filter.status = req.query.status;
-  } else if (!req.query.search) {
-    filter.$nor = [
-      { status: 'placed', paymentStatus: 'pending' }
-    ];
   }
 
   if (req.query.paymentStatus) filter.paymentStatus = req.query.paymentStatus;
