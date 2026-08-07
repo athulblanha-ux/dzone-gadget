@@ -4,9 +4,10 @@ import { Helmet } from 'react-helmet-async';
 import { useCartStore, useAuthStore } from '../store';
 import api from '../lib/api';
 import toast from 'react-hot-toast';
+import { FiPlus, FiMinus, FiTrash2 } from 'react-icons/fi';
 
 export default function Checkout() {
-  const { items, total, clearCart } = useCartStore();
+  const { items, total, clearCart, updateQuantity, removeItem } = useCartStore();
   const { user, isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -271,10 +272,21 @@ export default function Checkout() {
               <h2 className="font-semibold text-lg mb-4 dark:text-dark-text">Order Items</h2>
               <div className="space-y-4 mb-6 max-h-96 overflow-y-auto pr-2">
                 {items.map(item => (
-                  <div key={item.key} className="flex gap-4 items-center">
-                    <img src={item.product.images?.[0]?.url} alt="" className="w-16 h-16 rounded-xl object-contain" />
-                    <div className="flex-1"><p className="text-sm font-medium dark:text-dark-text">{item.product.name}</p><p className="text-xs text-gray-500">Qty: {item.quantity}</p></div>
-                    <p className="font-bold text-sm dark:text-dark-text">₹{(item.price * item.quantity).toLocaleString()}</p>
+                  <div key={item.key} className="flex gap-4 items-center py-2 border-b border-gray-100 dark:border-dark-border last:border-b-0">
+                    <img src={item.product.images?.[0]?.url} alt="" className="w-16 h-16 rounded-xl object-contain bg-gray-50 dark:bg-dark-card flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium dark:text-dark-text truncate">{item.product.name}</p>
+                      {item.variant && <p className="text-xs text-gray-400 mt-0.5">{item.variant.name}: {item.variant.value}</p>}
+                      <div className="flex items-center gap-2 mt-1.5">
+                        <div className="flex items-center border border-gray-200 dark:border-dark-border rounded-lg overflow-hidden bg-white dark:bg-dark-card">
+                          <button type="button" onClick={() => updateQuantity(item.key, item.quantity - 1)} className="p-1 hover:bg-gray-50 dark:hover:bg-dark-bg transition-colors text-gray-600 dark:text-dark-text"><FiMinus size={12} /></button>
+                          <span className="px-2 font-semibold text-xs dark:text-dark-text">{item.quantity}</span>
+                          <button type="button" onClick={() => updateQuantity(item.key, item.quantity + 1)} disabled={item.quantity >= item.product.stock} className="p-1 hover:bg-gray-50 dark:hover:bg-dark-bg transition-colors disabled:opacity-40 text-gray-600 dark:text-dark-text"><FiPlus size={12} /></button>
+                        </div>
+                        <button type="button" onClick={() => removeItem(item.key)} className="text-red-400 hover:text-red-600 p-1" aria-label="Remove item"><FiTrash2 size={14} /></button>
+                      </div>
+                    </div>
+                    <div className="text-right font-bold text-sm dark:text-dark-text">₹{(item.price * item.quantity).toLocaleString()}</div>
                   </div>
                 ))}
               </div>

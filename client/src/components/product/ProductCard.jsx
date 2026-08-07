@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiHeart, FiShoppingCart, FiStar, FiCreditCard } from 'react-icons/fi';
+import { FiHeart, FiShoppingCart, FiStar, FiCreditCard, FiShare2 } from 'react-icons/fi';
 import { useCartStore, useWishlistStore, useAuthStore } from '../../store';
 import toast from 'react-hot-toast';
 import api from '../../lib/api';
@@ -39,6 +39,29 @@ export default function ProductCard({ product, view }) {
     toast(inWishlist ? 'Removed from wishlist' : 'Added to wishlist!');
   };
 
+  const handleShare = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const productUrl = `${window.location.origin}/product/${product.slug}`;
+    const shareData = {
+      title: product.name,
+      text: product.shortDescription || `Check out ${product.name} on D-STORE!`,
+      url: productUrl,
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(productUrl);
+        toast.success('Product link copied to clipboard!');
+      }
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        console.error('Error sharing:', err);
+      }
+    }
+  };
+
   const displayPrice = product.isOnSale && product.salePrice ? product.salePrice : product.price;
   const image = product.images?.[0]?.url;
   const isList = view === 'list';
@@ -71,12 +94,24 @@ export default function ProductCard({ product, view }) {
           )}
 
           {/* Badges */}
-          <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-            {product.isTrending && (
-              <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-lg">TRENDING</span>
-            )}
-            {product.stock === 0 && (
+          <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
+            {product.stock === 0 ? (
               <span className="bg-gray-500 text-white text-xs font-bold px-2 py-1 rounded-lg">Out of Stock</span>
+            ) : (
+              <>
+                {product.isFlashSale && (
+                  <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-lg">FLASH SALE</span>
+                )}
+                {product.isOfferSale && (
+                  <span className="bg-indigo-600 text-white text-xs font-bold px-2 py-1 rounded-lg">OFFER SALE</span>
+                )}
+                {product.isClearanceSale && (
+                  <span className="bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded-lg">CLEARANCE</span>
+                )}
+                {product.isTrending && !product.isFlashSale && !product.isOfferSale && !product.isClearanceSale && (
+                  <span className="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-lg">TRENDING</span>
+                )}
+              </>
             )}
           </div>
 
@@ -95,6 +130,15 @@ export default function ProductCard({ product, view }) {
               aria-label="Add to wishlist"
             >
               <FiHeart size={16} fill={inWishlist ? 'currentColor' : 'none'} />
+            </motion.button>
+            <motion.button
+              type="button"
+              whileTap={{ scale: 0.9 }}
+              onClick={handleShare}
+              className="w-9 h-9 rounded-xl shadow-lg flex items-center justify-center bg-white dark:bg-dark-card text-gray-600 dark:text-dark-muted hover:text-primary-500 transition-colors"
+              aria-label="Share product"
+            >
+              <FiShare2 size={16} />
             </motion.button>
           </div>
 

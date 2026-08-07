@@ -16,6 +16,9 @@ const buildProductFilter = (query) => {
   if (query.isFeatured) filter.isFeatured = query.isFeatured === 'true';
   if (query.isTrending) filter.isTrending = query.isTrending === 'true';
   if (query.isNewArrival) filter.isNewArrival = query.isNewArrival === 'true';
+  if (query.isFlashSale) filter.isFlashSale = query.isFlashSale === 'true';
+  if (query.isOfferSale) filter.isOfferSale = query.isOfferSale === 'true';
+  if (query.isClearanceSale) filter.isClearanceSale = query.isClearanceSale === 'true';
   if (query.ageGroup) filter.ageGroup = query.ageGroup;
   if (query.brand) filter.brand = { $regex: query.brand, $options: 'i' };
 

@@ -50,6 +50,9 @@ const productSchema = new mongoose.Schema(
     isActive: { type: Boolean, default: true },
     isTrending: { type: Boolean, default: false },
     isNewArrival: { type: Boolean, default: false },
+    isFlashSale: { type: Boolean, default: false },
+    isOfferSale: { type: Boolean, default: false },
+    isClearanceSale: { type: Boolean, default: false },
     ageGroup: {
       type: String,
       enum: ['0-2', '3-5', '6-8', '9-12', '13+', 'all'],

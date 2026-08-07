@@ -428,7 +428,10 @@ export default function Home() {
   const featuredProducts = allProducts ? allProducts.filter(p => p.isFeatured).slice(0, 8) : [];
   const trendingProducts = allProducts ? allProducts.filter(p => p.isTrending).slice(0, 8) : [];
   const newArrivals = allProducts ? allProducts.filter(p => p.isNewArrival).slice(0, 8) : [];
-  const saleProducts = allProducts ? [...allProducts].sort((a, b) => (b.totalSold || 0) - (a.totalSold || 0)).slice(0, 4) : [];
+  const flashSaleProducts = allProducts ? allProducts.filter(p => p.isFlashSale) : [];
+  const saleProducts = flashSaleProducts.length > 0
+    ? flashSaleProducts.slice(0, 4)
+    : (allProducts ? [...allProducts].sort((a, b) => (b.totalSold || 0) - (a.totalSold || 0)).slice(0, 4) : []);
 
   const { data: testimonials } = useQuery({
     queryKey: ['testimonials'],

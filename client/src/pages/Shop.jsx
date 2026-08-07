@@ -30,6 +30,9 @@ export default function Shop() {
     isFeatured: searchParams.get('isFeatured') || '',
     isTrending: searchParams.get('isTrending') || '',
     isNewArrival: searchParams.get('isNewArrival') || '',
+    isFlashSale: searchParams.get('isFlashSale') || '',
+    isOfferSale: searchParams.get('isOfferSale') || '',
+    isClearanceSale: searchParams.get('isClearanceSale') || '',
     limit: 'all',
   });
 
@@ -49,7 +52,7 @@ export default function Shop() {
   });
 
   const updateFilter = (key, value) => setFilters(prev => ({ ...prev, [key]: value }));
-  const clearFilters = () => setFilters({ search: '', category: '', sort: 'recommended', minPrice: '', maxPrice: '', ageGroup: '', inStock: '', isFeatured: '', isTrending: '', isNewArrival: '', limit: 'all' });
+  const clearFilters = () => setFilters({ search: '', category: '', sort: 'recommended', minPrice: '', maxPrice: '', ageGroup: '', inStock: '', isFeatured: '', isTrending: '', isNewArrival: '', isFlashSale: '', isOfferSale: '', isClearanceSale: '', limit: 'all' });
   const activeCount = [filters.category, filters.minPrice, filters.maxPrice, filters.ageGroup, filters.inStock].filter(Boolean).length;
 
   return (
@@ -147,6 +150,35 @@ export default function Shop() {
                         {age === 'all' ? 'All Ages' : `${age} yrs`}
                       </button>
                     ))}
+                  </div>
+                </div>
+                <div className="mb-6">
+                  <h4 className="font-semibold mb-3 text-gray-800 dark:text-dark-text">Deals & Badges</h4>
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" checked={filters.isFeatured === 'true'} onChange={e => updateFilter('isFeatured', e.target.checked ? 'true' : '')} className="accent-primary-500 w-4 h-4" />
+                      <span className="text-sm text-gray-600 dark:text-dark-text">Featured</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" checked={filters.isTrending === 'true'} onChange={e => updateFilter('isTrending', e.target.checked ? 'true' : '')} className="accent-primary-500 w-4 h-4" />
+                      <span className="text-sm text-gray-600 dark:text-dark-text">Trending</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" checked={filters.isNewArrival === 'true'} onChange={e => updateFilter('isNewArrival', e.target.checked ? 'true' : '')} className="accent-primary-500 w-4 h-4" />
+                      <span className="text-sm text-gray-600 dark:text-dark-text">New Arrival</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" checked={filters.isFlashSale === 'true'} onChange={e => updateFilter('isFlashSale', e.target.checked ? 'true' : '')} className="accent-primary-500 w-4 h-4" />
+                      <span className="text-sm text-gray-600 dark:text-dark-text">Flash Sale</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" checked={filters.isOfferSale === 'true'} onChange={e => updateFilter('isOfferSale', e.target.checked ? 'true' : '')} className="accent-primary-500 w-4 h-4" />
+                      <span className="text-sm text-gray-600 dark:text-dark-text">Offer Sale</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" checked={filters.isClearanceSale === 'true'} onChange={e => updateFilter('isClearanceSale', e.target.checked ? 'true' : '')} className="accent-primary-500 w-4 h-4" />
+                      <span className="text-sm text-gray-600 dark:text-dark-text">Clearance Sale</span>
+                    </label>
                   </div>
                 </div>
                 <label className="flex items-center gap-2 cursor-pointer mb-6">

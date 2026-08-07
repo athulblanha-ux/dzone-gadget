@@ -13,7 +13,7 @@ export default function Products() {
   const [editingProduct, setEditingProduct] = useState(null);
   
   // Form State
-  const initialForm = { name: '', description: '', shortDescription: '', price: '', salePrice: '', stock: '', category: '', tags: '', ageGroup: 'all', isFeatured: false, isTrending: false, isNewArrival: false, variants: [], video: null, deliveryCharge: 0, weight: '' };
+  const initialForm = { name: '', description: '', shortDescription: '', price: '', salePrice: '', stock: '', category: '', tags: '', ageGroup: 'all', isFeatured: false, isTrending: false, isNewArrival: false, isFlashSale: false, isOfferSale: false, isClearanceSale: false, variants: [], video: null, deliveryCharge: 0, weight: '' };
   const [form, setForm] = useState(initialForm);
   const [images, setImages] = useState([]);
   const [previews, setPreviews] = useState([]);
@@ -74,6 +74,9 @@ export default function Products() {
         isFeatured: prod.isFeatured,
         isTrending: prod.isTrending,
         isNewArrival: prod.isNewArrival,
+        isFlashSale: prod.isFlashSale || false,
+        isOfferSale: prod.isOfferSale || false,
+        isClearanceSale: prod.isClearanceSale || false,
         variants: prod.variants || [],
         deliveryCharge: prod.deliveryCharge || 0,
         weight: prod.weight || ''
@@ -221,6 +224,9 @@ export default function Products() {
                       {prod.isFeatured && <span className="w-2 h-2 rounded-full bg-blue-500" title="Featured" />}
                       {prod.isTrending && <span className="w-2 h-2 rounded-full bg-orange-500" title="Trending" />}
                       {prod.isNewArrival && <span className="w-2 h-2 rounded-full bg-green-500" title="New Arrival" />}
+                      {prod.isFlashSale && <span className="w-2 h-2 rounded-full bg-red-500" title="Flash Sale" />}
+                      {prod.isOfferSale && <span className="w-2 h-2 rounded-full bg-indigo-500" title="Offer Sale" />}
+                      {prod.isClearanceSale && <span className="w-2 h-2 rounded-full bg-purple-500" title="Clearance Sale" />}
                     </div>
                   </td>
                   <td className="px-4 py-3 text-right">
@@ -362,7 +368,7 @@ export default function Products() {
                 </div>
 
                 {/* Toggles */}
-                <div className="flex gap-6 pt-2">
+                <div className="flex flex-wrap gap-x-6 gap-y-3 pt-2">
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input type="checkbox" checked={form.isFeatured} onChange={e => setForm({...form, isFeatured: e.target.checked})} className="accent-primary-500 w-4 h-4" />
                     <span className="text-sm font-medium dark:text-white">Featured</span>
@@ -374,6 +380,18 @@ export default function Products() {
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input type="checkbox" checked={form.isNewArrival} onChange={e => setForm({...form, isNewArrival: e.target.checked})} className="accent-primary-500 w-4 h-4" />
                     <span className="text-sm font-medium dark:text-white">New Arrival</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" checked={form.isFlashSale} onChange={e => setForm({...form, isFlashSale: e.target.checked})} className="accent-primary-500 w-4 h-4" />
+                    <span className="text-sm font-medium dark:text-white">Flash Sale</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" checked={form.isOfferSale} onChange={e => setForm({...form, isOfferSale: e.target.checked})} className="accent-primary-500 w-4 h-4" />
+                    <span className="text-sm font-medium dark:text-white">Offer Sale</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" checked={form.isClearanceSale} onChange={e => setForm({...form, isClearanceSale: e.target.checked})} className="accent-primary-500 w-4 h-4" />
+                    <span className="text-sm font-medium dark:text-white">Clearance Sale</span>
                   </label>
                 </div>
               </form>

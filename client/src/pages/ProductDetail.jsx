@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useQuery } from '@tanstack/react-query';
-import { FiHeart, FiShoppingCart, FiTruck, FiShield, FiStar, FiMinus, FiPlus, FiCheck, FiChevronDown, FiChevronUp, FiRotateCcw, FiCreditCard } from 'react-icons/fi';
+import { FiHeart, FiShoppingCart, FiTruck, FiShield, FiStar, FiMinus, FiPlus, FiCheck, FiChevronDown, FiChevronUp, FiRotateCcw, FiCreditCard, FiShare2 } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 import { useCartStore, useWishlistStore, useAuthStore } from '../store';
 import api from '../lib/api';
@@ -72,6 +72,26 @@ export default function ProductDetail() {
     if (data.variants?.length && !activeVariant) return toast.error('Please select an option');
     addItem(data, qty, activeVariant);
     toast.success('Added to cart! 🛒');
+  };
+
+  const handleShare = async () => {
+    const shareData = {
+      title: data.name,
+      text: data.shortDescription || `Check out ${data.name} on D-STORE!`,
+      url: window.location.href,
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success('Product link copied to clipboard!');
+      }
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        console.error('Error sharing:', err);
+      }
+    }
   };
 
   return (
@@ -166,6 +186,9 @@ export default function ProductDetail() {
               </motion.button>
               <motion.button whileTap={{ scale: 0.9 }} onClick={() => toggle(data._id)} className={`w-14 h-14 rounded-2xl border-2 flex items-center justify-center transition-all ${inWishlist ? 'border-primary-500 text-primary-500 bg-primary-50' : 'border-gray-100 text-gray-400 hover:text-primary-500'}`}>
                 <FiHeart size={24} fill={inWishlist ? 'currentColor' : 'none'} />
+              </motion.button>
+              <motion.button whileTap={{ scale: 0.9 }} onClick={handleShare} className="w-14 h-14 rounded-2xl border-2 flex items-center justify-center border-gray-100 text-gray-400 hover:text-primary-500 hover:border-gray-200 transition-all bg-white dark:bg-dark-card" aria-label="Share product">
+                <FiShare2 size={24} />
               </motion.button>
             </div>
 
