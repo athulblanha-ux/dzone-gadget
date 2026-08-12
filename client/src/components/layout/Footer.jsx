@@ -31,7 +31,7 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-4">
               <img src="/logo.png" className="h-10 w-auto object-contain" alt="logo" />
-              <span className="font-display font-bold text-2xl text-gradient">D-STORE</span>
+              <span className="font-display font-bold text-2xl text-gradient">DZONE GADGET</span>
             </Link>
             <p className="text-dark-muted text-sm leading-relaxed mb-6">
               Where passion meets precision. Discover premium hobbygrade models and diecast collections.
@@ -40,9 +40,9 @@ export default function Footer() {
             {/* Social */}
             <div className="flex gap-3 mt-6">
               {[
-                { icon: FiInstagram, href: 'https://www.instagram.com/dstore.in/', label: 'Instagram' },
-                { icon: FiTwitter, href: 'https://twitter.com/d-store', label: 'Twitter' },
-                { icon: FiYoutube, href: 'https://youtube.com/d-store', label: 'YouTube' },
+                { icon: FiInstagram, href: 'https://www.instagram.com/dzonegadget.in/', label: 'Instagram' },
+                { icon: FiTwitter, href: 'https://twitter.com/dzone-gadget', label: 'Twitter' },
+                { icon: FiYoutube, href: 'https://youtube.com/dzone-gadget', label: 'YouTube' },
               ].map(({ icon: Icon, href, label }) => (
                 <a
                   key={label}
@@ -91,7 +91,7 @@ export default function Footer() {
             </span>
           </div>
           <p className="text-dark-muted text-sm">
-            © {new Date().getFullYear()} D-STORE. Made with love in India.
+            © {new Date().getFullYear()} DZONE GADGET. Made with love in India.
           </p>
         </div>
       </div>

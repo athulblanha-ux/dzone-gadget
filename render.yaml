@@ -1,7 +1,7 @@
 services:
   # Backend API
   - type: web
-    name: d-store-api
+    name: dzone-gadget-api
     env: node
     rootDir: server
     buildCommand: npm install

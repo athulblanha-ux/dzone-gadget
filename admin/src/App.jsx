@@ -37,7 +37,7 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <React.Suspense fallback={<div className="h-screen flex items-center justify-center text-primary-500 font-bold">Loading D-STORE Admin...</div>}>
+        <React.Suspense fallback={<div className="h-screen flex items-center justify-center text-primary-500 font-bold">Loading DZONE GADGET Admin...</div>}>
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<ProtectedRoute />}>

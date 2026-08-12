@@ -23,7 +23,7 @@ export default function Contact() {
 
   return (
     <>
-      <Helmet><title>Contact Us — D-STORE</title></Helmet>
+      <Helmet><title>Contact Us — DZONE GADGET</title></Helmet>
       
       <div className="bg-gray-50 dark:bg-dark-bg py-16 border-b border-gray-100 dark:border-dark-border">
         <div className="max-w-7xl mx-auto px-4 text-center">

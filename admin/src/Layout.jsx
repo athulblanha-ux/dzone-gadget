@@ -21,7 +21,7 @@ const Sidebar = ({ location, user, handleLogout, onLinkClick }) => (
   <div className="flex flex-col h-full bg-white dark:bg-dark-card border-r border-gray-200 dark:border-dark-border w-64 flex-shrink-0 transition-colors">
     <div className="h-16 flex items-center justify-between px-6 border-b border-gray-200 dark:border-dark-border">
       <span className="text-xl font-bold text-primary-600 dark:text-primary-500 flex items-center gap-2">
-        <img src="/logo.png" alt="D-STORE" className="h-8 w-auto object-contain rounded-sm" />
+        <img src="/logo.png" alt="DZONE GADGET" className="h-8 w-auto object-contain rounded-sm" />
         Admin
       </span>
       {onLinkClick && (

@@ -68,7 +68,7 @@ exports.register = asyncHandler(async (req, res) => {
   try {
     await sendEmail({
       to: email,
-      subject: 'Welcome to D-STORE!',
+      subject: 'Welcome to DZONE GADGET!',
       template: 'welcome',
       data: { name },
     });
@@ -185,7 +185,7 @@ exports.forgotPassword = asyncHandler(async (req, res) => {
 
   await sendEmail({
     to: user.email,
-    subject: 'D-STORE — Password Reset Request',
+    subject: 'DZONE GADGET — Password Reset Request',
     template: 'resetPassword',
     data: { name: user.name, resetUrl },
   });

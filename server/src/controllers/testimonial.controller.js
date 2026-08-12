@@ -12,7 +12,7 @@ exports.getTestimonials = asyncHandler(async (req, res) => {
 exports.createTestimonial = asyncHandler(async (req, res) => {
   const data = { ...req.body };
   if (req.file) {
-    const result = await uploadToCloudinary(req.file.buffer, 'd-store/testimonials');
+    const result = await uploadToCloudinary(req.file.buffer, 'dzone-gadget/testimonials');
     data.avatar = { url: result.secure_url, publicId: result.public_id };
   }
   const testimonial = await Testimonial.create(data);

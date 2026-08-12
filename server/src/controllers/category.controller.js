@@ -26,7 +26,7 @@ exports.getCategory = asyncHandler(async (req, res) => {
 exports.createCategory = asyncHandler(async (req, res) => {
   const data = { ...req.body };
   if (req.file) {
-    const result = await uploadToCloudinary(req.file.buffer, 'd-store/categories');
+    const result = await uploadToCloudinary(req.file.buffer, 'dzone-gadget/categories');
     data.image = { url: result.secure_url, publicId: result.public_id };
   }
   const category = await Category.create(data);
@@ -38,7 +38,7 @@ exports.updateCategory = asyncHandler(async (req, res) => {
   if (req.file) {
     const existing = await Category.findById(req.params.id);
     if (existing?.image?.publicId) await deleteFromCloudinary(existing.image.publicId);
-    const result = await uploadToCloudinary(req.file.buffer, 'd-store/categories');
+    const result = await uploadToCloudinary(req.file.buffer, 'dzone-gadget/categories');
     data.image = { url: result.secure_url, publicId: result.public_id };
   }
   const category = await Category.findByIdAndUpdate(req.params.id, data, { new: true, runValidators: true });

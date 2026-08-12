@@ -98,7 +98,7 @@ app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
 app.get('/health', (req, res) => {
   res.status(200).json({
     success: true,
-    message: 'D-STORE API is running',
+    message: 'DZONE GADGET API is running',
     environment: process.env.NODE_ENV,
     timestamp: new Date().toISOString(),
   });
@@ -138,7 +138,7 @@ app.use(errorHandler);
 // ─── Start Server ──────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () => {
-  console.log(`🚀 D-STORE server running on port ${PORT} [${process.env.NODE_ENV}]`);
+  console.log(`🚀 DZONE GADGET server running on port ${PORT} [${process.env.NODE_ENV}]`);
 });
 
 // Graceful shutdown

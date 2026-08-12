@@ -8,9 +8,9 @@ function replaceInFile(filePath) {
   if (!fs.existsSync(filePath)) return;
   const content = fs.readFileSync(filePath, 'utf8');
   let newContent = content
-    .replace(/ToyVerse/g, 'D-STORE')
-    .replace(/toyverse/g, 'd-store')
-    .replace(/TOYVERSE/g, 'D_STORE');
+    .replace(/ToyVerse/g, 'DZONE-GADGET')
+    .replace(/toyverse/g, 'dzone-gadget')
+    .replace(/TOYVERSE/g, 'DZONE_GADGET');
     
   if (content !== newContent) {
     fs.writeFileSync(filePath, newContent, 'utf8');

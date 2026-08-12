@@ -45,7 +45,7 @@ export default function ProductCard({ product, view }) {
     const productUrl = `${window.location.origin}/product/${product.slug}`;
     const shareData = {
       title: product.name,
-      text: product.shortDescription || `Check out ${product.name} on D-STORE!`,
+      text: product.shortDescription || `Check out ${product.name} on DZONE GADGET!`,
       url: productUrl,
     };
     try {

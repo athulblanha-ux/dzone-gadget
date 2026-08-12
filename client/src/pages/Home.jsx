@@ -441,9 +441,9 @@ export default function Home() {
   return (
     <>
       <Helmet>
-        <title>D-STORE — Where Passion Meets Precision | Premium Hobby & Diecast Store</title>
-        <meta name="description" content="Shop premium hobbygrade models and diecast collectibles. Best prices, fast delivery, and exclusive offers on D-STORE — India's favourite hobby store." />
-        <meta property="og:title" content="D-STORE — Where Passion Meets Precision" />
+        <title>DZONE GADGET — Where Passion Meets Precision | Premium Hobby & Diecast Store</title>
+        <meta name="description" content="Shop premium hobbygrade models and diecast collectibles. Best prices, fast delivery, and exclusive offers on DZONE GADGET — India's favourite hobby store." />
+        <meta property="og:title" content="DZONE GADGET — Where Passion Meets Precision" />
         <meta property="og:description" content="Premium hobbygrade models and diecast collections." />
       </Helmet>
 

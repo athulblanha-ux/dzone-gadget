@@ -11,7 +11,7 @@ export default function Orders() {
 
   return (
     <>
-      <Helmet><title>My Orders — D-STORE</title></Helmet>
+      <Helmet><title>My Orders — DZONE GADGET</title></Helmet>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="font-display font-bold text-3xl dark:text-dark-text mb-8">My Orders</h1>
         {isLoading ? <div className="space-y-4">{Array(3).fill(null).map((_,i) => <div key={i} className="card p-6"><div className="skeleton h-4 w-1/3 rounded mb-3" /><div className="skeleton h-3 w-1/2 rounded" /></div>)}</div>

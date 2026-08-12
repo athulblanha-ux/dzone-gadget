@@ -27,7 +27,7 @@ export default function Profile() {
 
   return (
     <>
-      <Helmet><title>My Profile — D-STORE</title></Helmet>
+      <Helmet><title>My Profile — DZONE GADGET</title></Helmet>
       <div className="max-w-3xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
           <h1 className="font-display font-bold text-3xl dark:text-dark-text">My Profile</h1>

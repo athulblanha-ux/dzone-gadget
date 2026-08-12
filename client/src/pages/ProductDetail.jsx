@@ -77,7 +77,7 @@ export default function ProductDetail() {
   const handleShare = async () => {
     const shareData = {
       title: data.name,
-      text: data.shortDescription || `Check out ${data.name} on D-STORE!`,
+      text: data.shortDescription || `Check out ${data.name} on DZONE GADGET!`,
       url: window.location.href,
     };
     try {
@@ -96,7 +96,7 @@ export default function ProductDetail() {
 
   return (
     <>
-      <Helmet><title>{`${data.name} — D-STORE`}</title><meta name="description" content={data.shortDescription} /></Helmet>
+      <Helmet><title>{`${data.name} — DZONE GADGET`}</title><meta name="description" content={data.shortDescription} /></Helmet>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Breadcrumb */}

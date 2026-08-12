@@ -3,8 +3,8 @@ const path = require('path');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-const oldUrl = 'https://instagram.com/d-store.store';
-const newUrl = 'https://www.instagram.com/dstore.in/';
+const oldUrl = 'https://instagram.com/dzone-gadget.store';
+const newUrl = 'https://www.instagram.com/dzonegadget.in/';
 
 const files = [
   '../client/src/pages/Home.jsx',

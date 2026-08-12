@@ -42,8 +42,8 @@ export default function OrderDetail() {
           key: rzpData.keyId,
           amount: rzpData.amount,
           currency: 'INR',
-          name: 'D-STORE',
-          description: 'D-STORE Order Payment',
+          name: 'DZONE GADGET',
+          description: 'DZONE GADGET Order Payment',
           order_id: rzpData.razorpayOrderId,
           handler: async (response) => {
             await api.post('/payments/razorpay/verify', { ...response, orderId: order._id });
@@ -72,7 +72,7 @@ export default function OrderDetail() {
 
   return (
     <>
-      <Helmet><title>{`Order ${data.orderNumber} — D-STORE`}</title></Helmet>
+      <Helmet><title>{`Order ${data.orderNumber} — DZONE GADGET`}</title></Helmet>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Link to="/orders" className="flex items-center gap-2 text-primary-500 mb-6 hover:underline"><FiArrowLeft />Back to Orders</Link>
         <div className="flex items-center justify-between mb-6">
@@ -218,7 +218,7 @@ export default function OrderDetail() {
               <div className="bg-gray-50 dark:bg-dark-bg p-4 rounded-xl space-y-2">
                 <div className="flex justify-between text-sm text-gray-500">
                   <span>Merchant</span>
-                  <span className="font-semibold text-gray-800 dark:text-dark-text">D-STORE</span>
+                  <span className="font-semibold text-gray-800 dark:text-dark-text">DZONE GADGET</span>
                 </div>
                 <div className="flex justify-between text-sm text-gray-500">
                   <span>Order ID</span>

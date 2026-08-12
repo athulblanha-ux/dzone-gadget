@@ -12,8 +12,8 @@ async function migrate() {
     const updates = [
       { key: 'contact_phone', value: '+91 94953 02826' },
       { key: 'whatsapp_number', value: '919495302826' },
-      { key: 'instagram_handle', value: 'dstore.in' },
-      { key: 'instagram_url', value: 'https://www.instagram.com/dstore.in/' }
+      { key: 'instagram_handle', value: 'dzonegadget.in' },
+      { key: 'instagram_url', value: 'https://www.instagram.com/dzonegadget.in/' }
     ];
 
     for (const update of updates) {

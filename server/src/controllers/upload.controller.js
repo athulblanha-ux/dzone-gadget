@@ -7,7 +7,7 @@ const { asyncHandler } = require('../middleware/errorHandler');
  */
 exports.uploadSingle = asyncHandler(async (req, res) => {
   if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded.' });
-  const folder = req.query.folder || 'd-store/general';
+  const folder = req.query.folder || 'dzone-gadget/general';
   const result = await uploadToCloudinary(req.file.buffer, folder);
   res.json({ success: true, url: result.secure_url, publicId: result.public_id });
 });
@@ -18,7 +18,7 @@ exports.uploadSingle = asyncHandler(async (req, res) => {
  */
 exports.uploadMultiple = asyncHandler(async (req, res) => {
   if (!req.files?.length) return res.status(400).json({ success: false, message: 'No files uploaded.' });
-  const folder = req.query.folder || 'd-store/general';
+  const folder = req.query.folder || 'dzone-gadget/general';
   const results = await Promise.all(req.files.map(f => uploadToCloudinary(f.buffer, folder)));
   const files = results.map(r => ({ url: r.secure_url, publicId: r.public_id }));
   res.json({ success: true, files });

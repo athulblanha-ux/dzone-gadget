@@ -25,7 +25,7 @@ const checkConfig = () => {
  * @param {string} folder - Cloudinary folder
  * @returns {Promise<object>} Upload result
  */
-const uploadToCloudinary = (fileBuffer, folder = 'd-store') => {
+const uploadToCloudinary = (fileBuffer, folder = 'dzone-gadget') => {
   try {
     checkConfig();
   } catch (error) {

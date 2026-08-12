@@ -42,7 +42,7 @@ export default function Category() {
 
   return (
     <>
-      <Helmet><title>{`${catRes.name} — D-STORE`}</title></Helmet>
+      <Helmet><title>{`${catRes.name} — DZONE GADGET`}</title></Helmet>
       <div className="bg-white/[0.02] border-b border-white/[0.05] py-12 mb-8">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <div className="w-20 h-20 mx-auto bg-white/5 border border-white/[0.08] backdrop-blur-md rounded-2xl flex items-center justify-center text-primary-400 mb-4 shadow-lg">

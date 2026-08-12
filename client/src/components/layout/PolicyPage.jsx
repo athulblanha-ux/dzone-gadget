@@ -10,7 +10,7 @@ export default function PolicyPage({ title, settingKey }) {
 
   return (
     <>
-      <Helmet><title>{title} — D-STORE</title></Helmet>
+      <Helmet><title>{title} — DZONE GADGET</title></Helmet>
       <div className="max-w-4xl mx-auto px-4 py-16">
         <h1 className="font-display font-bold text-4xl dark:text-dark-text mb-8">{title}</h1>
         <div className="card p-8 md:p-12">

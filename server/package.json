@@ -1,7 +1,7 @@
 {
-  "name": "d-store-server",
+  "name": "dzone-gadget-server",
   "version": "1.0.0",
-  "description": "D-STORE E-Commerce Backend API",
+  "description": "DZONE GADGET E-Commerce Backend API",
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",

@@ -134,7 +134,7 @@ exports.createProduct = asyncHandler(async (req, res) => {
   // Upload images to Cloudinary
   if (req.files?.images?.length) {
     const uploadPromises = req.files.images.map((file) =>
-      uploadToCloudinary(file.buffer, 'd-store/products')
+      uploadToCloudinary(file.buffer, 'dzone-gadget/products')
     );
     const results = await Promise.all(uploadPromises);
     data.images = results.map((r, i) => ({
@@ -146,7 +146,7 @@ exports.createProduct = asyncHandler(async (req, res) => {
 
   // Upload video to Cloudinary
   if (req.files?.video?.[0]) {
-    const result = await uploadToCloudinary(req.files.video[0].buffer, 'd-store/products/videos');
+    const result = await uploadToCloudinary(req.files.video[0].buffer, 'dzone-gadget/products/videos');
     data.video = {
       url: result.secure_url,
       publicId: result.public_id,
@@ -200,7 +200,7 @@ exports.updateProduct = asyncHandler(async (req, res) => {
   // Upload new images if provided
   if (req.files?.images?.length) {
     const uploadPromises = req.files.images.map((file) =>
-      uploadToCloudinary(file.buffer, 'd-store/products')
+      uploadToCloudinary(file.buffer, 'dzone-gadget/products')
     );
     const results = await Promise.all(uploadPromises);
     const newImages = results.map((r, i) => ({
@@ -218,7 +218,7 @@ exports.updateProduct = asyncHandler(async (req, res) => {
     if (product.video?.publicId) {
       await deleteFromCloudinary(product.video.publicId);
     }
-    const result = await uploadToCloudinary(req.files.video[0].buffer, 'd-store/products/videos');
+    const result = await uploadToCloudinary(req.files.video[0].buffer, 'dzone-gadget/products/videos');
     product.video = {
       url: result.secure_url,
       publicId: result.public_id,

@@ -24,7 +24,7 @@ exports.getAllBannersAdmin = asyncHandler(async (req, res) => {
 exports.createBanner = asyncHandler(async (req, res) => {
   const data = { ...req.body };
   if (req.file) {
-    const result = await uploadToCloudinary(req.file.buffer, 'd-store/banners');
+    const result = await uploadToCloudinary(req.file.buffer, 'dzone-gadget/banners');
     data.image = { url: result.secure_url, publicId: result.public_id };
   }
   const banner = await Banner.create(data);
@@ -36,7 +36,7 @@ exports.updateBanner = asyncHandler(async (req, res) => {
   if (req.file) {
     const existing = await Banner.findById(req.params.id);
     if (existing?.image?.publicId) await deleteFromCloudinary(existing.image.publicId);
-    const result = await uploadToCloudinary(req.file.buffer, 'd-store/banners');
+    const result = await uploadToCloudinary(req.file.buffer, 'dzone-gadget/banners');
     data.image = { url: result.secure_url, publicId: result.public_id };
   }
   const banner = await Banner.findByIdAndUpdate(req.params.id, data, { new: true });

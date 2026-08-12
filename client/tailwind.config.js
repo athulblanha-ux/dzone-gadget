@@ -6,16 +6,16 @@ export default {
     extend: {
       colors: {
         primary: {
-          50: '#f3f2ff',
-          100: '#dedaff',
-          200: '#bbb3ff',
-          300: '#998eff',
-          400: '#8172ff',
-          500: '#6c5ce7', // Royal Violet
-          600: '#5b4cd8',
-          700: '#4839bd',
-          800: '#35279e',
-          900: '#21187d',
+          50: '#e6f0ff',
+          100: '#cce0ff',
+          200: '#99c2ff',
+          300: '#66a3ff',
+          400: '#3385ff',
+          500: '#0066ff', // Logo Electric Blue
+          600: '#0052cc',
+          700: '#003d99',
+          800: '#002966',
+          900: '#001433',
         },
         accent: {
           pink: '#ff007f',
@@ -39,8 +39,8 @@ export default {
         display: ['Poppins', 'system-ui', 'sans-serif'],
       },
       backgroundImage: {
-        'gradient-primary': 'linear-gradient(135deg, #6c5ce7 0%, #00d2ff 100%)', // Violet to Cyan
-        'gradient-purple': 'linear-gradient(135deg, #8a2be2 0%, #6c5ce7 100%)',
+        'gradient-primary': 'linear-gradient(135deg, #0066ff 0%, #00d2ff 100%)', // Blue to Cyan
+        'gradient-purple': 'linear-gradient(135deg, #0052cc 0%, #0066ff 100%)',
         'gradient-dark': 'linear-gradient(135deg, #0f0f14 0%, #060608 100%)',
       },
       animation: {
@@ -70,12 +70,12 @@ export default {
         },
       },
       boxShadow: {
-        'glow': '0 0 20px rgba(108, 92, 231, 0.4)',
+        'glow': '0 0 20px rgba(0, 102, 255, 0.4)',
         'framer-shadow': '0 0 0 1px rgba(255, 255, 255, 0.08), 0 8px 30px rgba(0, 0, 0, 0.5)',
-        'framer-shadow-hover': '0 0 0 1px rgba(255, 255, 255, 0.16), 0 0 25px rgba(108, 92, 231, 0.15), 0 12px 40px rgba(0, 0, 0, 0.7)',
+        'framer-shadow-hover': '0 0 0 1px rgba(255, 255, 255, 0.16), 0 0 25px rgba(0, 102, 255, 0.15), 0 12px 40px rgba(0, 0, 0, 0.7)',
         'card': '0 0 0 1px rgba(255, 255, 255, 0.08), 0 4px 24px rgba(0, 0, 0, 0.4)',
         'card-dark': '0 0 0 1px rgba(255, 255, 255, 0.12), 0 8px 30px rgba(0, 0, 0, 0.7)',
-        'border-glow': '0 0 0 1px rgba(108, 92, 231, 0.3), 0 0 12px rgba(108, 92, 231, 0.1)',
+        'border-glow': '0 0 0 1px rgba(0, 102, 255, 0.3), 0 0 12px rgba(0, 102, 255, 0.1)',
       },
       borderRadius: {
         '2xl': '1rem',

@@ -15,7 +15,7 @@ export const useAuthStore = create(persist(
       set({ user: null, token: null, isAuthenticated: false });
     }
   }),
-  { name: 'd-store-admin-auth' }
+  { name: 'dzone-gadget-admin-auth' }
 ));
 
 export const useThemeStore = create(persist(
@@ -28,5 +28,5 @@ export const useThemeStore = create(persist(
     },
     init: () => document.documentElement.classList.toggle('dark', get().isDark)
   }),
-  { name: 'd-store-admin-theme-v2' }
+  { name: 'dzone-gadget-admin-theme-v2' }
 ));

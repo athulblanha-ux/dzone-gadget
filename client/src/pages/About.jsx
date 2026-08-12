@@ -4,14 +4,14 @@ import { motion } from 'framer-motion';
 export default function About() {
   return (
     <>
-      <Helmet><title>About Us — D-STORE</title></Helmet>
+      <Helmet><title>About Us — DZONE GADGET</title></Helmet>
       
       {/* Hero */}
       <div className="relative bg-gradient-to-r from-primary-500 to-accent-purple py-24 text-center text-white">
         <div className="max-w-4xl mx-auto px-4">
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="font-display font-bold text-5xl mb-6">Our Story</motion.h1>
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-xl text-white/90 leading-relaxed">
-            Welcome to D-STORE! We believe in the pursuit of detail and performance. Our mission is to bring high-quality hobbygrade products and diecast models to collectors and enthusiasts everywhere.
+            Welcome to DZONE GADGET! We believe in the pursuit of detail and performance. Our mission is to bring high-quality hobbygrade products and diecast models to collectors and enthusiasts everywhere.
           </motion.p>
         </div>
       </div>

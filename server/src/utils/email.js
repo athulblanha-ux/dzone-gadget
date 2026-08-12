@@ -15,32 +15,32 @@ const transporter = nodemailer.createTransport({
  */
 const templates = {
   welcome: (data) => ({
-    subject: 'Welcome to D-STORE!',
+    subject: 'Welcome to DZONE GADGET!',
     html: `
       <div style="font-family:Inter,sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08)">
         <div style="background:linear-gradient(135deg,#FF6B6B,#FFE66D);padding:40px;text-align:center">
-          <h1 style="color:#fff;font-size:32px;margin:0">D-STORE</h1>
+          <h1 style="color:#fff;font-size:32px;margin:0">DZONE GADGET</h1>
           <p style="color:rgba(255,255,255,0.9);margin:8px 0 0">Where Play Comes to Life</p>
         </div>
         <div style="padding:40px">
           <h2 style="color:#1a1a2e;margin:0 0 16px">Welcome, ${data.name}! 🎉</h2>
-          <p style="color:#555;line-height:1.6">Thank you for joining D-STORE. We're thrilled to have you on board!</p>
+          <p style="color:#555;line-height:1.6">Thank you for joining DZONE GADGET. We're thrilled to have you on board!</p>
           <p style="color:#555;line-height:1.6">Start exploring our amazing collection of toys designed to spark joy and creativity.</p>
           <a href="${process.env.CLIENT_URL}/shop" style="display:inline-block;background:linear-gradient(135deg,#FF6B6B,#FFE66D);color:#fff;text-decoration:none;padding:14px 32px;border-radius:50px;font-weight:600;margin-top:24px">Shop Now 🛍️</a>
         </div>
         <div style="background:#f9f9f9;padding:20px;text-align:center">
-          <p style="color:#999;font-size:12px;margin:0">© 2025 D-STORE. All rights reserved.</p>
+          <p style="color:#999;font-size:12px;margin:0">© 2025 DZONE GADGET. All rights reserved.</p>
         </div>
       </div>
     `,
   }),
 
   resetPassword: (data) => ({
-    subject: 'D-STORE — Password Reset Request',
+    subject: 'DZONE GADGET — Password Reset Request',
     html: `
       <div style="font-family:Inter,sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08)">
         <div style="background:linear-gradient(135deg,#FF6B6B,#FFE66D);padding:40px;text-align:center">
-          <h1 style="color:#fff;font-size:32px;margin:0">D-STORE</h1>
+          <h1 style="color:#fff;font-size:32px;margin:0">DZONE GADGET</h1>
         </div>
         <div style="padding:40px">
           <h2 style="color:#1a1a2e">Reset Your Password</h2>
@@ -57,7 +57,7 @@ const templates = {
     html: `
       <div style="font-family:Inter,sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden">
         <div style="background:linear-gradient(135deg,#FF6B6B,#FFE66D);padding:40px;text-align:center">
-          <h1 style="color:#fff;font-size:32px;margin:0">D-STORE</h1>
+          <h1 style="color:#fff;font-size:32px;margin:0">DZONE GADGET</h1>
         </div>
         <div style="padding:40px">
           <h2 style="color:#1a1a2e">Your Order is Confirmed! 🎉</h2>
@@ -78,7 +78,7 @@ const templates = {
     html: `
       <div style="font-family:Inter,sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden">
         <div style="background:linear-gradient(135deg,#FF6B6B,#FFE66D);padding:40px;text-align:center">
-          <h1 style="color:#fff;font-size:32px;margin:0">D-STORE</h1>
+          <h1 style="color:#fff;font-size:32px;margin:0">DZONE GADGET</h1>
         </div>
         <div style="padding:40px">
           <h2 style="color:#1a1a2e">Order Status Update</h2>
@@ -103,7 +103,7 @@ const templates = {
 const sendEmail = async ({ to, subject, template, data, html }) => {
   const content = template && templates[template] ? templates[template](data) : { subject, html };
   await transporter.sendMail({
-    from: process.env.EMAIL_FROM || 'D-STORE <noreply@dstoreindia.com>',
+    from: process.env.EMAIL_FROM || 'DZONE GADGET <noreply@dzonegadgetindia.com>',
     to,
     subject: content.subject || subject,
     html: content.html || html,

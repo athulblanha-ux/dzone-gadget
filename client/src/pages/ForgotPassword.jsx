@@ -25,7 +25,7 @@ export default function ForgotPassword() {
 
   return (
     <>
-      <Helmet><title>Forgot Password — D-STORE</title></Helmet>
+      <Helmet><title>Forgot Password — DZONE GADGET</title></Helmet>
       <div className="min-h-[80vh] flex items-center justify-center px-4">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
           <div className="text-center mb-8">

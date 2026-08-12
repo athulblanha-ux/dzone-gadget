@@ -11,7 +11,7 @@ export default function FAQ() {
 
   return (
     <>
-      <Helmet><title>FAQ — D-STORE</title></Helmet>
+      <Helmet><title>FAQ — DZONE GADGET</title></Helmet>
       
       <div className="bg-gradient-to-b from-accent-blue/10 to-white dark:from-dark-card dark:to-dark-bg py-16 mb-8 text-center px-4">
         <h1 className="font-display font-bold text-4xl dark:text-dark-text mb-4">Frequently Asked Questions ❓</h1>

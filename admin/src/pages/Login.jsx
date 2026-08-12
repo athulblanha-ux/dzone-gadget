@@ -36,7 +36,7 @@ export default function Login() {
         <div className="text-center">
           <img src="/logo.png" className="h-16 w-auto object-contain mx-auto" alt="logo" />
           <h2 className="mt-6 text-3xl font-bold text-gray-900 dark:text-white">Admin Portal</h2>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Sign in to manage D-STORE</p>
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Sign in to manage DZONE GADGET</p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
@@ -44,7 +44,7 @@ export default function Login() {
               <label className="label">Email Address</label>
               <div className="relative">
                 <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="input pl-10 py-2.5" placeholder="admin@d-store.store" />
+                <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="input pl-10 py-2.5" placeholder="admin@dzone-gadget.store" />
               </div>
             </div>
             <div>

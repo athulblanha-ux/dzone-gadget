@@ -105,8 +105,8 @@ export default function Checkout() {
             key: rzpData.keyId,
             amount: rzpData.amount,
             currency: 'INR',
-            name: 'D-STORE',
-            description: form.paymentMethod === 'partial_cod' ? 'D-STORE Partial COD Advance' : 'D-STORE Order Payment',
+            name: 'DZONE GADGET',
+            description: form.paymentMethod === 'partial_cod' ? 'DZONE GADGET Partial COD Advance' : 'DZONE GADGET Order Payment',
             order_id: rzpData.razorpayOrderId,
             handler: async (response) => {
               await api.post('/payments/razorpay/verify', { ...response, orderId: orderResponse.order._id });
@@ -137,7 +137,7 @@ export default function Checkout() {
 
   return (
     <>
-      <Helmet><title>Checkout — D-STORE</title></Helmet>
+      <Helmet><title>Checkout — DZONE GADGET</title></Helmet>
       <div className="max-w-6xl mx-auto px-4 py-8">
         <h1 className="font-display font-bold text-3xl dark:text-dark-text mb-8">Checkout</h1>
         <div className="grid lg:grid-cols-2 gap-8">
@@ -343,7 +343,7 @@ export default function Checkout() {
               <div className="bg-gray-50 dark:bg-dark-bg p-4 rounded-xl space-y-2">
                 <div className="flex justify-between text-sm text-gray-500">
                   <span>Merchant</span>
-                  <span className="font-semibold text-gray-800 dark:text-dark-text">D-STORE</span>
+                  <span className="font-semibold text-gray-800 dark:text-dark-text">DZONE GADGET</span>
                 </div>
                 <div className="flex justify-between text-sm text-gray-500">
                   <span>Order ID</span>

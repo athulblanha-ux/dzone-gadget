@@ -23,7 +23,7 @@ exports.getInstagramFeed = asyncHandler(async (req, res) => {
       id: p._id.toString(),
       media_type: 'IMAGE',
       media_url: p.images?.[0]?.url || '/logo.png',
-      permalink: 'https://www.instagram.com/dstore.in/',
+      permalink: 'https://www.instagram.com/dzonegadget.in/',
       caption: `${p.name} — ${p.description ? p.description.replace(/<[^>]*>/g, '').substring(0, 120) : 'Premium toys online'}... DM for orders! 🧸✨`,
       timestamp: p.createdAt || new Date().toISOString()
     }));
@@ -34,7 +34,7 @@ exports.getInstagramFeed = asyncHandler(async (req, res) => {
         id: 'mock_post_1',
         media_type: 'IMAGE',
         media_url: '/images/products/batch1_1.jpg',
-        permalink: 'https://www.instagram.com/dstore.in/',
+        permalink: 'https://www.instagram.com/dzonegadget.in/',
         caption: 'Unleash the beast! The CRAWLER CYBERTREK with camera. Large scale off-road performance.',
         timestamp: new Date().toISOString()
       }

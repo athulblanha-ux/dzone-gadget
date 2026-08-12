@@ -19,7 +19,7 @@ export const useAuthStore = create(
       updateUser: (updates) => set((state) => ({ user: { ...state.user, ...updates } })),
     }),
     {
-      name: 'd-store-auth',
+      name: 'dzone-gadget-auth',
       partialize: (state) => ({ user: state.user, isAuthenticated: state.isAuthenticated }),
     }
   )
@@ -78,7 +78,7 @@ export const useCartStore = create(
 
       clearCart: () => set({ items: [], total: 0, itemCount: 0 }),
     }),
-    { name: 'd-store-cart' }
+    { name: 'dzone-gadget-cart' }
   )
 );
 
@@ -97,7 +97,7 @@ export const useThemeStore = create(
         document.documentElement.classList.toggle('dark', theme === 'dark');
       },
     }),
-    { name: 'd-store-theme-v2' }
+    { name: 'dzone-gadget-theme-v2' }
   )
 );
 
@@ -116,6 +116,6 @@ export const useWishlistStore = create(
       },
       isInWishlist: (productId) => get().items.includes(productId),
     }),
-    { name: 'd-store-wishlist' }
+    { name: 'dzone-gadget-wishlist' }
   )
 );

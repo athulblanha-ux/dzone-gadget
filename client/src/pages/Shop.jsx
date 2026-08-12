@@ -58,7 +58,7 @@ export default function Shop() {
   return (
     <>
       <Helmet>
-        <title>Shop Models & Gear — D-STORE</title>
+        <title>Shop Models & Gear — DZONE GADGET</title>
         <meta name="description" content="Browse premium hobbygrade models and diecast collectibles. Filter by category, price, and age group." />
       </Helmet>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

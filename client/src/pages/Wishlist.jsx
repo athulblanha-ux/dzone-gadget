@@ -15,7 +15,7 @@ export default function Wishlist() {
 
   return (
     <>
-      <Helmet><title>Wishlist — D-STORE</title></Helmet>
+      <Helmet><title>Wishlist — DZONE GADGET</title></Helmet>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="font-display font-bold text-3xl dark:text-dark-text mb-8">My Wishlist ❤️</h1>
         {items.length === 0 ? (

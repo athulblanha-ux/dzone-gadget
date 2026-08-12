@@ -17,7 +17,7 @@ exports.updateProfile = asyncHandler(async (req, res) => {
   if (req.file) {
     const user = await User.findById(req.user._id);
     if (user.avatar?.publicId) await deleteFromCloudinary(user.avatar.publicId);
-    const result = await uploadToCloudinary(req.file.buffer, 'd-store/avatars');
+    const result = await uploadToCloudinary(req.file.buffer, 'dzone-gadget/avatars');
     update.avatar = { url: result.secure_url, publicId: result.public_id };
   }
 

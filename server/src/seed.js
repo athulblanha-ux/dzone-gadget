@@ -31,8 +31,8 @@ const seed = async () => {
 
   // ─── Admin User ────────────────────────────────────────────────────────────
   await User.create({
-    name: 'D-STORE Admin',
-    email: process.env.ADMIN_EMAIL || 'admin@dstoreindia.com',
+    name: 'DZONE GADGET Admin',
+    email: process.env.ADMIN_EMAIL || 'admin@dzonegadgetindia.com',
     password: process.env.ADMIN_PASSWORD || 'Admin@123456',
     role: 'superadmin',
     isActive: true,
@@ -112,22 +112,22 @@ const seed = async () => {
 
   // ─── Site Settings ──────────────────────────────────────────────────────────
   await Setting.insertMany([
-    { key: 'site_name', value: 'D-STORE', label: 'Site Name', group: 'general', type: 'text' },
+    { key: 'site_name', value: 'DZONE GADGET', label: 'Site Name', group: 'general', type: 'text' },
     { key: 'site_tagline', value: 'Where Play Comes to Life', label: 'Tagline', group: 'general', type: 'text' },
-    { key: 'contact_email', value: 'support@dstoreindia.com', label: 'Support Email', group: 'contact', type: 'text' },
+    { key: 'contact_email', value: 'support@dzonegadgetindia.com', label: 'Support Email', group: 'contact', type: 'text' },
     { key: 'contact_phone', value: '+91 94953 02826', label: 'Phone', group: 'contact', type: 'text' },
     { key: 'contact_address', value: '123, Toy Street, Mukkam, Kozhikode, Kerala - 673602', label: 'Address', group: 'contact', type: 'textarea' },
     { key: 'whatsapp_number', value: '919495302826', label: 'WhatsApp Number', group: 'contact', type: 'text' },
-    { key: 'instagram_handle', value: 'dstore.in', label: 'Instagram Handle', group: 'social', type: 'text' },
-    { key: 'instagram_url', value: 'https://www.instagram.com/dstore.in/', label: 'Instagram URL', group: 'social', type: 'text' },
-    { key: 'facebook_url', value: 'https://facebook.com/d-store', label: 'Facebook URL', group: 'social', type: 'text' },
+    { key: 'instagram_handle', value: 'dzonegadget.in', label: 'Instagram Handle', group: 'social', type: 'text' },
+    { key: 'instagram_url', value: 'https://www.instagram.com/dzonegadget.in/', label: 'Instagram URL', group: 'social', type: 'text' },
+    { key: 'facebook_url', value: 'https://facebook.com/dzone-gadget', label: 'Facebook URL', group: 'social', type: 'text' },
     { key: 'free_shipping_threshold', value: 499, label: 'Free Shipping Above (₹)', group: 'shipping', type: 'number' },
     { key: 'shipping_fee', value: 49, label: 'Standard Shipping Fee (₹)', group: 'shipping', type: 'number' },
     { key: 'gst_number', value: '27AABCT1332L1Z8', label: 'GST Number', group: 'general', type: 'text' },
     { key: 'privacy_policy', value: 'Your privacy is important to us...', label: 'Privacy Policy', group: 'policies', type: 'textarea', isPublic: false },
     { key: 'terms_conditions', value: 'By using our website...', label: 'Terms & Conditions', group: 'policies', type: 'textarea', isPublic: false },
     { key: 'return_policy', value: `Effective Date: 26-05-2026
-At D-STORE, we aim to offer a seamless shopping experience with fast and reliable delivery, high-quality products, and customer-friendly support policies. Please read the following carefully to understand how we handle shipping, delivery, warranty, returns, and cancellations.
+At DZONE GADGET, we aim to offer a seamless shopping experience with fast and reliable delivery, high-quality products, and customer-friendly support policies. Please read the following carefully to understand how we handle shipping, delivery, warranty, returns, and cancellations.
 
 ### Shipping Partners
 To ensure timely and safe delivery, we only ship through reputed courier partners such as DTDC and ST Courier. On special requests and for remote locations, we may use India Post EMS Speed Post. However, we cannot guarantee EMS requests as post offices often reject shipments they consider fragile or non-compliant.
@@ -152,7 +152,7 @@ If the package appears damaged or tampered, do not accept it. Immediately contac
 All shipments include a tax invoice as per Indian regulations, including for gifts.
 
 ### Warranty Policy
-All D-STORE products carry a standard warranty against manufacturing defects (unless otherwise stated on the product page). If you encounter issues:
+All DZONE GADGET products carry a standard warranty against manufacturing defects (unless otherwise stated on the product page). If you encounter issues:
 - Notify us promptly of receiving the item.
 - Share relevant images/videos with your complaint.
 - Upon verification, we will offer free repair/replacement or 100% refund if the item is unavailable.
@@ -166,7 +166,7 @@ Products that develop issues due to normal usage, wear and tear, or aging of com
 - Battery degradation over time
 - Loose screws, connectors, or cosmetic damage from regular handling
 Since these issues arise from regular use and are not manufacturing defects, free replacements cannot be provided.
-However, D-STORE offers:
+However, DZONE GADGET offers:
 - Paid replacement parts at genuine prices
 - Repair service support if needed
 - Guidance on installation or troubleshooting
@@ -229,7 +229,7 @@ This policy is in place to cover unavoidable logistics and handling expenses alr
 - If a refund is approved (only for defective items), the amount will be credited to your original payment method within 7 business days.
 
 ### Limits of Responsibility
-D-STORE is not responsible for:
+DZONE GADGET is not responsible for:
 - Improper use, modification, or incorrect installation of products.
 - Polarity or voltage issues in electrical components.
 - Damage from user error or neglect.
@@ -237,11 +237,11 @@ D-STORE is not responsible for:
 ### Customer Support
 Need help? Contact us:
 Phone / WhatsApp: 📱 +91 94953 02826
-Email: 📧 support@dstoreindia.com
+Email: 📧 support@dzonegadgetindia.com
 
 ### Our Address
-D-STORE, Mukkam, Kozhikode, Kerala, India
-🌐 www.dstoreindia.com`, label: 'Return Policy', group: 'policies', type: 'textarea' },
+DZONE GADGET, Mukkam, Kozhikode, Kerala, India
+🌐 www.dzonegadgetindia.com`, label: 'Return Policy', group: 'policies', type: 'textarea' },
     { key: 'shipping_policy', value: `Orders are shipped within 1-2 business days. Delivery takes 2-5 business days depending on location.`, label: 'Shipping Policy', group: 'policies', type: 'textarea' },
   ]);
   console.log('⚙️  Site settings seeded');
@@ -253,7 +253,7 @@ D-STORE, Mukkam, Kozhikode, Kerala, India
     { type: 'featured_products', title: 'Featured Toys', subtitle: 'Handpicked just for you', order: 3, isActive: true, settings: { limit: 8 } },
     { type: 'flash_sale', title: '⚡ Flash Sale', subtitle: 'Limited time offers!', order: 4, isActive: true, settings: { showTimer: true } },
     { type: 'trending_products', title: 'Trending Now 🔥', order: 5, isActive: true, settings: { limit: 8 } },
-    { type: 'instagram_feed', title: 'Follow Us on Instagram', subtitle: '@dstore.in', order: 6, isActive: true },
+    { type: 'instagram_feed', title: 'Follow Us on Instagram', subtitle: '@dzonegadget.in', order: 6, isActive: true },
     { type: 'testimonials', title: 'Happy Little Customers', order: 7, isActive: true },
     { type: 'newsletter', title: 'Get Exclusive Deals!', subtitle: 'Subscribe for 10% off your first order', order: 8, isActive: true },
   ]);
@@ -271,14 +271,14 @@ D-STORE, Mukkam, Kozhikode, Kerala, India
 
   // ─── Testimonials ───────────────────────────────────────────────────────────
   await Testimonial.insertMany([
-    { name: 'Priya Sharma', role: 'Mother of 2', rating: 5, comment: 'My kids absolutely love the toys from D-STORE! Great quality and fast delivery.', isFeatured: true, order: 1 },
+    { name: 'Priya Sharma', role: 'Mother of 2', rating: 5, comment: 'My kids absolutely love the toys from DZONE GADGET! Great quality and fast delivery.', isFeatured: true, order: 1 },
     { name: 'Rahul Mehta', role: 'Verified Buyer', rating: 5, comment: 'Bought the STEM kit for my 7-year-old. She hasn\'t put it down since! Amazing value.', isFeatured: true, order: 2 },
     { name: 'Anita Patel', role: 'Parent', rating: 4, comment: 'Beautiful packaging and great quality. The building blocks set is perfect.', isFeatured: true, order: 3 },
   ]);
   console.log('💬 Testimonials seeded');
 
   console.log('\n✅ Database seeded successfully!');
-  console.log(`📧 Admin login: ${process.env.ADMIN_EMAIL || 'admin@dstoreindia.com'}`);
+  console.log(`📧 Admin login: ${process.env.ADMIN_EMAIL || 'admin@dzonegadgetindia.com'}`);
   console.log(`🔑 Admin password: ${process.env.ADMIN_PASSWORD || 'Admin@123456'}`);
   process.exit(0);
 };

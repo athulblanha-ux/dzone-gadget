@@ -19,11 +19,11 @@ const generateInvoicePDF = (order) => {
       doc
         .fontSize(24)
         .fillColor('#FF6B6B')
-        .text('D-STORE', 50, 50)
+        .text('DZONE GADGET', 50, 50)
         .fontSize(10)
         .fillColor('#666')
         .text('Where Play Comes to Life', 50, 80)
-        .text('www.dstoreindia.com | support@dstoreindia.com', 50, 95);
+        .text('www.dzonegadgetindia.com | support@dzonegadgetindia.com', 50, 95);
 
       doc
         .fontSize(20)
@@ -118,7 +118,7 @@ const generateInvoicePDF = (order) => {
       doc
         .fontSize(9)
         .fillColor('#999')
-        .text('Thank you for shopping with D-STORE!', 50, 760, { align: 'center' })
+        .text('Thank you for shopping with DZONE GADGET!', 50, 760, { align: 'center' })
         .text('This is a computer-generated invoice. No signature required.', 50, 775, { align: 'center' });
 
       doc.end();

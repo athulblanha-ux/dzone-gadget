@@ -20,7 +20,7 @@ export default function Register() {
     try {
       const { data } = await api.post('/auth/register', form);
       setAuth(data.user, data.accessToken);
-      toast.success('Account created! Welcome to D-STORE');
+      toast.success('Account created! Welcome to DZONE GADGET');
       navigate('/');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Registration failed.');
@@ -29,13 +29,13 @@ export default function Register() {
 
   return (
     <>
-      <Helmet><title>Create Account — D-STORE</title></Helmet>
+      <Helmet><title>Create Account — DZONE GADGET</title></Helmet>
       <div className="min-h-[80vh] flex items-center justify-center px-4 py-8">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
           <div className="text-center mb-8">
             <Link to="/"><img src="/logo.png" className="h-12 w-auto object-contain" alt="logo" /></Link>
             <h1 className="font-display font-bold text-2xl mt-3 dark:text-dark-text">Create your account</h1>
-            <p className="text-gray-500 dark:text-dark-muted mt-1">Join D-STORE and get 10% off your first order!</p>
+            <p className="text-gray-500 dark:text-dark-muted mt-1">Join DZONE GADGET and get 10% off your first order!</p>
           </div>
           <div className="card p-8">
             <form onSubmit={handleSubmit} className="space-y-5">

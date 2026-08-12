@@ -73,7 +73,7 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2">
-              <img src="/logo.png" alt="D-STORE Logo" className="h-12 w-auto object-contain rounded-md shadow-sm" />
+              <img src="/logo.png" alt="DZONE GADGET Logo" className="h-12 w-auto object-contain rounded-md shadow-sm" />
             </Link>
 
             {/* Desktop Nav */}
@@ -194,6 +194,37 @@ export default function Navbar() {
                   {link.label}
                 </Link>
               ))}
+
+              {/* Mobile Auth / Profile Integration */}
+              <div className="border-t border-gray-200/50 dark:border-white/5 pt-4 mt-2">
+                {isAuthenticated ? (
+                  <Link
+                    to="/profile"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-3 font-semibold text-base py-2 hover:text-primary-500 transition-colors"
+                  >
+                    {user?.avatar?.url ? (
+                      <img src={user.avatar.url} alt={user.name} className="w-8 h-8 rounded-full object-cover border border-primary-500/20" />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-gradient-primary flex items-center justify-center text-white font-bold text-sm shadow-sm">
+                        {user?.name?.[0]?.toUpperCase()}
+                      </div>
+                    )}
+                    <div className="flex flex-col">
+                      <span className="text-gray-800 dark:text-dark-text leading-tight">{user?.name}</span>
+                      <span className="text-xs text-gray-500 dark:text-dark-muted font-normal">View Profile</span>
+                    </div>
+                  </Link>
+                ) : (
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="btn-primary text-sm py-2.5 px-4 w-full text-center block"
+                  >
+                    Sign In
+                  </Link>
+                )}
+              </div>
             </div>
           </motion.div>
         )}
