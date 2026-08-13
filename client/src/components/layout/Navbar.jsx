@@ -77,61 +77,64 @@ export default function Navbar() {
             </Link>
 
             {/* Desktop Nav */}
-            <div className="hidden lg:flex items-center gap-6">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.label}
-                  to={link.to}
-                  className={`font-medium text-sm transition-colors duration-200 hover:text-primary-500 ${
-                    location.pathname === link.to
-                      ? 'text-primary-500'
-                      : 'text-gray-700 dark:text-dark-text'
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
+            <div className="hidden lg:flex items-center gap-1 bg-slate-200/40 dark:bg-white/[0.04] p-1.5 rounded-2xl border border-slate-300/40 dark:border-white/[0.06] backdrop-blur-md">
+              {navLinks.map((link) => {
+                const isActive = location.pathname === link.to;
+                return (
+                  <Link
+                    key={link.label}
+                    to={link.to}
+                    className={`font-semibold text-xs sm:text-sm px-4 py-1.5 rounded-xl transition-all duration-200 ${
+                      isActive
+                        ? 'bg-white dark:bg-[#161c2e] text-primary-600 dark:text-accent-cyan shadow-sm border border-slate-200/50 dark:border-accent-cyan/30 font-bold'
+                        : 'text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-white hover:bg-white/50 dark:hover:bg-white/5'
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
             </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               {/* Search */}
               <button
                 onClick={() => setSearchOpen(true)}
-                className="btn-icon text-gray-600 dark:text-dark-muted"
+                className="btn-icon text-slate-600 dark:text-slate-300 hover:text-primary-500 dark:hover:text-accent-cyan"
                 aria-label="Search"
               >
-                <FiSearch size={20} />
+                <FiSearch size={19} />
               </button>
 
               {/* Theme Toggle */}
               <button
                 onClick={toggleTheme}
-                className="btn-icon text-gray-600 dark:text-dark-muted"
+                className="btn-icon text-slate-600 dark:text-slate-300 hover:text-primary-500 dark:hover:text-accent-cyan"
                 aria-label="Toggle theme"
               >
-                {theme === 'dark' ? <FiSun size={20} /> : <FiMoon size={20} />}
+                {theme === 'dark' ? <FiSun size={19} className="text-amber-400" /> : <FiMoon size={19} />}
               </button>
 
               {/* Wishlist */}
-              <Link to="/wishlist" className="btn-icon relative text-gray-600 dark:text-dark-muted">
-                <FiHeart size={20} />
+              <Link to="/wishlist" className="btn-icon relative text-slate-600 dark:text-slate-300 hover:text-primary-500 dark:hover:text-accent-cyan">
+                <FiHeart size={19} />
                 {wishlistItems.length > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-accent-cyan to-primary-500 text-slate-950 text-[10px] rounded-full flex items-center justify-center font-black shadow-glow-cyan">
                     {wishlistItems.length}
                   </span>
                 )}
               </Link>
 
               {/* Cart */}
-              <Link to="/cart" className="btn-icon relative text-gray-600 dark:text-dark-muted">
-                <FiShoppingCart size={20} />
+              <Link to="/cart" className="btn-icon relative text-slate-600 dark:text-slate-300 hover:text-primary-500 dark:hover:text-accent-cyan">
+                <FiShoppingCart size={19} />
                 {itemCount > 0 && (
                   <motion.span
                     key={itemCount}
-                    initial={{ scale: 1.5 }}
+                    initial={{ scale: 1.4 }}
                     animate={{ scale: 1 }}
-                    className="absolute -top-1 -right-1 w-4 h-4 bg-primary-500 text-white text-xs rounded-full flex items-center justify-center font-bold"
+                    className="absolute -top-1 -right-1 w-4.5 h-4.5 bg-gradient-to-r from-accent-cyan to-primary-500 text-slate-950 text-[10px] rounded-full flex items-center justify-center font-black shadow-glow-cyan px-1"
                   >
                     {itemCount}
                   </motion.span>
