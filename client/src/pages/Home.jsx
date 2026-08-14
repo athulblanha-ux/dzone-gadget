@@ -356,53 +356,6 @@ function FlashSaleBanner({ products }) {
 }
 
 
-// ─── Testimonials ─────────────────────────────────────────────────────────────
-function Testimonials({ testimonials }) {
-  if (!testimonials?.length) return null;
-  return (
-    <section className="section bg-gray-50 dark:bg-dark-card rounded-3xl">
-      <div className="text-center mb-10">
-        <h2 className="section-title">Happy Little Customers</h2>
-        <p className="text-gray-500 dark:text-dark-muted mt-2">What parents say about us</p>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {testimonials.map((t, i) => (
-          <motion.div
-            key={t._id}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.1 }}
-            className="card p-6"
-          >
-            <div className="flex text-yellow-400 mb-3">
-              {Array.from({ length: t.rating }).map((_, j) => (
-                <span key={j}>⭐</span>
-              ))}
-            </div>
-            <p className="text-gray-600 dark:text-dark-muted text-sm leading-relaxed mb-4">"{t.comment}"</p>
-            <div className="flex items-center gap-3">
-              {t.avatar?.url ? (
-                <img src={t.avatar.url} alt={t.name} className="w-10 h-10 rounded-full object-cover" />
-              ) : (
-                <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-white font-bold">
-                  {t.name[0]}
-                </div>
-              )}
-              <div>
-                <p className="font-semibold text-sm dark:text-dark-text">{t.name}</p>
-                <p className="text-xs text-gray-400">{t.role}</p>
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-
-
 // ─── Home Page ─────────────────────────────────────────────────────────────────
 import toast from 'react-hot-toast';
 
@@ -431,11 +384,6 @@ export default function Home() {
   const saleProducts = flashSaleProducts.length > 0
     ? flashSaleProducts.slice(0, 4)
     : (allProducts ? [...allProducts].sort((a, b) => (b.totalSold || 0) - (a.totalSold || 0)).slice(0, 4) : []);
-
-  const { data: testimonials } = useQuery({
-    queryKey: ['testimonials'],
-    queryFn: () => api.get('/testimonials?featured=true').then((r) => r.data.testimonials),
-  });
 
   return (
     <>
@@ -473,7 +421,6 @@ export default function Home() {
         products={allProducts}
         showAll={true}
       />
-      <Testimonials testimonials={testimonials} />
     </>
   );
 }

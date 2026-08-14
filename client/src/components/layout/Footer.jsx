@@ -86,7 +86,7 @@ export default function Footer() {
           <div className="flex flex-wrap items-center gap-6 text-slate-400 text-sm">
             <span className="flex items-center gap-2">
               <FiPhone size={15} className="text-accent-cyan" />
-              +91 94953 02826
+              +91 94959 61840
             </span>
             <span className="flex items-center gap-2">
               <FiMapPin size={15} className="text-accent-cyan" />

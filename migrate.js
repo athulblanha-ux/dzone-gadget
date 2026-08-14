@@ -10,8 +10,8 @@ async function migrate() {
     const Setting = require('./server/src/models/Setting');
 
     const updates = [
-      { key: 'contact_phone', value: '+91 94953 02826' },
-      { key: 'whatsapp_number', value: '919495302826' },
+      { key: 'contact_phone', value: '+91 94959 61840' },
+      { key: 'whatsapp_number', value: '919495961840' },
       { key: 'instagram_handle', value: 'dzonegadget.in' },
       { key: 'instagram_url', value: 'https://www.instagram.com/dzonegadget.in/' }
     ];

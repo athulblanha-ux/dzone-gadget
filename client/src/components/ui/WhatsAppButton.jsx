@@ -13,7 +13,7 @@ export default function WhatsAppButton() {
     staleTime: 30 * 60 * 1000,
   });
 
-  const whatsappNumber = settings?.whatsapp_number || '919495302826';
+  const whatsappNumber = settings?.whatsapp_number || '919495961840';
   const whatsappUrl = `https://wa.me/c/${whatsappNumber}`;
 
   return (
