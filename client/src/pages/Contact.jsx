@@ -42,7 +42,7 @@ export default function Contact() {
               <div className="w-12 h-12 rounded-2xl bg-green-50 text-green-500 flex items-center justify-center flex-shrink-0"><FiPhone size={20} /></div>
               <div>
                 <h3 className="font-bold dark:text-dark-text mb-1">Phone / WhatsApp</h3>
-                <p className="text-gray-500 dark:text-dark-muted">{settings?.contact_phone || '+91 98765 43210'}</p>
+                <p className="text-gray-500 dark:text-dark-muted">{settings?.contact_phone || '+91 94959 61840'}</p>
                 <p className="text-xs text-gray-400 mt-1">Mon-Fri, 10am to 6pm</p>
               </div>
             </div>
@@ -51,7 +51,7 @@ export default function Contact() {
               <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-500 flex items-center justify-center flex-shrink-0"><FiMapPin size={20} /></div>
               <div>
                 <h3 className="font-bold dark:text-dark-text mb-1">Office</h3>
-                <p className="text-gray-500 dark:text-dark-muted leading-relaxed">{settings?.contact_address || '123, Toy Street, Mukkam, Kozhikode, Kerala - 673602'}</p>
+                <p className="text-gray-500 dark:text-dark-muted leading-relaxed">{settings?.contact_address || 'Mukkam, Kozhikode, Kerala - 673602'}</p>
               </div>
             </div>
           </div>

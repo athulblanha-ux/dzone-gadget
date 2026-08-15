@@ -116,7 +116,7 @@ const seed = async () => {
     { key: 'site_tagline', value: 'Where Play Comes to Life', label: 'Tagline', group: 'general', type: 'text' },
     { key: 'contact_email', value: 'support@dzonegadgetindia.com', label: 'Support Email', group: 'contact', type: 'text' },
     { key: 'contact_phone', value: '+91 94959 61840', label: 'Phone', group: 'contact', type: 'text' },
-    { key: 'contact_address', value: '123, Toy Street, Mukkam, Kozhikode, Kerala - 673602', label: 'Address', group: 'contact', type: 'textarea' },
+    { key: 'contact_address', value: 'Mukkam, Kozhikode, Kerala - 673602', label: 'Address', group: 'contact', type: 'textarea' },
     { key: 'whatsapp_number', value: '919495961840', label: 'WhatsApp Number', group: 'contact', type: 'text' },
     { key: 'instagram_handle', value: 'dzonegadget.in', label: 'Instagram Handle', group: 'social', type: 'text' },
     { key: 'instagram_url', value: 'https://www.instagram.com/dzonegadget.in/', label: 'Instagram URL', group: 'social', type: 'text' },
