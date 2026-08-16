@@ -87,12 +87,12 @@ export default function Checkout() {
         }
       } else if (form.paymentMethod === 'razorpay' || form.paymentMethod === 'partial_cod') {
         const { data: orderResponse } = await api.post('/orders', orderData);
-        const { data: rzpData } = await api.post('/payments/razorpay/create-order', { orderId: orderResponse.order._id });
+        const { data: rzpData } = await api.post('/create-order', { orderId: orderResponse.order._id });
         
         if (rzpData.isMock) {
           setMockPaymentData({
             orderId: orderResponse.order._id,
-            razorpayOrderId: rzpData.razorpayOrderId,
+            razorpayOrderId: rzpData.order_id || rzpData.razorpayOrderId,
             amount: rzpData.amount,
             keyId: rzpData.keyId,
             email: form.email
@@ -102,14 +102,14 @@ export default function Checkout() {
           if (!isLoaded) throw new Error('Razorpay SDK failed to load');
           
           const options = {
-            key: rzpData.keyId,
+            key: rzpData.keyId || 'rzp_test_TQ8Fe6m1oUt2nT',
             amount: rzpData.amount,
-            currency: 'INR',
+            currency: rzpData.currency || 'INR',
             name: 'DZONE GADGET',
             description: form.paymentMethod === 'partial_cod' ? 'DZONE GADGET Partial COD Advance' : 'DZONE GADGET Order Payment',
-            order_id: rzpData.razorpayOrderId,
+            order_id: rzpData.order_id || rzpData.razorpayOrderId,
             handler: async (response) => {
-              await api.post('/payments/razorpay/verify', { ...response, orderId: orderResponse.order._id });
+              await api.post('/verify-payment', { ...response, orderId: orderResponse.order._id });
               clearCart();
               toast.success(form.paymentMethod === 'partial_cod' ? 'Advance paid! Order placed. 🎉' : 'Payment successful! Order placed. 🎉');
               if (isAuthenticated) {
@@ -124,7 +124,7 @@ export default function Checkout() {
               }
             },
             prefill: { name: form.fullName, email: form.email, contact: form.phone },
-            theme: { color: '#FF6B6B' }
+            theme: { color: '#007aff' }
           };
           const rzp = new window.Razorpay(options);
           rzp.open();

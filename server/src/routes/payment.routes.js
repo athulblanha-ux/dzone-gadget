@@ -5,6 +5,12 @@ const { protect, optionalAuth } = require('../middleware/auth');
 
 const { adminOnly } = require('../middleware/admin');
 
+// Standard endpoints (Step 1 & Step 3 aliases)
+router.post('/create-order', optionalAuth, ctrl.createRazorpayOrder);
+router.post('/verify-payment', optionalAuth, ctrl.verifyRazorpayPayment);
+router.post('/verify', optionalAuth, ctrl.verifyRazorpayPayment);
+
+// Razorpay specific routes
 router.post('/razorpay/create-order', optionalAuth, ctrl.createRazorpayOrder);
 router.post('/razorpay/verify', optionalAuth, ctrl.verifyRazorpayPayment);
 router.post('/razorpay/sync', protect, adminOnly, ctrl.syncRazorpayPayments);

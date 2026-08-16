@@ -8,68 +8,105 @@ const { asyncHandler } = require('../middleware/errorHandler');
 const getStripe = () => new Stripe(process.env.STRIPE_SECRET_KEY);
 
 exports.createRazorpayOrder = asyncHandler(async (req, res) => {
-  const order = await Order.findById(req.body.orderId);
-  if (!order) return res.status(404).json({ success: false, message: 'Order not found.' });
+  const keyId = process.env.RAZORPAY_KEY_ID || 'rzp_test_TQ8Fe6m1oUt2nT';
+  const keySecret = process.env.RAZORPAY_KEY_SECRET || 'DVBr6QonswgVnmX6QKEKb3Sc';
 
-  const keyId = process.env.RAZORPAY_KEY_ID || 'rzp_test_stubkey123';
-  const keySecret = process.env.RAZORPAY_KEY_SECRET || 'rzp_test_stubsecret123';
-  const isMock = keyId.startsWith('rzp_test_stub');
+  let amountPaise = 0;
+  let currency = req.body.currency || 'INR';
+  let receipt = req.body.receipt || `receipt_${Date.now()}`;
+  let dbOrder = null;
 
-  const amountToPay = order.paymentMethod === 'partial_cod' ? order.advanceAmount : order.total;
-
-  if (isMock) {
-    const mockOrderId = `order_mock_${Math.random().toString(36).substr(2, 9)}`;
-    order.paymentOrderId = mockOrderId;
-    await order.save();
-    return res.json({
-      success: true,
-      razorpayOrderId: mockOrderId,
-      amount: Math.round(amountToPay * 100),
-      currency: 'INR',
-      keyId: keyId,
-      isMock: true
-    });
+  if (req.body.orderId) {
+    dbOrder = await Order.findById(req.body.orderId);
+    if (!dbOrder) return res.status(404).json({ success: false, message: 'Order not found.' });
+    const amountToPay = dbOrder.paymentMethod === 'partial_cod' ? dbOrder.advanceAmount : dbOrder.total;
+    amountPaise = Math.round(amountToPay * 100);
+    receipt = dbOrder.orderNumber;
+  } else if (req.body.amount !== undefined) {
+    amountPaise = Number(req.body.amount);
+    if (amountPaise < 100) {
+      return res.status(400).json({ success: false, message: 'Minimum amount must be at least 100 paise.' });
+    }
+  } else {
+    return res.status(400).json({ success: false, message: 'Order ID or amount is required.' });
   }
 
-  // Real Razorpay integration
+  // Call Razorpay API: POST https://api.razorpay.com/v1/orders
   const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret });
-  const rzpOrder = await razorpay.orders.create({ amount: Math.round(amountToPay * 100), currency: 'INR', receipt: order.orderNumber });
-  order.paymentOrderId = rzpOrder.id;
-  await order.save();
-  res.json({ success: true, razorpayOrderId: rzpOrder.id, amount: rzpOrder.amount, currency: 'INR', keyId: keyId });
+  const rzpOrder = await razorpay.orders.create({
+    amount: amountPaise,
+    currency,
+    receipt,
+  });
+
+  if (dbOrder) {
+    dbOrder.paymentOrderId = rzpOrder.id;
+    await dbOrder.save();
+  }
+
+  res.json({
+    success: true,
+    order_id: rzpOrder.id,
+    razorpayOrderId: rzpOrder.id,
+    amount: rzpOrder.amount,
+    currency: rzpOrder.currency,
+    keyId: keyId,
+  });
 });
 
 exports.verifyRazorpayPayment = asyncHandler(async (req, res) => {
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature, orderId } = req.body;
-  
-  const keyId = process.env.RAZORPAY_KEY_ID || 'rzp_test_stubkey123';
-  const keySecret = process.env.RAZORPAY_KEY_SECRET || 'rzp_test_stubsecret123';
-  const isMock = keyId.startsWith('rzp_test_stub') || razorpay_order_id?.startsWith('order_mock_');
 
-  if (!isMock) {
-    const expected = crypto.createHmac('sha256', keySecret).update(`${razorpay_order_id}|${razorpay_payment_id}`).digest('hex');
-    if (expected !== razorpay_signature) return res.status(400).json({ success: false, message: 'Payment verification failed.' });
+  if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+    return res.status(400).json({
+      success: false,
+      message: 'razorpay_order_id, razorpay_payment_id, and razorpay_signature are required.',
+    });
   }
 
-  const order = await Order.findById(orderId);
-  if (!order) return res.status(404).json({ success: false, message: 'Order not found.' });
+  const keySecret = process.env.RAZORPAY_KEY_SECRET || 'DVBr6QonswgVnmX6QKEKb3Sc';
 
-  if (order.paymentMethod === 'partial_cod') {
-    order.paymentStatus = 'partially_paid';
+  // Verify HMAC SHA256 Signature
+  const expectedSignature = crypto
+    .createHmac('sha256', keySecret)
+    .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+    .digest('hex');
+
+  if (expectedSignature !== razorpay_signature) {
+    return res.status(400).json({ success: false, message: 'Payment verification failed. Invalid signature.' });
+  }
+
+  let dbOrder = null;
+  if (orderId) {
+    dbOrder = await Order.findById(orderId);
   } else {
-    order.paymentStatus = 'paid';
+    dbOrder = await Order.findOne({ paymentOrderId: razorpay_order_id });
   }
-  order.paymentId = razorpay_payment_id || `pay_mock_${Math.random().toString(36).substr(2, 9)}`;
-  order.status = 'confirmed';
-  order.statusHistory.push({ 
-    status: 'confirmed', 
-    message: order.paymentMethod === 'partial_cod' 
-      ? `Partial COD advance of ₹${order.advanceAmount} received via Razorpay${isMock ? ' (Mock Mode)' : ''}. Remaining ₹${order.codBalance} COD due on delivery.`
-      : `Payment received via Razorpay${isMock ? ' (Mock Mode)' : ''}.` 
-  });
-  await order.save();
 
-  res.json({ success: true, message: 'Payment verified.', order });
+  if (dbOrder) {
+    if (dbOrder.paymentMethod === 'partial_cod') {
+      dbOrder.paymentStatus = 'partially_paid';
+    } else {
+      dbOrder.paymentStatus = 'paid';
+    }
+    dbOrder.paymentId = razorpay_payment_id;
+    dbOrder.status = 'confirmed';
+    dbOrder.statusHistory.push({
+      status: 'confirmed',
+      message: dbOrder.paymentMethod === 'partial_cod'
+        ? `Partial COD advance of ₹${dbOrder.advanceAmount} received via Razorpay. Remaining ₹${dbOrder.codBalance} COD due on delivery.`
+        : 'Payment received & verified via Razorpay.',
+    });
+    await dbOrder.save();
+  }
+
+  res.json({
+    success: true,
+    message: 'Payment signature verified successfully.',
+    razorpay_payment_id,
+    razorpay_order_id,
+    order: dbOrder || undefined,
+  });
 });
 
 exports.createStripeIntent = asyncHandler(async (req, res) => {

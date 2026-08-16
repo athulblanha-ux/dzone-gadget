@@ -24,12 +24,12 @@ export default function OrderDetail() {
   const handlePayNow = async (order) => {
     setPayLoading(true);
     try {
-      const { data: rzpData } = await api.post('/payments/razorpay/create-order', { orderId: order._id });
+      const { data: rzpData } = await api.post('/create-order', { orderId: order._id });
       
       if (rzpData.isMock) {
         setMockPaymentData({
           orderId: order._id,
-          razorpayOrderId: rzpData.razorpayOrderId,
+          razorpayOrderId: rzpData.order_id || rzpData.razorpayOrderId,
           amount: rzpData.amount,
           keyId: rzpData.keyId,
           email: order.shippingAddress.email
@@ -39,14 +39,14 @@ export default function OrderDetail() {
         if (!isLoaded) throw new Error('Razorpay SDK failed to load');
         
         const options = {
-          key: rzpData.keyId,
+          key: rzpData.keyId || 'rzp_test_TQ8Fe6m1oUt2nT',
           amount: rzpData.amount,
-          currency: 'INR',
+          currency: rzpData.currency || 'INR',
           name: 'DZONE GADGET',
           description: 'DZONE GADGET Order Payment',
-          order_id: rzpData.razorpayOrderId,
+          order_id: rzpData.order_id || rzpData.razorpayOrderId,
           handler: async (response) => {
-            await api.post('/payments/razorpay/verify', { ...response, orderId: order._id });
+            await api.post('/verify-payment', { ...response, orderId: order._id });
             toast.success('Payment successful! 🎉');
             refetch();
           },
@@ -55,7 +55,7 @@ export default function OrderDetail() {
             email: order.shippingAddress.email, 
             contact: order.shippingAddress.phone 
           },
-          theme: { color: '#FF6B6B' }
+          theme: { color: '#007aff' }
         };
         const rzp = new window.Razorpay(options);
         rzp.open();
