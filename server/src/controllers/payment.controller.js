@@ -41,16 +41,13 @@ exports.createRazorpayOrder = asyncHandler(async (req, res) => {
     const razorpay = new Razorpay({ key_id: PRIMARY_KEY_ID, key_secret: PRIMARY_KEY_SECRET });
     rzpOrder = await razorpay.orders.create({ amount: amountPaise, currency, receipt });
   } catch (primaryErr) {
-    console.warn('⚠️ Primary Razorpay key failed, attempting fallback key:', primaryErr.error?.description || primaryErr.message);
-    try {
-      const razorpayFallback = new Razorpay({ key_id: FALLBACK_KEY_ID, key_secret: FALLBACK_KEY_SECRET });
-      rzpOrder = await razorpayFallback.orders.create({ amount: amountPaise, currency, receipt });
-      activeKeyId = FALLBACK_KEY_ID;
-    } catch (fallbackErr) {
-      console.error('❌ Both Razorpay keys failed:', fallbackErr);
-      const errorMessage = fallbackErr.error?.description || fallbackErr.description || fallbackErr.message || 'Razorpay order creation failed.';
-      return res.status(400).json({ success: false, message: errorMessage });
-    }
+    console.error('❌ Primary key creation error:', primaryErr);
+    return res.status(400).json({
+      success: false,
+      message: primaryErr.error?.description || primaryErr.message || 'Authentication failed',
+      attemptedKeyId: PRIMARY_KEY_ID,
+      rawError: primaryErr
+    });
   }
 
   if (dbOrder) {
