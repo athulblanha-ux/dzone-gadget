@@ -7,8 +7,8 @@ const { asyncHandler } = require('../middleware/errorHandler');
 // Lazily initialize Stripe so missing keys don't crash startup
 const getStripe = () => new Stripe(process.env.STRIPE_SECRET_KEY);
 
-const PRIMARY_KEY_ID = process.env.RAZORPAY_KEY_ID || 'rzp_test_TQ8Fe6m1oUt2nT';
-const PRIMARY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || 'DVBr6QonswgVnmX6QKEKb3Sc';
+const PRIMARY_KEY_ID = 'rzp_test_TQ8Fe6m1oUt2nT';
+const PRIMARY_KEY_SECRET = 'DVBr6QonswgVnmX6QKEKb3Sc';
 
 const FALLBACK_KEY_ID = 'rzp_test_TQ8Fe6m1oUt2nT';
 const FALLBACK_KEY_SECRET = 'DVBr6QonswgVnmX6QKEKb3Sc';
