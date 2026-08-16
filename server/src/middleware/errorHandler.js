@@ -3,8 +3,8 @@
  * Must be defined with 4 parameters to be recognized as error middleware by Express
  */
 const errorHandler = (err, req, res, next) => {
-  let statusCode = err.statusCode || 500;
-  let message = err.message || 'Internal Server Error';
+  let statusCode = err.statusCode || err.status || 500;
+  let message = err.message || err.error?.description || err.description || 'Internal Server Error';
 
   // Mongoose bad ObjectId
   if (err.name === 'CastError') {

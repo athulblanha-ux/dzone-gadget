@@ -9,7 +9,7 @@ const getStripe = () => new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const getKeyId = () => {
   const k = process.env.RAZORPAY_KEY_ID;
-  if (!k || k === 'rzp_test_dummy' || k.startsWith('rzp_test_stub')) {
+  if (!k || k === 'undefined' || k === 'null' || k === 'rzp_test_dummy' || k.startsWith('rzp_test_stub') || !k.startsWith('rzp_')) {
     return 'rzp_test_TQ8Fe6m1oUt2nT';
   }
   return k.trim();
@@ -17,7 +17,7 @@ const getKeyId = () => {
 
 const getKeySecret = () => {
   const s = process.env.RAZORPAY_KEY_SECRET;
-  if (!s || s === 'dummysecret' || s.startsWith('stubsecret')) {
+  if (!s || s === 'undefined' || s === 'null' || s === 'dummysecret' || s.startsWith('stubsecret') || s.length < 10) {
     return 'DVBr6QonswgVnmX6QKEKb3Sc';
   }
   return s.trim();
@@ -74,6 +74,7 @@ exports.createRazorpayOrder = asyncHandler(async (req, res) => {
     return res.status(400).json({
       success: false,
       message: errorMessage,
+      details: err.error || err
     });
   }
 });
