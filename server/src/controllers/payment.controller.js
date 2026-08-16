@@ -7,26 +7,13 @@ const { asyncHandler } = require('../middleware/errorHandler');
 // Lazily initialize Stripe so missing keys don't crash startup
 const getStripe = () => new Stripe(process.env.STRIPE_SECRET_KEY);
 
-const getKeyId = () => {
-  const k = process.env.RAZORPAY_KEY_ID;
-  if (!k || k === 'undefined' || k === 'null' || k === 'rzp_test_dummy' || k === 'rzp_test_TQ06smJxa1jwR1' || k.startsWith('rzp_test_stub') || !k.startsWith('rzp_')) {
-    return 'rzp_test_TQ8Fe6m1oUt2nT';
-  }
-  return k.trim();
-};
+const PRIMARY_KEY_ID = process.env.RAZORPAY_KEY_ID || 'rzp_test_TQ06smJxa1jwR1';
+const PRIMARY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || '4b6CeSE5meC067xRL487yGBW';
 
-const getKeySecret = () => {
-  const s = process.env.RAZORPAY_KEY_SECRET;
-  if (!s || s === 'undefined' || s === 'null' || s === 'dummysecret' || s === '4b6CeSE5meC067xRL487yGBW' || s.startsWith('stubsecret') || s.length < 10) {
-    return 'DVBr6QonswgVnmX6QKEKb3Sc';
-  }
-  return s.trim();
-};
+const FALLBACK_KEY_ID = 'rzp_test_TQ8Fe6m1oUt2nT';
+const FALLBACK_KEY_SECRET = 'DVBr6QonswgVnmX6QKEKb3Sc';
 
 exports.createRazorpayOrder = asyncHandler(async (req, res) => {
-  const keyId = getKeyId();
-  const keySecret = getKeySecret();
-
   let amountPaise = 0;
   let currency = req.body.currency || 'INR';
   let receipt = req.body.receipt || `receipt_${Date.now()}`;
@@ -47,36 +34,38 @@ exports.createRazorpayOrder = asyncHandler(async (req, res) => {
     return res.status(400).json({ success: false, message: 'Order ID or amount is required.' });
   }
 
+  // Attempt 1: Primary key
+  let rzpOrder;
+  let activeKeyId = PRIMARY_KEY_ID;
   try {
-    const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret });
-    const rzpOrder = await razorpay.orders.create({
-      amount: amountPaise,
-      currency,
-      receipt,
-    });
-
-    if (dbOrder) {
-      dbOrder.paymentOrderId = rzpOrder.id;
-      await dbOrder.save();
+    const razorpay = new Razorpay({ key_id: PRIMARY_KEY_ID, key_secret: PRIMARY_KEY_SECRET });
+    rzpOrder = await razorpay.orders.create({ amount: amountPaise, currency, receipt });
+  } catch (primaryErr) {
+    console.warn('⚠️ Primary Razorpay key failed, attempting fallback key:', primaryErr.error?.description || primaryErr.message);
+    try {
+      const razorpayFallback = new Razorpay({ key_id: FALLBACK_KEY_ID, key_secret: FALLBACK_KEY_SECRET });
+      rzpOrder = await razorpayFallback.orders.create({ amount: amountPaise, currency, receipt });
+      activeKeyId = FALLBACK_KEY_ID;
+    } catch (fallbackErr) {
+      console.error('❌ Both Razorpay keys failed:', fallbackErr);
+      const errorMessage = fallbackErr.error?.description || fallbackErr.description || fallbackErr.message || 'Razorpay order creation failed.';
+      return res.status(400).json({ success: false, message: errorMessage });
     }
-
-    return res.json({
-      success: true,
-      order_id: rzpOrder.id,
-      razorpayOrderId: rzpOrder.id,
-      amount: rzpOrder.amount,
-      currency: rzpOrder.currency,
-      keyId: keyId,
-    });
-  } catch (err) {
-    console.error('❌ Razorpay order creation error:', err);
-    const errorMessage = err.error?.description || err.description || err.message || 'Razorpay order creation failed.';
-    return res.status(400).json({
-      success: false,
-      message: errorMessage,
-      details: err.error || err
-    });
   }
+
+  if (dbOrder) {
+    dbOrder.paymentOrderId = rzpOrder.id;
+    await dbOrder.save();
+  }
+
+  return res.json({
+    success: true,
+    order_id: rzpOrder.id,
+    razorpayOrderId: rzpOrder.id,
+    amount: rzpOrder.amount,
+    currency: rzpOrder.currency,
+    keyId: activeKeyId,
+  });
 });
 
 exports.verifyRazorpayPayment = asyncHandler(async (req, res) => {
@@ -89,15 +78,24 @@ exports.verifyRazorpayPayment = asyncHandler(async (req, res) => {
     });
   }
 
-  const keySecret = getKeySecret();
+  const secretsToTry = [
+    PRIMARY_KEY_SECRET,
+    FALLBACK_KEY_SECRET,
+    process.env.RAZORPAY_KEY_SECRET,
+  ].filter(Boolean);
 
-  // Verify HMAC SHA256 Signature
-  const expectedSignature = crypto
-    .createHmac('sha256', keySecret)
-    .update(`${razorpay_order_id}|${razorpay_payment_id}`)
-    .digest('hex');
+  let verified = false;
+  const body = `${razorpay_order_id}|${razorpay_payment_id}`;
 
-  if (expectedSignature !== razorpay_signature) {
+  for (const secret of secretsToTry) {
+    const expectedSignature = crypto.createHmac('sha256', secret).update(body).digest('hex');
+    if (expectedSignature === razorpay_signature) {
+      verified = true;
+      break;
+    }
+  }
+
+  if (!verified) {
     return res.status(400).json({ success: false, message: 'Payment verification failed. Invalid signature.' });
   }
 
