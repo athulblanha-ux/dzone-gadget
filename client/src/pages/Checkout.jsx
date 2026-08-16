@@ -102,7 +102,7 @@ export default function Checkout() {
           if (!isLoaded) throw new Error('Razorpay SDK failed to load');
           
           const options = {
-            key: rzpData.keyId || 'rzp_test_TQ06smJxa1jwR1',
+            key: rzpData.keyId || 'rzp_test_TQ8Fe6m1oUt2nT',
             amount: rzpData.amount,
             currency: rzpData.currency || 'INR',
             name: 'DZONE GADGET',
