@@ -41,12 +41,10 @@ exports.createRazorpayOrder = asyncHandler(async (req, res) => {
     const razorpay = new Razorpay({ key_id: PRIMARY_KEY_ID, key_secret: PRIMARY_KEY_SECRET });
     rzpOrder = await razorpay.orders.create({ amount: amountPaise, currency, receipt });
   } catch (primaryErr) {
-    console.error('❌ Primary key creation error:', primaryErr);
+    console.error('❌ Razorpay order creation error:', primaryErr);
     return res.status(400).json({
       success: false,
       message: primaryErr.error?.description || primaryErr.message || 'Authentication failed',
-      attemptedKeyId: PRIMARY_KEY_ID,
-      rawError: primaryErr
     });
   }
 
