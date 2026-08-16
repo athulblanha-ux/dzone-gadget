@@ -74,7 +74,6 @@ exports.createRazorpayOrder = asyncHandler(async (req, res) => {
     return res.status(400).json({
       success: false,
       message: errorMessage,
-      usedKeyId: keyId,
       details: err.error || err
     });
   }
