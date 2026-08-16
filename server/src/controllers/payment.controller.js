@@ -7,9 +7,25 @@ const { asyncHandler } = require('../middleware/errorHandler');
 // Lazily initialize Stripe so missing keys don't crash startup
 const getStripe = () => new Stripe(process.env.STRIPE_SECRET_KEY);
 
+const getKeyId = () => {
+  const k = process.env.RAZORPAY_KEY_ID;
+  if (!k || k === 'rzp_test_dummy' || k.startsWith('rzp_test_stub')) {
+    return 'rzp_test_TQ8Fe6m1oUt2nT';
+  }
+  return k.trim();
+};
+
+const getKeySecret = () => {
+  const s = process.env.RAZORPAY_KEY_SECRET;
+  if (!s || s === 'dummysecret' || s.startsWith('stubsecret')) {
+    return 'DVBr6QonswgVnmX6QKEKb3Sc';
+  }
+  return s.trim();
+};
+
 exports.createRazorpayOrder = asyncHandler(async (req, res) => {
-  const keyId = process.env.RAZORPAY_KEY_ID || 'rzp_test_TQ8Fe6m1oUt2nT';
-  const keySecret = process.env.RAZORPAY_KEY_SECRET || 'DVBr6QonswgVnmX6QKEKb3Sc';
+  const keyId = getKeyId();
+  const keySecret = getKeySecret();
 
   let amountPaise = 0;
   let currency = req.body.currency || 'INR';
@@ -31,27 +47,35 @@ exports.createRazorpayOrder = asyncHandler(async (req, res) => {
     return res.status(400).json({ success: false, message: 'Order ID or amount is required.' });
   }
 
-  // Call Razorpay API: POST https://api.razorpay.com/v1/orders
-  const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret });
-  const rzpOrder = await razorpay.orders.create({
-    amount: amountPaise,
-    currency,
-    receipt,
-  });
+  try {
+    const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret });
+    const rzpOrder = await razorpay.orders.create({
+      amount: amountPaise,
+      currency,
+      receipt,
+    });
 
-  if (dbOrder) {
-    dbOrder.paymentOrderId = rzpOrder.id;
-    await dbOrder.save();
+    if (dbOrder) {
+      dbOrder.paymentOrderId = rzpOrder.id;
+      await dbOrder.save();
+    }
+
+    return res.json({
+      success: true,
+      order_id: rzpOrder.id,
+      razorpayOrderId: rzpOrder.id,
+      amount: rzpOrder.amount,
+      currency: rzpOrder.currency,
+      keyId: keyId,
+    });
+  } catch (err) {
+    console.error('❌ Razorpay order creation error:', err);
+    const errorMessage = err.error?.description || err.description || err.message || 'Razorpay order creation failed.';
+    return res.status(400).json({
+      success: false,
+      message: errorMessage,
+    });
   }
-
-  res.json({
-    success: true,
-    order_id: rzpOrder.id,
-    razorpayOrderId: rzpOrder.id,
-    amount: rzpOrder.amount,
-    currency: rzpOrder.currency,
-    keyId: keyId,
-  });
 });
 
 exports.verifyRazorpayPayment = asyncHandler(async (req, res) => {
@@ -64,7 +88,7 @@ exports.verifyRazorpayPayment = asyncHandler(async (req, res) => {
     });
   }
 
-  const keySecret = process.env.RAZORPAY_KEY_SECRET || 'DVBr6QonswgVnmX6QKEKb3Sc';
+  const keySecret = getKeySecret();
 
   // Verify HMAC SHA256 Signature
   const expectedSignature = crypto
@@ -100,7 +124,7 @@ exports.verifyRazorpayPayment = asyncHandler(async (req, res) => {
     await dbOrder.save();
   }
 
-  res.json({
+  return res.json({
     success: true,
     message: 'Payment signature verified successfully.',
     razorpay_payment_id,
