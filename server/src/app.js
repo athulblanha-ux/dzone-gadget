@@ -96,7 +96,24 @@ app.use('/api', globalLimiter);
 // ─── Static Files ──────────────────────────────────────────────────────────────
 app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
 
-// ─── Health Check ──────────────────────────────────────────────────────────────
+// ─── Robots.txt & Health Check ──────────────────────────────────────────────────
+app.get('/robots.txt', (req, res) => {
+  res.type('text/plain');
+  res.send(`User-agent: *
+Allow: /api/products
+Allow: /api/categories
+Allow: /api/banners
+Allow: /api/settings/public
+Allow: /api/faqs
+Allow: /api/homepage-sections
+Allow: /uploads/
+Disallow: /api/users
+Disallow: /api/orders
+Disallow: /api/auth
+Disallow: /api/analytics
+`);
+});
+
 app.get('/health', (req, res) => {
   res.status(200).json({
     success: true,

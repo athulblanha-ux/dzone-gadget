@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+Allow: /shop
+Allow: /product/
+Allow: /category/
+Allow: /about
+Allow: /contact
+Allow: /faq
+Disallow: /cart
+Disallow: /checkout
+Disallow: /orders
+Disallow: /profile
+Disallow: /admin
+
+Sitemap: https://dzone-gadget-shop.vercel.app/sitemap.xml
