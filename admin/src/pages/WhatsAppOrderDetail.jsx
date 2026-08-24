@@ -131,8 +131,22 @@ export default function WhatsAppOrderDetail() {
     window.open(`https://wa.me/${cleanNumber}?text=${message}`, '_blank');
   };
 
-  const handlePrint = () => {
-    window.print();
+  const handlePrint = async () => {
+    try {
+      const res = await api.get(`/whatsapp-orders/orders/${id}/invoice`, {
+        responseType: 'blob',
+      });
+      const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `invoice-${order.orderNumber}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      toast.success(`Invoice ${order.orderNumber} downloaded!`);
+    } catch (err) {
+      toast.error('Failed to download invoice PDF');
+    }
   };
 
   // Open Edit Customer Modal

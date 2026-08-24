@@ -583,6 +583,25 @@ exports.getCustomerWhatsAppStats = asyncHandler(async (req, res) => {
     savedAddressesCount: customer.addresses?.length || 0,
     totalOrdersCount,
     totalOrderValue,
-    recentOrders: orders,
+    recent  });
+});
+
+const { generateWhatsAppInvoicePDF } = require('../utils/invoice');
+
+// Download PDF Invoice for WhatsApp Order
+exports.getWhatsAppOrderInvoice = asyncHandler(async (req, res) => {
+  const order = await WhatsAppOrder.findById(req.params.id);
+
+  if (!order) {
+    return res.status(404).json({ success: false, message: 'WhatsApp Order not found.' });
+  }
+
+  const pdfBuffer = await generateWhatsAppInvoicePDF(order);
+
+  res.set({
+    'Content-Type': 'application/pdf',
+    'Content-Disposition': `attachment; filename=invoice-${order.orderNumber}.pdf`,
   });
+
+  res.send(pdfBuffer);
 });

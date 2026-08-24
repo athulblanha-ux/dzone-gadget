@@ -19,6 +19,7 @@ router.get('/orders', ctrl.getWhatsAppOrders);
 router.post('/orders', ctrl.createWhatsAppOrder);
 router.get('/orders/:id', ctrl.getWhatsAppOrderById);
 router.put('/orders/:id', ctrl.updateWhatsAppOrder);
+router.get('/orders/:id/invoice', ctrl.getWhatsAppOrderInvoice);
 router.patch('/orders/:id/status', ctrl.updateWhatsAppOrderStatus);
 router.delete('/orders/:id', ctrl.deleteWhatsAppOrder);
 
