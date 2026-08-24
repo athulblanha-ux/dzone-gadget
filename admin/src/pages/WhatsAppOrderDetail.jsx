@@ -12,7 +12,6 @@ import {
   FiUser,
   FiMapPin,
   FiCreditCard,
-  FiClock,
   FiCheckCircle,
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
@@ -369,28 +368,6 @@ export default function WhatsAppOrderDetail() {
                   Shipment Date: {new Date(order.shippingInfo.shipmentDate).toLocaleDateString('en-IN')}
                 </p>
               )}
-            </div>
-          </div>
-
-          {/* Order Timeline History */}
-          <div className="bg-white dark:bg-dark-card p-5 rounded-2xl border border-gray-200 dark:border-dark-border shadow-sm space-y-4">
-            <h3 className="text-xs font-bold uppercase text-gray-500 tracking-wider flex items-center gap-1.5">
-              <FiClock className="text-emerald-500" /> Order Timeline History
-            </h3>
-
-            <div className="space-y-4 relative pl-4 border-l-2 border-emerald-500/30">
-              {order.statusHistory?.map((h, idx) => (
-                <div key={idx} className="relative text-xs space-y-1">
-                  <div className="absolute -left-[21px] top-0 w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                  <p className="font-bold text-gray-900 dark:text-white uppercase tracking-wider">
-                    {h.newStatus?.replace(/_/g, ' ')}
-                  </p>
-                  <p className="text-gray-600 dark:text-gray-300">{h.message}</p>
-                  <p className="text-[10px] text-gray-400">
-                    {new Date(h.timestamp).toLocaleString('en-IN')} {h.updatedBy?.name ? `• by ${h.updatedBy.name}` : ''}
-                  </p>
-                </div>
-              ))}
             </div>
           </div>
         </div>
