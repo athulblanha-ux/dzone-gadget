@@ -126,7 +126,7 @@ export default function WhatsAppOrderDetail() {
     let cleanNumber = order.whatsappNumber.replace(/\D/g, '');
     if (cleanNumber.length === 10) cleanNumber = '91' + cleanNumber;
     const message = encodeURIComponent(
-      `Hello ${order.customerName}! Regarding your WhatsApp Order ${order.orderNumber} on DZONE GADGET:`
+      `Hello ${order.customerName}! Regarding your WhatsApp Order ${order.orderNumber} on DSTORE:`
     );
     window.open(`https://wa.me/${cleanNumber}?text=${message}`, '_blank');
   };

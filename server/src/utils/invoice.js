@@ -118,7 +118,7 @@ const generateInvoicePDF = (order) => {
       doc
         .fontSize(9)
         .fillColor('#999')
-        .text('Thank you for shopping with DZONE GADGET!', 50, 760, { align: 'center' })
+        .text('Thank you for shopping with DSTORE!', 50, 760, { align: 'center' })
         .text('This is a computer-generated invoice. No signature required.', 50, 775, { align: 'center' });
 
       doc.end();

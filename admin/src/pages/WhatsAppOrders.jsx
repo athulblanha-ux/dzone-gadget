@@ -165,11 +165,11 @@ export default function WhatsAppOrders() {
               ? ord.customerName.split(',')[0].trim()
               : ord.customerName || 'Customer';
 
-            let msg = `Hello ${cleanCustName}! 👋\n\nYour Order #${ord.orderNumber} has been SHIPPED! 🚚📦\n\n`;
+            let msg = `Hello ${cleanCustName}!\n\nYour Order #${ord.orderNumber} has been SHIPPED!\n\n`;
             if (finalCourier) msg += `Courier Partner: ${finalCourier}\n`;
             if (finalTracking) msg += `Tracking Number: ${finalTracking}\n`;
             if (finalUrl) msg += `Track Here: ${finalUrl}\n`;
-            msg += `\nThank you for shopping with DZONE GADGET! ✨`;
+            msg += `\nThank you for shopping with DSTORE!`;
 
             const encoded = encodeURIComponent(msg);
             window.open(`https://wa.me/${cleanNumber}?text=${encoded}`, '_blank');
@@ -184,7 +184,7 @@ export default function WhatsAppOrders() {
     if (!whatsappNumber) return;
     let cleanNumber = whatsappNumber.replace(/\D/g, '');
     if (cleanNumber.length === 10) cleanNumber = '91' + cleanNumber;
-    const msg = encodeURIComponent(`Hello! Regarding your WhatsApp Order ${orderNumber}:`);
+    const msg = encodeURIComponent(`Hello! Regarding your WhatsApp Order ${orderNumber} on DSTORE:`);
     window.open(`https://wa.me/${cleanNumber}?text=${msg}`, '_blank');
   };
 
