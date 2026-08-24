@@ -9,37 +9,31 @@ import {
   FiMessageSquare,
   FiPlus,
   FiRefreshCw,
-  FiTruck,
-  FiCheckCircle,
-  FiClock,
-  FiPackage,
-  FiXCircle,
-  FiRotateCcw,
-  FiExternalLink,
-  FiFilter,
+  FiPrinter,
+  FiHome,
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import api from '../lib/api';
 
-const STATUS_OPTIONS = [
-  { value: 'new', label: 'New', color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' },
-  { value: 'confirmed', label: 'Confirmed', color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' },
-  { value: 'processing', label: 'Processing', color: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400' },
-  { value: 'packed', label: 'Packed', color: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400' },
-  { value: 'shipped', label: 'Shipped', color: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-400' },
-  { value: 'in_transit', label: 'In Transit', color: 'bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-400' },
-  { value: 'out_for_delivery', label: 'Out for Delivery', color: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400' },
-  { value: 'delivered', label: 'Delivered', color: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400' },
-  { value: 'cancelled', label: 'Cancelled', color: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' },
-  { value: 'returned', label: 'Returned', color: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400' },
+const ORDER_STATUS_LIST = [
+  { value: 'new', label: 'NEW' },
+  { value: 'confirmed', label: 'CONFIRMED' },
+  { value: 'processing', label: 'PROCESSING' },
+  { value: 'packed', label: 'PACKED' },
+  { value: 'shipped', label: 'SHIPPED' },
+  { value: 'in_transit', label: 'IN TRANSIT' },
+  { value: 'out_for_delivery', label: 'OUT FOR DELIVERY' },
+  { value: 'delivered', label: 'DELIVERED' },
+  { value: 'cancelled', label: 'CANCELLED' },
+  { value: 'returned', label: 'RETURNED' },
 ];
 
-const PAYMENT_STATUS_STYLES = {
-  pending: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400',
-  paid: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-  failed: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
-  refunded: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400',
-};
+const PAYMENT_STATUS_LIST = [
+  { value: 'pending', label: 'PENDING' },
+  { value: 'paid', label: 'PAID' },
+  { value: 'failed', label: 'FAILED' },
+  { value: 'refunded', label: 'REFUNDED' },
+];
 
 export default function WhatsAppOrders() {
   const navigate = useNavigate();
@@ -48,29 +42,11 @@ export default function WhatsAppOrders() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [paymentStatusFilter, setPaymentStatusFilter] = useState('');
-  const [courierFilter, setCourierFilter] = useState('');
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
   const [page, setPage] = useState(1);
 
-  // Quick Change Status Modal
-  const [statusModalOrder, setStatusModalOrder] = useState(null);
-  const [newStatus, setNewStatus] = useState('');
-  const [newPaymentStatus, setNewPaymentStatus] = useState('');
-  const [statusNote, setStatusNote] = useState('');
-
-  // Fetch WhatsApp Orders & Stats
+  // Fetch WhatsApp Orders
   const { data, isLoading, refetch } = useQuery({
-    queryKey: [
-      'admin-whatsapp-orders',
-      page,
-      search,
-      statusFilter,
-      paymentStatusFilter,
-      courierFilter,
-      dateFrom,
-      dateTo,
-    ],
+    queryKey: ['admin-whatsapp-orders', page, search, statusFilter, paymentStatusFilter],
     queryFn: async () => {
       const res = await api.get('/whatsapp-orders/orders', {
         params: {
@@ -79,9 +55,6 @@ export default function WhatsAppOrders() {
           search,
           status: statusFilter,
           paymentStatus: paymentStatusFilter,
-          courier: courierFilter,
-          dateFrom,
-          dateTo,
         },
       });
       return res.data;
@@ -102,34 +75,32 @@ export default function WhatsAppOrders() {
   };
   const pagination = data?.pagination || { page: 1, pages: 1, total: 0 };
 
-  // Status Change Mutation
+  // Status Change Mutation (Instant Inline Change)
   const statusMutation = useMutation({
     mutationFn: async ({ id, status, paymentStatus, message }) => {
       const res = await api.patch(`/whatsapp-orders/orders/${id}/status`, {
         status,
         paymentStatus,
-        message,
+        message: message || `Updated status to ${status}`,
       });
       return res.data;
     },
     onSuccess: () => {
-      toast.success('Order status updated!');
       queryClient.invalidateQueries(['admin-whatsapp-orders']);
-      setStatusModalOrder(null);
     },
     onError: (err) => {
-      toast.error(err.response?.data?.message || 'Failed to update status');
+      toast.error(err.response?.data?.message || 'Failed to update order status');
     },
   });
 
-  // Delete Mutation
+  // Delete Order Mutation
   const deleteMutation = useMutation({
     mutationFn: async (id) => {
       const res = await api.delete(`/whatsapp-orders/orders/${id}`);
       return res.data;
     },
     onSuccess: () => {
-      toast.success('WhatsApp Order deleted');
+      toast.success('Order deleted');
       queryClient.invalidateQueries(['admin-whatsapp-orders']);
     },
     onError: (err) => {
@@ -137,374 +108,390 @@ export default function WhatsAppOrders() {
     },
   });
 
-  const handleOpenWhatsApp = (whatsappNumber, orderNumber) => {
-    let cleanNumber = (whatsappNumber || '').replace(/\D/g, '');
-    if (cleanNumber.length === 10) cleanNumber = '91' + cleanNumber;
-    const message = encodeURIComponent(`Hello! Regarding your WhatsApp Order ${orderNumber} on DZONE GADGET:`);
-    window.open(`https://wa.me/${cleanNumber}?text=${message}`, '_blank');
+  // Inline Status Handlers
+  const handleInlineStatusChange = (ord, newStatus) => {
+    statusMutation.mutate({
+      id: ord._id,
+      status: newStatus,
+      paymentStatus: ord.paymentDetails?.status || 'pending',
+      message: `Status manually changed to ${newStatus.toUpperCase()}`,
+    });
+    toast.success(`Status updated to ${newStatus.toUpperCase()}`);
   };
 
-  const getStatusBadge = (statusVal) => {
-    const matched = STATUS_OPTIONS.find((s) => s.value === statusVal);
-    const color = matched?.color || 'bg-gray-100 text-gray-800';
-    const label = matched?.label || statusVal;
-    return (
-      <span className={`px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider ${color}`}>
-        {label}
-      </span>
-    );
+  const handleInlinePaymentChange = (ord, newPaymentStatus) => {
+    statusMutation.mutate({
+      id: ord._id,
+      status: ord.status,
+      paymentStatus: newPaymentStatus,
+      message: `Payment status manually changed to ${newPaymentStatus.toUpperCase()}`,
+    });
+    toast.success(`Payment status updated to ${newPaymentStatus.toUpperCase()}`);
+  };
+
+  // Open WhatsApp direct chat
+  const handleOpenWhatsApp = (whatsappNumber, orderNumber) => {
+    if (!whatsappNumber) return;
+    let cleanNumber = whatsappNumber.replace(/\D/g, '');
+    if (cleanNumber.length === 10) cleanNumber = '91' + cleanNumber;
+    const msg = encodeURIComponent(`Hello! Regarding your WhatsApp Order ${orderNumber}:`);
+    window.open(`https://wa.me/${cleanNumber}?text=${msg}`, '_blank');
   };
 
   return (
-    <div className="space-y-6">
-      {/* Page Title & Add Button */}
+    <div className="space-y-6 pb-12">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-            <span className="p-2 rounded-xl bg-emerald-500/10 text-emerald-500">
-              <FiMessageSquare className="w-6 h-6" />
-            </span>
-            WhatsApp Orders
+          <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white flex items-center gap-2">
+            💬 WhatsApp Orders
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Manage, track, and create manual orders placed via WhatsApp
-          </p>
+          <p className="text-xs text-gray-500">Manage orders placed via WhatsApp with instant status controls</p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => refetch()}
-            className="p-2.5 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-card border border-gray-200 dark:border-dark-border rounded-xl transition-colors"
-            title="Refresh Data"
+            className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-dark-card rounded-xl border border-gray-200 dark:border-dark-border"
+            title="Refresh list"
           >
-            <FiRefreshCw size={18} />
+            <FiRefreshCw size={16} />
           </button>
-
           <Link
             to="/whatsapp-orders/new"
-            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl font-medium shadow-md shadow-emerald-600/20 transition-colors"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg shadow-emerald-600/20 transition-all flex items-center gap-1.5"
           >
-            <FiPlus size={20} />
-            + New WhatsApp Order
+            <FiPlus size={16} /> + New WhatsApp Order
           </Link>
         </div>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-        {[
-          { label: 'Total Orders', count: stats.total, color: 'text-gray-900 dark:text-white', border: 'border-gray-200 dark:border-dark-border' },
-          { label: 'New', count: stats.new, color: 'text-yellow-600 dark:text-yellow-400', border: 'border-yellow-200 dark:border-yellow-900/40' },
-          { label: 'Confirmed', count: stats.confirmed, color: 'text-blue-600 dark:text-blue-400', border: 'border-blue-200 dark:border-blue-900/40' },
-          { label: 'Processing', count: stats.processing, color: 'text-purple-600 dark:text-purple-400', border: 'border-purple-200 dark:border-purple-900/40' },
-          { label: 'Shipped', count: stats.shipped, color: 'text-cyan-600 dark:text-cyan-400', border: 'border-cyan-200 dark:border-cyan-900/40' },
-          { label: 'Delivered', count: stats.delivered, color: 'text-emerald-600 dark:text-emerald-400', border: 'border-emerald-200 dark:border-emerald-900/40' },
-          { label: 'Cancelled', count: stats.cancelled, color: 'text-red-600 dark:text-red-400', border: 'border-red-200 dark:border-red-900/40' },
-          { label: 'Returned', count: stats.returned, color: 'text-gray-500 dark:text-gray-400', border: 'border-gray-300 dark:border-gray-700' },
-        ].map((c) => (
-          <div
-            key={c.label}
-            onClick={() => setStatusFilter(c.label === 'Total Orders' ? '' : c.label.toLowerCase().replace(/ /g, '_'))}
-            className={`cursor-pointer p-3.5 rounded-xl bg-white dark:bg-dark-card border ${c.border} shadow-sm hover:shadow-md transition-all text-center`}
-          >
-            <p className="text-xs font-medium text-gray-500 dark:text-gray-400 truncate">{c.label}</p>
-            <p className={`text-xl font-bold mt-1 ${c.color}`}>{c.count || 0}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Search & Filters */}
-      <div className="bg-white dark:bg-dark-card p-4 rounded-2xl border border-gray-200 dark:border-dark-border shadow-sm space-y-3">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-          {/* Search */}
-          <div className="relative md:col-span-1">
-            <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-            <input
-              type="text"
-              placeholder="Search Order ID, Customer, Phone..."
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setPage(1);
-              }}
-              className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border rounded-xl text-sm dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            />
-          </div>
-
-          {/* Status Filter */}
-          <div>
-            <select
-              value={statusFilter}
-              onChange={(e) => {
-                setStatusFilter(e.target.value);
-                setPage(1);
-              }}
-              className="w-full px-3 py-2 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border rounded-xl text-sm dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            >
-              <option value="">All Order Statuses</option>
-              {STATUS_OPTIONS.map((s) => (
-                <option key={s.value} value={s.value}>
-                  {s.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Payment Status Filter */}
-          <div>
-            <select
-              value={paymentStatusFilter}
-              onChange={(e) => {
-                setPaymentStatusFilter(e.target.value);
-                setPage(1);
-              }}
-              className="w-full px-3 py-2 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border rounded-xl text-sm dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            >
-              <option value="">All Payment Statuses</option>
-              <option value="pending">Pending</option>
-              <option value="paid">Paid</option>
-              <option value="failed">Failed</option>
-              <option value="refunded">Refunded</option>
-            </select>
-          </div>
-
-          {/* Date Filter */}
-          <div className="flex gap-2">
-            <input
-              type="date"
-              value={dateFrom}
-              onChange={(e) => setDateFrom(e.target.value)}
-              className="w-full px-2.5 py-2 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border rounded-xl text-xs dark:text-white"
-              title="From Date"
-            />
-            <input
-              type="date"
-              value={dateTo}
-              onChange={(e) => setDateTo(e.target.value)}
-              className="w-full px-2.5 py-2 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border rounded-xl text-xs dark:text-white"
-              title="To Date"
-            />
-          </div>
+        <div
+          onClick={() => { setStatusFilter(''); setPage(1); }}
+          className={`cursor-pointer p-3 rounded-2xl border transition-all ${
+            statusFilter === ''
+              ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 ring-2 ring-emerald-500'
+              : 'bg-white dark:bg-dark-card border-gray-200 dark:border-dark-border hover:border-emerald-500/50'
+          }`}
+        >
+          <p className="text-[10px] font-bold uppercase text-gray-400">Total</p>
+          <p className="text-lg font-black text-gray-900 dark:text-white">{stats.total}</p>
         </div>
 
-        {(search || statusFilter || paymentStatusFilter || courierFilter || dateFrom || dateTo) && (
-          <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-dark-border text-xs">
-            <span className="text-gray-500">Filtered results</span>
-            <button
-              onClick={() => {
-                setSearch('');
-                setStatusFilter('');
-                setPaymentStatusFilter('');
-                setCourierFilter('');
-                setDateFrom('');
-                setDateTo('');
-                setPage(1);
-              }}
-              className="text-emerald-600 dark:text-emerald-400 hover:underline font-medium"
-            >
-              Reset Filters
-            </button>
-          </div>
-        )}
+        <div
+          onClick={() => { setStatusFilter('new'); setPage(1); }}
+          className={`cursor-pointer p-3 rounded-2xl border transition-all ${
+            statusFilter === 'new'
+              ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-500 ring-2 ring-yellow-500'
+              : 'bg-white dark:bg-dark-card border-gray-200 dark:border-dark-border'
+          }`}
+        >
+          <p className="text-[10px] font-bold uppercase text-yellow-600 dark:text-yellow-400">New</p>
+          <p className="text-lg font-black text-yellow-600 dark:text-yellow-400">{stats.new}</p>
+        </div>
+
+        <div
+          onClick={() => { setStatusFilter('confirmed'); setPage(1); }}
+          className={`cursor-pointer p-3 rounded-2xl border transition-all ${
+            statusFilter === 'confirmed'
+              ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-500 ring-2 ring-blue-500'
+              : 'bg-white dark:bg-dark-card border-gray-200 dark:border-dark-border'
+          }`}
+        >
+          <p className="text-[10px] font-bold uppercase text-blue-600 dark:text-blue-400">Confirmed</p>
+          <p className="text-lg font-black text-blue-600 dark:text-blue-400">{stats.confirmed}</p>
+        </div>
+
+        <div
+          onClick={() => { setStatusFilter('processing'); setPage(1); }}
+          className={`cursor-pointer p-3 rounded-2xl border transition-all ${
+            statusFilter === 'processing'
+              ? 'bg-purple-50 dark:bg-purple-900/20 border-purple-500 ring-2 ring-purple-500'
+              : 'bg-white dark:bg-dark-card border-gray-200 dark:border-dark-border'
+          }`}
+        >
+          <p className="text-[10px] font-bold uppercase text-purple-600 dark:text-purple-400">Processing</p>
+          <p className="text-lg font-black text-purple-600 dark:text-purple-400">{stats.processing}</p>
+        </div>
+
+        <div
+          onClick={() => { setStatusFilter('shipped'); setPage(1); }}
+          className={`cursor-pointer p-3 rounded-2xl border transition-all ${
+            statusFilter === 'shipped'
+              ? 'bg-cyan-50 dark:bg-cyan-900/20 border-cyan-500 ring-2 ring-cyan-500'
+              : 'bg-white dark:bg-dark-card border-gray-200 dark:border-dark-border'
+          }`}
+        >
+          <p className="text-[10px] font-bold uppercase text-cyan-600 dark:text-cyan-400">Shipped</p>
+          <p className="text-lg font-black text-cyan-600 dark:text-cyan-400">{stats.shipped}</p>
+        </div>
+
+        <div
+          onClick={() => { setStatusFilter('delivered'); setPage(1); }}
+          className={`cursor-pointer p-3 rounded-2xl border transition-all ${
+            statusFilter === 'delivered'
+              ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 ring-2 ring-emerald-500'
+              : 'bg-white dark:bg-dark-card border-gray-200 dark:border-dark-border'
+          }`}
+        >
+          <p className="text-[10px] font-bold uppercase text-emerald-600 dark:text-emerald-400">Delivered</p>
+          <p className="text-lg font-black text-emerald-600 dark:text-emerald-400">{stats.delivered}</p>
+        </div>
+
+        <div
+          onClick={() => { setStatusFilter('cancelled'); setPage(1); }}
+          className={`cursor-pointer p-3 rounded-2xl border transition-all ${
+            statusFilter === 'cancelled'
+              ? 'bg-red-50 dark:bg-red-900/20 border-red-500 ring-2 ring-red-500'
+              : 'bg-white dark:bg-dark-card border-gray-200 dark:border-dark-border'
+          }`}
+        >
+          <p className="text-[10px] font-bold uppercase text-red-600 dark:text-red-400">Cancelled</p>
+          <p className="text-lg font-black text-red-600 dark:text-red-400">{stats.cancelled}</p>
+        </div>
+
+        <div
+          onClick={() => { setStatusFilter('returned'); setPage(1); }}
+          className={`cursor-pointer p-3 rounded-2xl border transition-all ${
+            statusFilter === 'returned'
+              ? 'bg-gray-200 dark:bg-gray-800 border-gray-500 ring-2 ring-gray-500'
+              : 'bg-white dark:bg-dark-card border-gray-200 dark:border-dark-border'
+          }`}
+        >
+          <p className="text-[10px] font-bold uppercase text-gray-500 dark:text-gray-400">Returned</p>
+          <p className="text-lg font-black text-gray-600 dark:text-gray-300">{stats.returned}</p>
+        </div>
       </div>
 
-      {/* Orders Table */}
-      <div className="bg-white dark:bg-dark-card rounded-2xl border border-gray-200 dark:border-dark-border overflow-hidden shadow-sm">
+      {/* Filter Bar */}
+      <div className="bg-white dark:bg-dark-card p-4 rounded-2xl border border-gray-200 dark:border-dark-border shadow-sm flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+          <input
+            type="text"
+            placeholder="Search by Order ID, Customer Name, Phone number..."
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border rounded-xl text-sm dark:text-white"
+          />
+        </div>
+
+        <select
+          value={statusFilter}
+          onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
+          className="px-3 py-2 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border rounded-xl text-xs dark:text-white font-medium"
+        >
+          <option value="">All Order Statuses</option>
+          {ORDER_STATUS_LIST.map((s) => (
+            <option key={s.value} value={s.value}>{s.label}</option>
+          ))}
+        </select>
+
+        <select
+          value={paymentStatusFilter}
+          onChange={(e) => { setPaymentStatusFilter(e.target.value); setPage(1); }}
+          className="px-3 py-2 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border rounded-xl text-xs dark:text-white font-medium"
+        >
+          <option value="">All Payment Statuses</option>
+          <option value="pending">PENDING</option>
+          <option value="paid">PAID</option>
+          <option value="failed">FAILED</option>
+          <option value="refunded">REFUNDED</option>
+        </select>
+      </div>
+
+      {/* ORDERS TABLE (MATCHING EXACT SCREENSHOT DESIGN) */}
+      <div className="bg-white dark:bg-[#121824] rounded-2xl border border-gray-200 dark:border-dark-border overflow-hidden shadow-xl">
         {isLoading ? (
-          <div className="p-12 text-center text-gray-500 dark:text-gray-400 font-medium">
-            Loading WhatsApp Orders...
-          </div>
+          <div className="p-12 text-center text-gray-400 font-medium">Loading WhatsApp Orders...</div>
         ) : orders.length === 0 ? (
           <div className="p-12 text-center text-gray-500 dark:text-gray-400 space-y-3">
-            <FiMessageSquare className="w-12 h-12 mx-auto text-gray-300 dark:text-gray-600" />
-            <p className="text-lg font-semibold text-gray-800 dark:text-white">No WhatsApp Orders Found</p>
-            <p className="text-sm">Create your first WhatsApp order to get started!</p>
+            <p className="text-base font-bold text-gray-800 dark:text-white">No WhatsApp Orders Found</p>
             <Link
               to="/whatsapp-orders/new"
-              className="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-emerald-700"
+              className="inline-block bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"
             >
-              <FiPlus /> Create Order
+              + Create WhatsApp Order
             </Link>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-gray-200 dark:border-dark-border bg-gray-50/50 dark:bg-dark-bg/50 text-xs font-bold text-gray-500 uppercase">
-                  <th className="py-4 px-4">Order ID</th>
-                  <th className="py-4 px-4">Customer</th>
-                  <th className="py-4 px-4">WhatsApp</th>
-                  <th className="py-4 px-4">Product(s)</th>
-                  <th className="py-4 px-4">Total</th>
-                  <th className="py-4 px-4">Payment</th>
-                  <th className="py-4 px-4">Courier / Tracking</th>
-                  <th className="py-4 px-4">Status</th>
-                  <th className="py-4 px-4">Date</th>
-                  <th className="py-4 px-4 text-right">Actions</th>
+                <tr className="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-[#182030] text-[11px] font-extrabold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="py-3.5 px-4">Order ID</th>
+                  <th className="py-3.5 px-4">Date</th>
+                  <th className="py-3.5 px-4">Customer</th>
+                  <th className="py-3.5 px-4">Total Price</th>
+                  <th className="py-3.5 px-4">Payment Info</th>
+                  <th className="py-3.5 px-4">Order Status</th>
+                  <th className="py-3.5 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-dark-border text-sm">
-                {orders.map((ord) => (
-                  <tr key={ord._id} className="hover:bg-gray-50/80 dark:hover:bg-dark-bg/50 transition-colors">
-                    {/* Order ID */}
-                    <td className="py-4 px-4 font-bold text-emerald-600 dark:text-emerald-400">
-                      <Link to={`/whatsapp-orders/${ord._id}`} className="hover:underline">
-                        {ord.orderNumber}
-                      </Link>
-                    </td>
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-800/80 text-xs">
+                {orders.map((ord) => {
+                  const addrType = ord.shippingAddressSnapshot?.type || 'Home';
+                  const grandTotal = ord.paymentDetails?.grandTotal || 0;
+                  const isPaid = ord.paymentDetails?.status === 'paid';
+                  const paidAmount = isPaid ? grandTotal : 0;
 
-                    {/* Customer */}
-                    <td className="py-4 px-4">
-                      <p className="font-semibold text-gray-900 dark:text-white">{ord.customerName}</p>
-                      {ord.shippingAddressSnapshot?.city && (
-                        <p className="text-xs text-gray-500">
-                          {ord.shippingAddressSnapshot.city}, {ord.shippingAddressSnapshot.state}
-                        </p>
-                      )}
-                    </td>
-
-                    {/* WhatsApp Number */}
-                    <td className="py-4 px-4">
-                      <button
-                        onClick={() => handleOpenWhatsApp(ord.whatsappNumber, ord.orderNumber)}
-                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400 text-xs font-semibold hover:bg-emerald-100 transition-colors"
-                        title="Open WhatsApp chat"
-                      >
-                        <FiMessageSquare size={14} />
-                        {ord.whatsappNumber}
-                      </button>
-                    </td>
-
-                    {/* Product(s) */}
-                    <td className="py-4 px-4 max-w-xs">
-                      <p className="font-medium text-gray-800 dark:text-gray-200 truncate">
-                        {ord.items?.[0]?.name || 'Custom Product'}
-                      </p>
-                      {ord.items?.length > 1 && (
-                        <p className="text-xs text-gray-500">+ {ord.items.length - 1} more item(s)</p>
-                      )}
-                    </td>
-
-                    {/* Total Amount */}
-                    <td className="py-4 px-4 font-bold text-gray-900 dark:text-white">
-                      ₹{(ord.paymentDetails?.grandTotal || 0).toLocaleString('en-IN')}
-                    </td>
-
-                    {/* Payment Status */}
-                    <td className="py-4 px-4">
-                      <span
-                        className={`px-2.5 py-1 rounded-full text-xs font-semibold uppercase ${
-                          PAYMENT_STATUS_STYLES[ord.paymentDetails?.status] || 'bg-gray-100 text-gray-700'
-                        }`}
-                      >
-                        {ord.paymentDetails?.method} • {ord.paymentDetails?.status}
-                      </span>
-                    </td>
-
-                    {/* Courier & Tracking */}
-                    <td className="py-4 px-4 text-xs">
-                      {ord.shippingInfo?.courierCompany ? (
-                        <div>
-                          <p className="font-semibold text-gray-800 dark:text-gray-200">
-                            {ord.shippingInfo.courierCompany}
-                          </p>
-                          <p className="text-gray-500 font-mono">{ord.shippingInfo.trackingNumber || 'No tracking #'}</p>
+                  return (
+                    <tr
+                      key={ord._id}
+                      className="hover:bg-gray-50/80 dark:hover:bg-[#1a2334] transition-colors"
+                    >
+                      {/* Order ID + Address Badge */}
+                      <td className="py-4 px-4">
+                        <div className="flex items-center gap-2">
+                          <Link
+                            to={`/whatsapp-orders/${ord._id}`}
+                            className="font-bold text-sm text-gray-900 dark:text-white hover:text-emerald-400 font-mono tracking-tight"
+                          >
+                            {ord.orderNumber}
+                          </Link>
+                          {ord.shippingAddressSnapshot?.type && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-purple-900/40 text-purple-300 border border-purple-500/30 text-[10px] font-bold">
+                              <FiHome size={10} />
+                              {addrType}
+                            </span>
+                          )}
                         </div>
-                      ) : (
-                        <span className="text-gray-400 italic">Not shipped yet</span>
-                      )}
-                    </td>
+                      </td>
 
-                    {/* Order Status */}
-                    <td className="py-4 px-4">
-                      <button
-                        onClick={() => {
-                          setStatusModalOrder(ord);
-                          setNewStatus(ord.status);
-                          setNewPaymentStatus(ord.paymentDetails?.status || 'pending');
-                          setStatusNote('');
-                        }}
-                        className="hover:opacity-80 transition-opacity"
-                        title="Click to change status"
-                      >
-                        {getStatusBadge(ord.status)}
-                      </button>
-                    </td>
+                      {/* Date */}
+                      <td className="py-4 px-4 text-gray-500 dark:text-gray-400 font-medium">
+                        {new Date(ord.createdAt).toLocaleDateString('en-GB')}
+                      </td>
 
-                    {/* Date */}
-                    <td className="py-4 px-4 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
-                      {new Date(ord.createdAt).toLocaleDateString('en-IN', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric',
-                      })}
-                    </td>
+                      {/* Customer Name & Subtitle */}
+                      <td className="py-4 px-4">
+                        <p className="font-bold text-sm text-gray-900 dark:text-white">
+                          {ord.customerName}
+                        </p>
+                        <p className="text-[11px] text-gray-400 font-medium">
+                          {ord.whatsappNumber} • Guest
+                        </p>
+                      </td>
 
-                    {/* Actions */}
-                    <td className="py-4 px-4 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <Link
-                          to={`/whatsapp-orders/${ord._id}`}
-                          className="p-1.5 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-bg rounded-lg"
-                          title="View Order"
+                      {/* Total Price (Blue/Cyan Font) */}
+                      <td className="py-4 px-4 font-black text-sm text-blue-600 dark:text-blue-400">
+                        ₹{grandTotal.toLocaleString('en-IN')}
+                      </td>
+
+                      {/* Payment Status Dropdown Selector (Manually make it PAID/PENDING) */}
+                      <td className="py-4 px-4">
+                        <div className="flex items-center gap-2">
+                          <select
+                            value={ord.paymentDetails?.status || 'pending'}
+                            onChange={(e) => handleInlinePaymentChange(ord, e.target.value)}
+                            className={`px-2.5 py-1 rounded-full text-[11px] font-black uppercase border cursor-pointer focus:outline-none transition-all ${
+                              isPaid
+                                ? 'bg-emerald-900/30 text-emerald-400 border-emerald-500/50'
+                                : 'bg-amber-900/30 text-amber-400 border-amber-500/50'
+                            }`}
+                          >
+                            <option value="pending" className="bg-gray-900 text-amber-400 font-bold">PENDING</option>
+                            <option value="paid" className="bg-gray-900 text-emerald-400 font-bold">PAID</option>
+                            <option value="failed" className="bg-gray-900 text-red-400 font-bold">FAILED</option>
+                            <option value="refunded" className="bg-gray-900 text-gray-400 font-bold">REFUNDED</option>
+                          </select>
+                          <span className="font-bold text-emerald-400 text-xs">
+                            ₹{paidAmount.toLocaleString('en-IN')}
+                          </span>
+                        </div>
+                      </td>
+
+                      {/* Order Status Dropdown Selector (Manually make it SHIPPED/CONFIRMED/etc) */}
+                      <td className="py-4 px-4">
+                        <select
+                          value={ord.status || 'new'}
+                          onChange={(e) => handleInlineStatusChange(ord, e.target.value)}
+                          className={`px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider border cursor-pointer focus:outline-none transition-all ${
+                            ord.status === 'shipped' || ord.status === 'in_transit' || ord.status === 'out_for_delivery'
+                              ? 'bg-blue-900/40 text-blue-300 border-blue-500/50'
+                              : ord.status === 'delivered'
+                              ? 'bg-emerald-900/40 text-emerald-300 border-emerald-500/50'
+                              : ord.status === 'cancelled'
+                              ? 'bg-red-900/40 text-red-300 border-red-500/50'
+                              : 'bg-indigo-900/40 text-indigo-300 border-indigo-500/50'
+                          }`}
                         >
-                          <FiEye size={16} />
-                        </Link>
+                          {ORDER_STATUS_LIST.map((s) => (
+                            <option key={s.value} value={s.value} className="bg-gray-900 text-white font-bold">
+                              {s.label} ↕
+                            </option>
+                          ))}
+                        </select>
+                      </td>
 
-                        <Link
-                          to={`/whatsapp-orders/${ord._id}/edit`}
-                          className="p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg"
-                          title="Edit Order"
-                        >
-                          <FiEdit size={16} />
-                        </Link>
+                      {/* Actions */}
+                      <td className="py-4 px-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <Link
+                            to={`/whatsapp-orders/${ord._id}`}
+                            className="p-1.5 text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
+                            title="View Details"
+                          >
+                            <FiEye size={16} />
+                          </Link>
 
-                        <button
-                          onClick={() => handleOpenWhatsApp(ord.whatsappNumber, ord.orderNumber)}
-                          className="p-1.5 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg"
-                          title="Open WhatsApp"
-                        >
-                          <FiMessageSquare size={16} />
-                        </button>
+                          <button
+                            onClick={() => handleOpenWhatsApp(ord.whatsappNumber, ord.orderNumber)}
+                            className="p-1.5 text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors"
+                            title="Open WhatsApp Chat"
+                          >
+                            <FiMessageSquare size={16} />
+                          </button>
 
-                        <button
-                          onClick={() => {
-                            if (window.confirm(`Delete WhatsApp order ${ord.orderNumber}?`)) {
-                              deleteMutation.mutate(ord._id);
-                            }
-                          }}
-                          className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
-                          title="Delete Order"
-                        >
-                          <FiTrash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                          <Link
+                            to={`/whatsapp-orders/${ord._id}`}
+                            className="p-1.5 text-gray-400 hover:bg-gray-500/10 rounded-lg transition-colors"
+                            title="Print Invoice"
+                          >
+                            <FiPrinter size={16} />
+                          </Link>
+
+                          <button
+                            onClick={() => {
+                              if (window.confirm(`Delete WhatsApp Order ${ord.orderNumber}?`)) {
+                                deleteMutation.mutate(ord._id);
+                              }
+                            }}
+                            className="p-1.5 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                            title="Delete Order"
+                          >
+                            <FiTrash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         )}
 
-        {/* Pagination Footer */}
+        {/* Pagination */}
         {pagination.pages > 1 && (
-          <div className="p-4 border-t border-gray-200 dark:border-dark-border flex items-center justify-between text-sm">
-            <span className="text-gray-500">
-              Page {pagination.page} of {pagination.pages} ({pagination.total} total orders)
+          <div className="flex items-center justify-between p-4 border-t border-gray-200 dark:border-gray-800 text-xs">
+            <span className="text-gray-500 dark:text-gray-400 font-medium">
+              Page {pagination.page} of {pagination.pages} ({pagination.total} orders)
             </span>
             <div className="flex gap-2">
               <button
-                disabled={page <= 1}
-                onClick={() => setPage((p) => p - 1)}
-                className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-dark-border text-gray-700 dark:text-gray-300 disabled:opacity-40"
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="px-3 py-1.5 rounded-xl border border-gray-200 dark:border-gray-800 disabled:opacity-40 font-bold dark:text-white"
               >
-                Previous
+                Prev
               </button>
               <button
-                disabled={page >= pagination.pages}
-                onClick={() => setPage((p) => p + 1)}
-                className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-dark-border text-gray-700 dark:text-gray-300 disabled:opacity-40"
+                onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))}
+                disabled={page === pagination.pages}
+                className="px-3 py-1.5 rounded-xl border border-gray-200 dark:border-gray-800 disabled:opacity-40 font-bold dark:text-white"
               >
                 Next
               </button>
@@ -512,82 +499,6 @@ export default function WhatsAppOrders() {
           </div>
         )}
       </div>
-
-      {/* Quick Change Status Modal */}
-      {statusModalOrder && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-dark-card max-w-md w-full rounded-2xl p-6 border border-gray-200 dark:border-dark-border shadow-2xl space-y-4">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-              Change Status: {statusModalOrder.orderNumber}
-            </h3>
-
-            <div className="space-y-3 text-sm">
-              <div>
-                <label className="block font-medium mb-1 dark:text-gray-300">Order Status</label>
-                <select
-                  value={newStatus}
-                  onChange={(e) => setNewStatus(e.target.value)}
-                  className="w-full p-2.5 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border rounded-xl dark:text-white"
-                >
-                  {STATUS_OPTIONS.map((s) => (
-                    <option key={s.value} value={s.value}>
-                      {s.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block font-medium mb-1 dark:text-gray-300">Payment Status</label>
-                <select
-                  value={newPaymentStatus}
-                  onChange={(e) => setNewPaymentStatus(e.target.value)}
-                  className="w-full p-2.5 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border rounded-xl dark:text-white"
-                >
-                  <option value="pending">Pending</option>
-                  <option value="paid">Paid</option>
-                  <option value="failed">Failed</option>
-                  <option value="refunded">Refunded</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block font-medium mb-1 dark:text-gray-300">Status Update Note (Optional)</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Packed and ready for dispatch"
-                  value={statusNote}
-                  onChange={(e) => setStatusNote(e.target.value)}
-                  className="w-full p-2.5 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border rounded-xl dark:text-white"
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-3 pt-2">
-              <button
-                onClick={() => setStatusModalOrder(null)}
-                className="px-4 py-2 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-bg text-sm font-medium"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  statusMutation.mutate({
-                    id: statusModalOrder._id,
-                    status: newStatus,
-                    paymentStatus: newPaymentStatus,
-                    message: statusNote,
-                  });
-                }}
-                disabled={statusMutation.isLoading}
-                className="px-5 py-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 text-sm font-medium shadow-md"
-              >
-                {statusMutation.isLoading ? 'Updating...' : 'Update Status'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
