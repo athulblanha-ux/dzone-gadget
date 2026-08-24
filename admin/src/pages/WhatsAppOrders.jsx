@@ -4,7 +4,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   FiSearch,
   FiEye,
-  FiEdit,
   FiTrash2,
   FiMessageSquare,
   FiPlus,
@@ -27,13 +26,6 @@ const ORDER_STATUS_LIST = [
   { value: 'delivered', label: 'DELIVERED' },
   { value: 'cancelled', label: 'CANCELLED' },
   { value: 'returned', label: 'RETURNED' },
-];
-
-const PAYMENT_STATUS_LIST = [
-  { value: 'pending', label: 'PENDING' },
-  { value: 'paid', label: 'PAID' },
-  { value: 'failed', label: 'FAILED' },
-  { value: 'refunded', label: 'REFUNDED' },
 ];
 
 export default function WhatsAppOrders() {
@@ -125,16 +117,6 @@ export default function WhatsAppOrders() {
     toast.success(`Status updated to ${newStatus.toUpperCase()}`);
   };
 
-  const handleInlinePaymentChange = (ord, newPaymentStatus) => {
-    statusMutation.mutate({
-      id: ord._id,
-      status: ord.status,
-      paymentStatus: newPaymentStatus,
-      message: `Payment status manually changed to ${newPaymentStatus.toUpperCase()}`,
-    });
-    toast.success(`Payment status updated to ${newPaymentStatus.toUpperCase()}`);
-  };
-
   // Open WhatsApp direct chat
   const handleOpenWhatsApp = (whatsappNumber, orderNumber) => {
     if (!whatsappNumber) return;
@@ -145,341 +127,279 @@ export default function WhatsAppOrders() {
   };
 
   return (
-    <div className="space-y-6 pb-12">
+    <div className="space-y-4 pb-12 text-xs">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex items-center justify-between gap-2">
         <div>
-          <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white flex items-center gap-2">
+          <h1 className="text-xl font-extrabold text-gray-900 dark:text-white flex items-center gap-1.5">
             💬 WhatsApp Orders
           </h1>
-          <p className="text-xs text-gray-500">Manage orders placed via WhatsApp with instant status controls</p>
+          <p className="text-[11px] text-gray-500">Quick WhatsApp order list & status controls</p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <button
             onClick={() => refetch()}
-            className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-dark-card rounded-xl border border-gray-200 dark:border-dark-border"
+            className="p-1.5 text-gray-500 hover:bg-gray-100 dark:hover:bg-dark-card rounded-xl border border-gray-200 dark:border-dark-border"
             title="Refresh list"
           >
-            <FiRefreshCw size={16} />
+            <FiRefreshCw size={14} />
           </button>
           <Link
             to="/whatsapp-orders/new"
-            className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg shadow-emerald-600/20 transition-all flex items-center gap-1.5"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-1"
           >
-            <FiPlus size={16} /> + New WhatsApp Order
+            <FiPlus size={14} /> + New Order
           </Link>
         </div>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-        <div
-          onClick={() => { setStatusFilter(''); setPage(1); }}
-          className={`cursor-pointer p-3 rounded-2xl border transition-all ${
-            statusFilter === ''
-              ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 ring-2 ring-emerald-500'
-              : 'bg-white dark:bg-dark-card border-gray-200 dark:border-dark-border hover:border-emerald-500/50'
-          }`}
-        >
-          <p className="text-[10px] font-bold uppercase text-gray-400">Total</p>
-          <p className="text-lg font-black text-gray-900 dark:text-white">{stats.total}</p>
-        </div>
-
-        <div
-          onClick={() => { setStatusFilter('new'); setPage(1); }}
-          className={`cursor-pointer p-3 rounded-2xl border transition-all ${
-            statusFilter === 'new'
-              ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-500 ring-2 ring-yellow-500'
-              : 'bg-white dark:bg-dark-card border-gray-200 dark:border-dark-border'
-          }`}
-        >
-          <p className="text-[10px] font-bold uppercase text-yellow-600 dark:text-yellow-400">New</p>
-          <p className="text-lg font-black text-yellow-600 dark:text-yellow-400">{stats.new}</p>
-        </div>
-
-        <div
-          onClick={() => { setStatusFilter('confirmed'); setPage(1); }}
-          className={`cursor-pointer p-3 rounded-2xl border transition-all ${
-            statusFilter === 'confirmed'
-              ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-500 ring-2 ring-blue-500'
-              : 'bg-white dark:bg-dark-card border-gray-200 dark:border-dark-border'
-          }`}
-        >
-          <p className="text-[10px] font-bold uppercase text-blue-600 dark:text-blue-400">Confirmed</p>
-          <p className="text-lg font-black text-blue-600 dark:text-blue-400">{stats.confirmed}</p>
-        </div>
-
-        <div
-          onClick={() => { setStatusFilter('processing'); setPage(1); }}
-          className={`cursor-pointer p-3 rounded-2xl border transition-all ${
-            statusFilter === 'processing'
-              ? 'bg-purple-50 dark:bg-purple-900/20 border-purple-500 ring-2 ring-purple-500'
-              : 'bg-white dark:bg-dark-card border-gray-200 dark:border-dark-border'
-          }`}
-        >
-          <p className="text-[10px] font-bold uppercase text-purple-600 dark:text-purple-400">Processing</p>
-          <p className="text-lg font-black text-purple-600 dark:text-purple-400">{stats.processing}</p>
-        </div>
-
-        <div
-          onClick={() => { setStatusFilter('shipped'); setPage(1); }}
-          className={`cursor-pointer p-3 rounded-2xl border transition-all ${
-            statusFilter === 'shipped'
-              ? 'bg-cyan-50 dark:bg-cyan-900/20 border-cyan-500 ring-2 ring-cyan-500'
-              : 'bg-white dark:bg-dark-card border-gray-200 dark:border-dark-border'
-          }`}
-        >
-          <p className="text-[10px] font-bold uppercase text-cyan-600 dark:text-cyan-400">Shipped</p>
-          <p className="text-lg font-black text-cyan-600 dark:text-cyan-400">{stats.shipped}</p>
-        </div>
-
-        <div
-          onClick={() => { setStatusFilter('delivered'); setPage(1); }}
-          className={`cursor-pointer p-3 rounded-2xl border transition-all ${
-            statusFilter === 'delivered'
-              ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 ring-2 ring-emerald-500'
-              : 'bg-white dark:bg-dark-card border-gray-200 dark:border-dark-border'
-          }`}
-        >
-          <p className="text-[10px] font-bold uppercase text-emerald-600 dark:text-emerald-400">Delivered</p>
-          <p className="text-lg font-black text-emerald-600 dark:text-emerald-400">{stats.delivered}</p>
-        </div>
-
-        <div
-          onClick={() => { setStatusFilter('cancelled'); setPage(1); }}
-          className={`cursor-pointer p-3 rounded-2xl border transition-all ${
-            statusFilter === 'cancelled'
-              ? 'bg-red-50 dark:bg-red-900/20 border-red-500 ring-2 ring-red-500'
-              : 'bg-white dark:bg-dark-card border-gray-200 dark:border-dark-border'
-          }`}
-        >
-          <p className="text-[10px] font-bold uppercase text-red-600 dark:text-red-400">Cancelled</p>
-          <p className="text-lg font-black text-red-600 dark:text-red-400">{stats.cancelled}</p>
-        </div>
-
-        <div
-          onClick={() => { setStatusFilter('returned'); setPage(1); }}
-          className={`cursor-pointer p-3 rounded-2xl border transition-all ${
-            statusFilter === 'returned'
-              ? 'bg-gray-200 dark:bg-gray-800 border-gray-500 ring-2 ring-gray-500'
-              : 'bg-white dark:bg-dark-card border-gray-200 dark:border-dark-border'
-          }`}
-        >
-          <p className="text-[10px] font-bold uppercase text-gray-500 dark:text-gray-400">Returned</p>
-          <p className="text-lg font-black text-gray-600 dark:text-gray-300">{stats.returned}</p>
-        </div>
+      {/* Compact Summary Cards Grid */}
+      <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
+        {[
+          { key: '', label: 'Total', count: stats.total, color: 'text-white' },
+          { key: 'new', label: 'New', count: stats.new, color: 'text-yellow-400' },
+          { key: 'paid', label: 'Paid', count: stats.paid || 0, color: 'text-emerald-400' },
+          { key: 'confirmed', label: 'Confirmed', count: stats.confirmed, color: 'text-blue-400' },
+          { key: 'processing', label: 'Process', count: stats.processing, color: 'text-purple-400' },
+          { key: 'shipped', label: 'Shipped', count: stats.shipped, color: 'text-cyan-400' },
+          { key: 'delivered', label: 'Delivered', count: stats.delivered, color: 'text-emerald-400' },
+          { key: 'cancelled', label: 'Cancel', count: stats.cancelled, color: 'text-red-400' },
+        ].map((item) => (
+          <div
+            key={item.key}
+            onClick={() => { setStatusFilter(item.key); setPage(1); }}
+            className={`cursor-pointer p-2 rounded-xl border text-center transition-all ${
+              statusFilter === item.key
+                ? 'bg-emerald-900/30 border-emerald-500 ring-1 ring-emerald-500'
+                : 'bg-white dark:bg-[#121824] border-gray-200 dark:border-gray-800'
+            }`}
+          >
+            <p className="text-[9px] font-bold uppercase text-gray-400 truncate">{item.label}</p>
+            <p className={`text-sm font-black ${item.color}`}>{item.count}</p>
+          </div>
+        ))}
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-white dark:bg-dark-card p-4 rounded-2xl border border-gray-200 dark:border-dark-border shadow-sm flex flex-col sm:flex-row gap-3">
+      <div className="bg-white dark:bg-[#121824] p-3 rounded-xl border border-gray-200 dark:border-gray-800 flex flex-col sm:flex-row gap-2">
         <div className="relative flex-1">
-          <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+          <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
           <input
             type="text"
-            placeholder="Search by Order ID, Customer Name, Phone number..."
+            placeholder="Search Order ID, Customer Name, Phone..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border rounded-xl text-sm dark:text-white"
+            className="w-full pl-9 pr-3 py-1.5 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-gray-800 rounded-lg text-xs dark:text-white"
           />
         </div>
 
         <select
           value={statusFilter}
           onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-          className="px-3 py-2 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border rounded-xl text-xs dark:text-white font-medium"
+          className="px-2.5 py-1.5 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-gray-800 rounded-lg text-xs dark:text-white font-medium"
         >
-          <option value="">All Order Statuses</option>
+          <option value="">All Statuses</option>
           {ORDER_STATUS_LIST.map((s) => (
             <option key={s.value} value={s.value}>{s.label}</option>
           ))}
         </select>
-
-        <select
-          value={paymentStatusFilter}
-          onChange={(e) => { setPaymentStatusFilter(e.target.value); setPage(1); }}
-          className="px-3 py-2 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border rounded-xl text-xs dark:text-white font-medium"
-        >
-          <option value="">All Payment Statuses</option>
-          <option value="pending">PENDING</option>
-          <option value="paid">PAID</option>
-          <option value="failed">FAILED</option>
-          <option value="refunded">REFUNDED</option>
-        </select>
       </div>
 
-      {/* ORDERS TABLE (MATCHING EXACT SCREENSHOT DESIGN) */}
-      <div className="bg-white dark:bg-[#121824] rounded-2xl border border-gray-200 dark:border-dark-border overflow-hidden shadow-xl">
+      {/* MAIN CONTENT CONTAINER: Mobile Cards (sm:hidden) + Desktop Compact Table (hidden sm:block) */}
+      <div className="bg-white dark:bg-[#121824] rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-lg">
         {isLoading ? (
-          <div className="p-12 text-center text-gray-400 font-medium">Loading WhatsApp Orders...</div>
+          <div className="p-8 text-center text-gray-400">Loading orders...</div>
         ) : orders.length === 0 ? (
-          <div className="p-12 text-center text-gray-500 dark:text-gray-400 space-y-3">
-            <p className="text-base font-bold text-gray-800 dark:text-white">No WhatsApp Orders Found</p>
-            <Link
-              to="/whatsapp-orders/new"
-              className="inline-block bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold"
-            >
-              + Create WhatsApp Order
+          <div className="p-8 text-center text-gray-400 space-y-2">
+            <p className="text-sm font-bold text-white">No WhatsApp Orders Found</p>
+            <Link to="/whatsapp-orders/new" className="inline-block bg-emerald-600 text-white px-3 py-1.5 rounded-lg font-bold text-xs">
+              + Create Order
             </Link>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-[#182030] text-[11px] font-extrabold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  <th className="py-3.5 px-4">Order ID</th>
-                  <th className="py-3.5 px-4">Date</th>
-                  <th className="py-3.5 px-4">Customer</th>
-                  <th className="py-3.5 px-4">Total Price</th>
-                  <th className="py-3.5 px-4">Order Status</th>
-                  <th className="py-3.5 px-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100 dark:divide-gray-800/80 text-xs">
-                {orders.map((ord) => {
-                  const addrType = ord.shippingAddressSnapshot?.type || 'Home';
-                  const grandTotal = ord.paymentDetails?.grandTotal || 0;
+          <>
+            {/* 1. MOBILE COMPACT CARD VIEW (Visible only on screens < 640px) */}
+            <div className="block sm:hidden divide-y divide-gray-100 dark:divide-gray-800">
+              {orders.map((ord) => {
+                const grandTotal = ord.paymentDetails?.grandTotal || 0;
+                const cleanName = ord.customerName && ord.customerName.includes(',')
+                  ? ord.customerName.split(',')[0].trim()
+                  : ord.customerName;
 
-                  return (
-                    <tr
-                      key={ord._id}
-                      className="hover:bg-gray-50/80 dark:hover:bg-[#1a2334] transition-colors"
-                    >
-                      {/* Order ID + Address Badge */}
-                      <td className="py-4 px-4">
-                        <div className="flex items-center gap-2">
-                          <Link
-                            to={`/whatsapp-orders/${ord._id}`}
-                            className="font-bold text-sm text-gray-900 dark:text-white hover:text-emerald-400 font-mono tracking-tight"
-                          >
-                            {ord.orderNumber}
-                          </Link>
-                          {ord.shippingAddressSnapshot?.type && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-purple-900/40 text-purple-300 border border-purple-500/30 text-[10px] font-bold">
-                              <FiHome size={10} />
-                              {addrType}
-                            </span>
-                          )}
-                        </div>
-                      </td>
-
-                      {/* Date */}
-                      <td className="py-4 px-4 text-gray-500 dark:text-gray-400 font-medium">
-                        {new Date(ord.createdAt).toLocaleDateString('en-GB')}
-                      </td>
-
-                      {/* Customer Name & Subtitle */}
-                      <td className="py-4 px-4 max-w-[200px]">
-                        <p
-                          className="font-bold text-sm text-gray-900 dark:text-white truncate"
-                          title={ord.customerName}
+                return (
+                  <div key={ord._id} className="p-3 space-y-2">
+                    {/* Top Row: Order # + Date + Total */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <Link
+                          to={`/whatsapp-orders/${ord._id}`}
+                          className="font-extrabold text-sm text-white font-mono tracking-tight"
                         >
-                          {ord.customerName && ord.customerName.includes(',')
-                            ? ord.customerName.split(',')[0].trim()
-                            : ord.customerName}
-                        </p>
-                        <p className="text-[11px] text-gray-400 font-medium">
-                          {ord.whatsappNumber} • Guest
-                        </p>
-                      </td>
+                          {ord.orderNumber}
+                        </Link>
+                        {ord.shippingAddressSnapshot?.type && (
+                          <span className="px-1.5 py-0.5 rounded bg-purple-900/40 text-purple-300 text-[9px] font-bold">
+                            {ord.shippingAddressSnapshot.type}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-gray-400">
+                          {new Date(ord.createdAt).toLocaleDateString('en-GB')}
+                        </span>
+                        <span className="font-black text-sm text-blue-400">
+                          ₹{grandTotal.toLocaleString('en-IN')}
+                        </span>
+                      </div>
+                    </div>
 
-                      {/* Total Price (Blue/Cyan Font) */}
-                      <td className="py-4 px-4 font-black text-sm text-blue-600 dark:text-blue-400">
-                        ₹{grandTotal.toLocaleString('en-IN')}
-                      </td>
+                    {/* Customer Row */}
+                    <div className="flex items-center justify-between">
+                      <p className="font-bold text-white truncate max-w-[180px]">{cleanName}</p>
+                      <span className="text-gray-400 font-mono text-[11px]">{ord.whatsappNumber}</span>
+                    </div>
 
-                      {/* Order Status Dropdown Selector (Manually make it SHIPPED/CONFIRMED/etc) */}
-                      <td className="py-4 px-4">
-                        <select
-                          value={ord.status || 'new'}
-                          onChange={(e) => handleInlineStatusChange(ord, e.target.value)}
-                          className={`px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider border cursor-pointer focus:outline-none transition-all ${
-                            ord.status === 'shipped' || ord.status === 'in_transit' || ord.status === 'out_for_delivery'
-                              ? 'bg-blue-900/40 text-blue-300 border-blue-500/50'
-                              : ord.status === 'delivered'
-                              ? 'bg-emerald-900/40 text-emerald-300 border-emerald-500/50'
-                              : ord.status === 'cancelled'
-                              ? 'bg-red-900/40 text-red-300 border-red-500/50'
-                              : 'bg-indigo-900/40 text-indigo-300 border-indigo-500/50'
-                          }`}
-                        >
-                          {ORDER_STATUS_LIST.map((s) => (
-                            <option key={s.value} value={s.value} className="bg-gray-900 text-white font-bold">
-                              {s.label} ↕
-                            </option>
-                          ))}
-                        </select>
-                      </td>
+                    {/* Bottom Row: Status Dropdown + Action Icons */}
+                    <div className="flex items-center justify-between pt-1.5 border-t border-gray-800/80">
+                      <select
+                        value={ord.status || 'new'}
+                        onChange={(e) => handleInlineStatusChange(ord, e.target.value)}
+                        className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase border cursor-pointer ${
+                          ord.status === 'delivered' || ord.status === 'paid'
+                            ? 'bg-emerald-900/40 text-emerald-300 border-emerald-500/50'
+                            : ord.status === 'cancelled'
+                            ? 'bg-red-900/40 text-red-300 border-red-500/50'
+                            : 'bg-blue-900/40 text-blue-300 border-blue-500/50'
+                        }`}
+                      >
+                        {ORDER_STATUS_LIST.map((s) => (
+                          <option key={s.value} value={s.value} className="bg-gray-900 text-white font-bold">
+                            {s.label} ↕
+                          </option>
+                        ))}
+                      </select>
 
-                      {/* Actions */}
-                      <td className="py-4 px-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <Link
-                            to={`/whatsapp-orders/${ord._id}`}
-                            className="p-1.5 text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
-                            title="View Details"
+                      <div className="flex items-center gap-2">
+                        <Link to={`/whatsapp-orders/${ord._id}`} className="p-1 text-blue-400 hover:bg-blue-500/10 rounded">
+                          <FiEye size={15} />
+                        </Link>
+                        <button onClick={() => handleOpenWhatsApp(ord.whatsappNumber, ord.orderNumber)} className="p-1 text-emerald-400 hover:bg-emerald-500/10 rounded">
+                          <FiMessageSquare size={15} />
+                        </button>
+                        <Link to={`/whatsapp-orders/${ord._id}`} className="p-1 text-gray-400 hover:bg-gray-500/10 rounded">
+                          <FiPrinter size={15} />
+                        </Link>
+                        <button onClick={() => { if (window.confirm(`Delete ${ord.orderNumber}?`)) deleteMutation.mutate(ord._id); }} className="p-1 text-red-400 hover:bg-red-500/10 rounded">
+                          <FiTrash2 size={15} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* 2. DESKTOP COMPACT TABLE VIEW (Visible on screens >= 640px) */}
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-gray-800 bg-[#182030] text-[10px] font-extrabold text-gray-400 uppercase tracking-wider">
+                    <th className="py-2.5 px-3">Order ID</th>
+                    <th className="py-2.5 px-3">Date</th>
+                    <th className="py-2.5 px-3">Customer</th>
+                    <th className="py-2.5 px-3">Total Price</th>
+                    <th className="py-2.5 px-3">Order Status</th>
+                    <th className="py-2.5 px-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-800/70 text-xs">
+                  {orders.map((ord) => {
+                    const grandTotal = ord.paymentDetails?.grandTotal || 0;
+                    const cleanName = ord.customerName && ord.customerName.includes(',')
+                      ? ord.customerName.split(',')[0].trim()
+                      : ord.customerName;
+
+                    return (
+                      <tr key={ord._id} className="hover:bg-[#1a2334] transition-colors">
+                        {/* Order ID */}
+                        <td className="py-2.5 px-3">
+                          <div className="flex items-center gap-1.5">
+                            <Link to={`/whatsapp-orders/${ord._id}`} className="font-extrabold text-xs text-white hover:text-emerald-400 font-mono">
+                              {ord.orderNumber}
+                            </Link>
+                            {ord.shippingAddressSnapshot?.type && (
+                              <span className="px-1.5 py-0.5 rounded bg-purple-900/40 text-purple-300 border border-purple-500/30 text-[9px] font-bold">
+                                {ord.shippingAddressSnapshot.type}
+                              </span>
+                            )}
+                          </div>
+                        </td>
+
+                        {/* Date */}
+                        <td className="py-2.5 px-3 text-gray-400 font-medium">
+                          {new Date(ord.createdAt).toLocaleDateString('en-GB')}
+                        </td>
+
+                        {/* Customer */}
+                        <td className="py-2.5 px-3 max-w-[180px]">
+                          <p className="font-bold text-xs text-white truncate" title={ord.customerName}>
+                            {cleanName}
+                          </p>
+                          <p className="text-[10px] text-gray-400">{ord.whatsappNumber}</p>
+                        </td>
+
+                        {/* Total Price */}
+                        <td className="py-2.5 px-3 font-black text-xs text-blue-400">
+                          ₹{grandTotal.toLocaleString('en-IN')}
+                        </td>
+
+                        {/* Status Dropdown */}
+                        <td className="py-2.5 px-3">
+                          <select
+                            value={ord.status || 'new'}
+                            onChange={(e) => handleInlineStatusChange(ord, e.target.value)}
+                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase border cursor-pointer ${
+                              ord.status === 'delivered' || ord.status === 'paid'
+                                ? 'bg-emerald-900/40 text-emerald-300 border-emerald-500/50'
+                                : ord.status === 'cancelled'
+                                ? 'bg-red-900/40 text-red-300 border-red-500/50'
+                                : 'bg-blue-900/40 text-blue-300 border-blue-500/50'
+                            }`}
                           >
-                            <FiEye size={16} />
-                          </Link>
+                            {ORDER_STATUS_LIST.map((s) => (
+                              <option key={s.value} value={s.value} className="bg-gray-900 text-white font-bold">
+                                {s.label} ↕
+                              </option>
+                            ))}
+                          </select>
+                        </td>
 
-                          <button
-                            onClick={() => handleOpenWhatsApp(ord.whatsappNumber, ord.orderNumber)}
-                            className="p-1.5 text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors"
-                            title="Open WhatsApp Chat"
-                          >
-                            <FiMessageSquare size={16} />
-                          </button>
-
-                          <Link
-                            to={`/whatsapp-orders/${ord._id}`}
-                            className="p-1.5 text-gray-400 hover:bg-gray-500/10 rounded-lg transition-colors"
-                            title="Print Invoice"
-                          >
-                            <FiPrinter size={16} />
-                          </Link>
-
-                          <button
-                            onClick={() => {
-                              if (window.confirm(`Delete WhatsApp Order ${ord.orderNumber}?`)) {
-                                deleteMutation.mutate(ord._id);
-                              }
-                            }}
-                            className="p-1.5 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
-                            title="Delete Order"
-                          >
-                            <FiTrash2 size={16} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                        {/* Actions */}
+                        <td className="py-2.5 px-3 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <Link to={`/whatsapp-orders/${ord._id}`} className="p-1 text-blue-400 hover:bg-blue-500/10 rounded"><FiEye size={14} /></Link>
+                            <button onClick={() => handleOpenWhatsApp(ord.whatsappNumber, ord.orderNumber)} className="p-1 text-emerald-400 hover:bg-emerald-500/10 rounded"><FiMessageSquare size={14} /></button>
+                            <Link to={`/whatsapp-orders/${ord._id}`} className="p-1 text-gray-400 hover:bg-gray-500/10 rounded"><FiPrinter size={14} /></Link>
+                            <button onClick={() => { if (window.confirm(`Delete ${ord.orderNumber}?`)) deleteMutation.mutate(ord._id); }} className="p-1 text-red-400 hover:bg-red-500/10 rounded"><FiTrash2 size={14} /></button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
 
         {/* Pagination */}
         {pagination.pages > 1 && (
-          <div className="flex items-center justify-between p-4 border-t border-gray-200 dark:border-gray-800 text-xs">
-            <span className="text-gray-500 dark:text-gray-400 font-medium">
-              Page {pagination.page} of {pagination.pages} ({pagination.total} orders)
-            </span>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="px-3 py-1.5 rounded-xl border border-gray-200 dark:border-gray-800 disabled:opacity-40 font-bold dark:text-white"
-              >
-                Prev
-              </button>
-              <button
-                onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))}
-                disabled={page === pagination.pages}
-                className="px-3 py-1.5 rounded-xl border border-gray-200 dark:border-gray-800 disabled:opacity-40 font-bold dark:text-white"
-              >
-                Next
-              </button>
+          <div className="flex items-center justify-between p-3 border-t border-gray-800 text-[11px]">
+            <span className="text-gray-400">Page {pagination.page} of {pagination.pages}</span>
+            <div className="flex gap-1.5">
+              <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="px-2.5 py-1 rounded-lg border border-gray-800 disabled:opacity-30 font-bold text-white">Prev</button>
+              <button onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))} disabled={page === pagination.pages} className="px-2.5 py-1 rounded-lg border border-gray-800 disabled:opacity-30 font-bold text-white">Next</button>
             </div>
           </div>
         )}
