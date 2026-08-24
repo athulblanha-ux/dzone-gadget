@@ -17,6 +17,7 @@ import api from '../lib/api';
 
 const ORDER_STATUS_LIST = [
   { value: 'new', label: 'NEW' },
+  { value: 'paid', label: 'PAID' },
   { value: 'confirmed', label: 'CONFIRMED' },
   { value: 'processing', label: 'PROCESSING' },
   { value: 'packed', label: 'PACKED' },
@@ -110,10 +111,15 @@ export default function WhatsAppOrders() {
 
   // Inline Status Handlers
   const handleInlineStatusChange = (ord, newStatus) => {
+    let targetPaymentStatus = ord.paymentDetails?.status || 'pending';
+    if (newStatus === 'paid') {
+      targetPaymentStatus = 'paid';
+    }
+
     statusMutation.mutate({
       id: ord._id,
       status: newStatus,
-      paymentStatus: ord.paymentDetails?.status || 'pending',
+      paymentStatus: targetPaymentStatus,
       message: `Status manually changed to ${newStatus.toUpperCase()}`,
     });
     toast.success(`Status updated to ${newStatus.toUpperCase()}`);
@@ -325,7 +331,6 @@ export default function WhatsAppOrders() {
                   <th className="py-3.5 px-4">Date</th>
                   <th className="py-3.5 px-4">Customer</th>
                   <th className="py-3.5 px-4">Total Price</th>
-                  <th className="py-3.5 px-4">Payment Info</th>
                   <th className="py-3.5 px-4">Order Status</th>
                   <th className="py-3.5 px-4 text-right">Actions</th>
                 </tr>
@@ -334,8 +339,6 @@ export default function WhatsAppOrders() {
                 {orders.map((ord) => {
                   const addrType = ord.shippingAddressSnapshot?.type || 'Home';
                   const grandTotal = ord.paymentDetails?.grandTotal || 0;
-                  const isPaid = ord.paymentDetails?.status === 'paid';
-                  const paidAmount = isPaid ? grandTotal : 0;
 
                   return (
                     <tr
@@ -383,29 +386,6 @@ export default function WhatsAppOrders() {
                       {/* Total Price (Blue/Cyan Font) */}
                       <td className="py-4 px-4 font-black text-sm text-blue-600 dark:text-blue-400">
                         ₹{grandTotal.toLocaleString('en-IN')}
-                      </td>
-
-                      {/* Payment Status Dropdown Selector (Manually make it PAID/PENDING) */}
-                      <td className="py-4 px-4">
-                        <div className="flex items-center gap-2">
-                          <select
-                            value={ord.paymentDetails?.status || 'pending'}
-                            onChange={(e) => handleInlinePaymentChange(ord, e.target.value)}
-                            className={`px-2.5 py-1 rounded-full text-[11px] font-black uppercase border cursor-pointer focus:outline-none transition-all ${
-                              isPaid
-                                ? 'bg-emerald-900/30 text-emerald-400 border-emerald-500/50'
-                                : 'bg-amber-900/30 text-amber-400 border-amber-500/50'
-                            }`}
-                          >
-                            <option value="pending" className="bg-gray-900 text-amber-400 font-bold">PENDING</option>
-                            <option value="paid" className="bg-gray-900 text-emerald-400 font-bold">PAID</option>
-                            <option value="failed" className="bg-gray-900 text-red-400 font-bold">FAILED</option>
-                            <option value="refunded" className="bg-gray-900 text-gray-400 font-bold">REFUNDED</option>
-                          </select>
-                          <span className="font-bold text-emerald-400 text-xs">
-                            ₹{paidAmount.toLocaleString('en-IN')}
-                          </span>
-                        </div>
                       </td>
 
                       {/* Order Status Dropdown Selector (Manually make it SHIPPED/CONFIRMED/etc) */}

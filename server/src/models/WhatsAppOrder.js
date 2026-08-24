@@ -73,6 +73,7 @@ const whatsappOrderSchema = new mongoose.Schema(
       type: String,
       enum: [
         'new',
+        'paid',
         'confirmed',
         'processing',
         'packed',
