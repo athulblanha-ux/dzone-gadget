@@ -469,10 +469,7 @@ export default function WhatsAppOrderDetail() {
                   <tr className="border-b border-gray-200 dark:border-dark-border text-xs font-bold text-gray-500 uppercase">
                     <th className="py-3 px-3">Item Description</th>
                     <th className="py-3 px-3">SKU / Variant</th>
-                    <th className="py-3 px-3">Price</th>
                     <th className="py-3 px-3">Qty</th>
-                    <th className="py-3 px-3">Discount</th>
-                    <th className="py-3 px-3 text-right">Total</th>
                     <th className="py-3 px-3 text-right">Actions</th>
                   </tr>
                 </thead>
@@ -485,7 +482,6 @@ export default function WhatsAppOrderDetail() {
                       <td className="py-3 px-3 text-xs text-gray-500">
                         {item.sku || item.variant || item.size || 'N/A'}
                       </td>
-                      <td className="py-3 px-3 font-medium">₹{item.unitPrice}</td>
                       <td className="py-3 px-3 font-bold">
                         <div className="inline-flex items-center gap-1.5 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-lg border border-gray-200 dark:border-gray-700">
                           <button
@@ -505,10 +501,6 @@ export default function WhatsAppOrderDetail() {
                           </button>
                         </div>
                       </td>
-                      <td className="py-3 px-3 text-gray-500">₹{item.discount || 0}</td>
-                      <td className="py-3 px-3 text-right font-bold text-gray-900 dark:text-white">
-                        ₹{item.total}
-                      </td>
                       <td className="py-3 px-3 text-right">
                         <button
                           onClick={() => handleInlineItemDelete(idx)}
@@ -522,42 +514,6 @@ export default function WhatsAppOrderDetail() {
                   ))}
                 </tbody>
               </table>
-            </div>
-
-            {/* Calculations Breakdown */}
-            <div className="border-t border-gray-200 dark:border-dark-border pt-4 max-w-xs ml-auto space-y-2 text-sm">
-              <div className="flex justify-between text-gray-600 dark:text-gray-400">
-                <span>Product Subtotal:</span>
-                <span className="font-semibold text-gray-900 dark:text-white">
-                  ₹{order.paymentDetails?.productAmount || 0}
-                </span>
-              </div>
-
-              {order.paymentDetails?.discount > 0 && (
-                <div className="flex justify-between text-emerald-600 dark:text-emerald-400">
-                  <span>Discount:</span>
-                  <span>- ₹{order.paymentDetails.discount}</span>
-                </div>
-              )}
-
-              <div className="flex justify-between text-gray-600 dark:text-gray-400">
-                <span>Shipping Charge:</span>
-                <span>₹{order.paymentDetails?.shippingCharge || 0}</span>
-              </div>
-
-              {order.paymentDetails?.otherCharges > 0 && (
-                <div className="flex justify-between text-gray-600 dark:text-gray-400">
-                  <span>Other Charges:</span>
-                  <span>₹{order.paymentDetails.otherCharges}</span>
-                </div>
-              )}
-
-              <div className="flex justify-between border-t border-gray-200 dark:border-dark-border pt-2 text-base font-extrabold text-gray-900 dark:text-white">
-                <span>Grand Total:</span>
-                <span className="text-emerald-600 dark:text-emerald-400">
-                  ₹{order.paymentDetails?.grandTotal || 0}
-                </span>
-              </div>
             </div>
           </div>
         </div>
