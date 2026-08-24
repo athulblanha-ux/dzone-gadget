@@ -279,6 +279,18 @@ const generateWhatsAppInvoicePDF = (order) => {
 };
 
 /**
+ * Helper to capitalize address words cleanly
+ */
+function capitalizeWords(str) {
+  if (!str) return '';
+  return str.replace(/\b[a-z]+/gi, (word) => {
+    const w = word.toUpperCase();
+    if (w === 'PIN' || w === 'PH' || w === 'RC' || w === 'TC' || w === 'BMW' || w === 'PO' || w === 'NO') return w;
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  });
+}
+
+/**
  * Generate a 4x6 Shipping Label PDF for a WhatsApp Order
  * @param {object} order - WhatsAppOrder document
  * @returns {Promise<Buffer>} PDF buffer
@@ -315,8 +327,8 @@ const generateShippingLabelPDF = (order) => {
         .text(payStatus === 'PAID' ? 'PREPAID' : payStatus, 175, 24, { align: 'right', width: 95 });
 
       // 1. SHIP FROM (Sender Address - FIRST)
-      doc.rect(10, 52, 268, 108).fill('#F8FAFC');
-      doc.rect(10, 52, 268, 108).lineWidth(1).strokeColor('#000000').stroke();
+      doc.rect(10, 52, 268, 114).fill('#F8FAFC');
+      doc.rect(10, 52, 268, 114).lineWidth(1).strokeColor('#000000').stroke();
 
       doc
         .font('Helvetica-Bold')
@@ -334,69 +346,100 @@ const generateShippingLabelPDF = (order) => {
         .font('Helvetica')
         .fontSize(9.5)
         .fillColor('#111111')
-        .text(
-          '1st Floor Nefna Complex, Near Abhilash Theatre\nMukkam via Calicut, PIN: 673602',
-          18,
-          88,
-          { width: 252, lineGap: 2 }
-        );
-
-      doc
+        .text('1st Floor, Nefna Complex', 18, 88)
+        .text('Near Abhilash Theatre', 18, 101)
+        .text('Mukkam via Calicut', 18, 114)
+        .text('PIN: 673602', 18, 127)
         .font('Helvetica-Bold')
         .fontSize(10)
         .fillColor('#000000')
-        .text('PH: 9495302826', 18, 140);
+        .text('PH: 9495302826', 18, 147);
 
       // 2. SHIP TO (Recipient Address - SECOND)
-      doc.rect(10, 160, 268, 150).lineWidth(1).strokeColor('#000000').stroke();
+      doc.rect(10, 166, 268, 146).lineWidth(1).strokeColor('#000000').stroke();
 
       const addr = order.shippingAddressSnapshot || {};
-      const recipientName = addr.recipientName || order.customerName || 'Customer';
+      const recipientName = (addr.recipientName || order.customerName || 'Customer').trim();
 
-      // Build clean address text without hardcoded Kochi/Kerala/682030 fallbacks
-      const rawAddressParts = [
-        addr.houseFlatBuilding,
-        addr.streetLocality,
-        addr.landmark,
-        addr.city,
-        addr.state,
-        addr.pincode,
-      ].filter((p) => p && p !== 'N/A' && p !== '000000' && p !== 'Kochi' && p !== 'Kerala' && p !== '682030');
+      // Gather raw address string
+      let rawText = (addr.houseFlatBuilding || '').trim();
+      if (addr.streetLocality && addr.streetLocality !== 'N/A') {
+        rawText += (rawText ? ', ' : '') + addr.streetLocality.trim();
+      }
+      if (addr.landmark) {
+        rawText += (rawText ? ', ' : '') + addr.landmark.trim();
+      }
+      if (addr.city && addr.city !== 'Kochi' && addr.city !== 'N/A') {
+        rawText += (rawText ? ', ' : '') + addr.city.trim();
+      }
+      if (addr.state && addr.state !== 'Kerala' && addr.state !== 'N/A') {
+        rawText += (rawText ? ', ' : '') + addr.state.trim();
+      }
+      if (addr.pincode && addr.pincode !== '682030' && addr.pincode !== '000000') {
+        rawText += (rawText ? ', ' : '') + addr.pincode.trim();
+      }
 
-      const fullAddressText = rawAddressParts.join(', ') || addr.houseFlatBuilding || 'Address details';
+      // Smart Address Line Splitter & Formatter
+      const rawParts = rawText
+        .split(/[\n,]+/)
+        .map((p) => p.trim())
+        .filter((p) => p && p.toUpperCase() !== 'N/A' && p !== '000000' && p !== 'Kochi' && p !== 'Kerala' && p !== '682030');
+
+      const formattedLines = [];
+      let pinCodeLine = '';
+
+      for (let part of rawParts) {
+        const pinMatch = part.match(/(?:pin\s*:?|pincode\s*:?|\b)(\d{5,6})\b/i);
+        if (pinMatch && !pinCodeLine) {
+          pinCodeLine = `PIN: ${pinMatch[1]}`;
+          const cleaned = part.replace(/(?:pin\s*:?|pincode\s*:?|\b)\d{5,6}\b/gi, '').trim();
+          if (cleaned) {
+            formattedLines.push(capitalizeWords(cleaned));
+          }
+        } else {
+          formattedLines.push(capitalizeWords(part));
+        }
+      }
+
+      if (pinCodeLine && !formattedLines.some((l) => l.startsWith('PIN:'))) {
+        formattedLines.push(pinCodeLine);
+      }
+
+      const addressBlockText = formattedLines.length > 0 ? formattedLines.join('\n') : 'WhatsApp Order Address';
       const phone = addr.phone || order.whatsappNumber;
 
       doc
         .font('Helvetica-Bold')
         .fontSize(8.5)
         .fillColor('#555555')
-        .text('SHIP TO / DELIVER TO:', 18, 168);
+        .text('SHIP TO / DELIVER TO:', 18, 173);
 
       doc
         .font('Helvetica-Bold')
         .fontSize(13.5)
         .fillColor('#000000')
-        .text(recipientName.toUpperCase(), 18, 182, { width: 252 });
+        .text(recipientName.toUpperCase(), 18, 186, { width: 252 });
 
       doc
         .font('Helvetica')
         .fontSize(9.5)
         .fillColor('#111111')
-        .text(fullAddressText, 18, 202, { width: 252, lineGap: 2 });
+        .text(addressBlockText, 18, 204, { width: 252, lineGap: 3 });
+
+      // Position phone number dynamically 8pt below address block or minimum y=280
+      const phoneY = Math.max(doc.y + 8, 280);
 
       doc
         .font('Helvetica-Bold')
         .fontSize(10.5)
         .fillColor('#000000')
-        .text(`PH: ${phone}`, 18, 290);
-
-      // 3. PACKAGE CONTENTS (LAST)
-      doc.rect(10, 310, 268, 112).lineWidth(1).strokeColor('#000000').stroke();
+        .text(`PH: ${phone}`, 18, phoneY);
+      doc.rect(10, 312, 268, 110).lineWidth(1).strokeColor('#000000').stroke();
       doc
         .font('Helvetica-Bold')
         .fontSize(8.5)
         .fillColor('#555555')
-        .text('PACKAGE CONTENTS:', 18, 318);
+        .text('PACKAGE CONTENTS:', 18, 320);
 
       let itemY = 332;
       const items = order.items || [];
