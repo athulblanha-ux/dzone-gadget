@@ -334,10 +334,11 @@ const generateShippingLabelPDF = (order) => {
         .font('Helvetica')
         .fontSize(9.5)
         .fillColor('#111111')
-        .text('1st Floor, Nefna Complex, Near Abhilash Theatre', 18, 91, { width: 250 })
+        .text('1st Floor Nefna Complex', 18, 90)
+        .text('Near Abhilash Theatre', 18, 104)
         .text('Mukkam via Calicut, PIN: 673602', 18, 118)
         .font('Helvetica-Bold')
-        .fontSize(10.5)
+        .fontSize(10)
         .fillColor('#000000')
         .text('PH: 9495302826', 18, 142);
 
