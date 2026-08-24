@@ -15,6 +15,8 @@ import {
   FiCheckCircle,
   FiX,
   FiSave,
+  FiPlus,
+  FiMinus,
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import api from '../lib/api';
@@ -56,6 +58,10 @@ export default function WhatsAppOrderDetail() {
   const [editCity, setEditCity] = useState('');
   const [editState, setEditState] = useState('');
   const [editPincode, setEditPincode] = useState('');
+
+  // Edit Items Modal State
+  const [showEditItemsModal, setShowEditItemsModal] = useState(false);
+  const [editItems, setEditItems] = useState([]);
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-whatsapp-order', id],
@@ -195,6 +201,93 @@ export default function WhatsAppOrderDetail() {
         phone: editWhatsappNumber || order.whatsappNumber,
       },
     });
+  };
+
+  // Open Edit Items Modal
+  const handleOpenEditItems = () => {
+    const currentItems = (order?.items || []).map((item) => ({
+      name: item.name || '',
+      sku: item.sku || 'WA-ITEM',
+      unitPrice: item.unitPrice || 0,
+      quantity: item.quantity || 1,
+      discount: item.discount || 0,
+      total: item.total || ((Number(item.unitPrice) || 0) * (Number(item.quantity) || 1)),
+    }));
+    setEditItems(currentItems.length > 0 ? currentItems : [{ name: 'Custom Product', sku: 'WA-ITEM', unitPrice: 0, quantity: 1, discount: 0, total: 0 }]);
+    setShowEditItemsModal(true);
+  };
+
+  // Add New Item to draft
+  const handleAddItemToDraft = () => {
+    setEditItems((prev) => [
+      ...prev,
+      { name: '', sku: 'WA-ITEM', unitPrice: 0, quantity: 1, discount: 0, total: 0 },
+    ]);
+  };
+
+  // Update item field in draft
+  const handleUpdateItemField = (index, field, value) => {
+    setEditItems((prev) => {
+      const copy = [...prev];
+      const target = { ...copy[index], [field]: value };
+      const q = Number(target.quantity) || 1;
+      const p = Number(target.unitPrice) || 0;
+      const d = Number(target.discount) || 0;
+      target.total = Math.max(0, p * q - d);
+      copy[index] = target;
+      return copy;
+    });
+  };
+
+  // Remove item from draft
+  const handleRemoveItemFromDraft = (index) => {
+    setEditItems((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // Save Items Modal
+  const handleSaveItems = () => {
+    if (editItems.length === 0) {
+      toast.error('Order must have at least one product');
+      return;
+    }
+    for (const item of editItems) {
+      if (!item.name.trim()) {
+        toast.error('Product name cannot be empty');
+        return;
+      }
+    }
+    updateOrderMutation.mutate({ items: editItems });
+    setShowEditItemsModal(false);
+  };
+
+  // Inline Item Quantity Update
+  const handleInlineItemQtyChange = (itemIndex, qtyDelta) => {
+    const updatedItems = (order?.items || []).map((item, idx) => {
+      if (idx === itemIndex) {
+        const newQty = Math.max(1, (Number(item.quantity) || 1) + qtyDelta);
+        const p = Number(item.unitPrice) || 0;
+        const d = Number(item.discount) || 0;
+        return {
+          ...item,
+          quantity: newQty,
+          total: Math.max(0, p * newQty - d),
+        };
+      }
+      return item;
+    });
+    updateOrderMutation.mutate({ items: updatedItems });
+  };
+
+  // Inline Item Delete
+  const handleInlineItemDelete = (itemIndex) => {
+    if (order?.items?.length <= 1) {
+      toast.error('Order must have at least one product');
+      return;
+    }
+    if (window.confirm('Delete this product from the order?')) {
+      const updatedItems = order.items.filter((_, idx) => idx !== itemIndex);
+      updateOrderMutation.mutate({ items: updatedItems });
+    }
   };
 
   if (isLoading) {
@@ -358,7 +451,17 @@ export default function WhatsAppOrderDetail() {
 
           {/* Products Table */}
           <div className="bg-white dark:bg-dark-card p-6 rounded-2xl border border-gray-200 dark:border-dark-border shadow-sm space-y-4">
-            <h3 className="text-base font-bold text-gray-900 dark:text-white">Order Items</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                Order Items ({order.items?.length || 0})
+              </h3>
+              <button
+                onClick={handleOpenEditItems}
+                className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow flex items-center gap-1.5"
+              >
+                <FiEdit size={13} /> Edit Items
+              </button>
+            </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-sm">
@@ -370,22 +473,50 @@ export default function WhatsAppOrderDetail() {
                     <th className="py-3 px-3">Qty</th>
                     <th className="py-3 px-3">Discount</th>
                     <th className="py-3 px-3 text-right">Total</th>
+                    <th className="py-3 px-3 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-dark-border">
                   {order.items?.map((item, idx) => (
-                    <tr key={idx}>
+                    <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors">
                       <td className="py-3 px-3 font-semibold text-gray-900 dark:text-white">
                         {item.name}
                       </td>
                       <td className="py-3 px-3 text-xs text-gray-500">
                         {item.sku || item.variant || item.size || 'N/A'}
                       </td>
-                      <td className="py-3 px-3">₹{item.unitPrice}</td>
-                      <td className="py-3 px-3 font-bold">{item.quantity}</td>
+                      <td className="py-3 px-3 font-medium">₹{item.unitPrice}</td>
+                      <td className="py-3 px-3 font-bold">
+                        <div className="inline-flex items-center gap-1.5 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-lg border border-gray-200 dark:border-gray-700">
+                          <button
+                            onClick={() => handleInlineItemQtyChange(idx, -1)}
+                            className="text-gray-500 hover:text-red-500 p-0.5"
+                            title="Decrease Quantity"
+                          >
+                            <FiMinus size={12} />
+                          </button>
+                          <span className="text-xs font-black min-w-[16px] text-center">{item.quantity}</span>
+                          <button
+                            onClick={() => handleInlineItemQtyChange(idx, 1)}
+                            className="text-gray-500 hover:text-emerald-500 p-0.5"
+                            title="Increase Quantity"
+                          >
+                            <FiPlus size={12} />
+                          </button>
+                        </div>
+                      </td>
                       <td className="py-3 px-3 text-gray-500">₹{item.discount || 0}</td>
                       <td className="py-3 px-3 text-right font-bold text-gray-900 dark:text-white">
                         ₹{item.total}
+                      </td>
+                      <td className="py-3 px-3 text-right">
+                        <button
+                          onClick={() => handleInlineItemDelete(idx)}
+                          className="p-1.5 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                          title="Delete Product"
+                        >
+                          <FiTrash2 size={14} />
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -723,6 +854,144 @@ export default function WhatsAppOrderDetail() {
                 className="px-5 py-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 text-sm font-medium shadow-md"
               >
                 {statusMutation.isLoading ? 'Updating...' : 'Save Changes'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Order Items Modal */}
+      {showEditItemsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+          <div className="bg-white dark:bg-dark-card w-full max-w-2xl rounded-2xl p-6 border border-gray-200 dark:border-dark-border shadow-2xl space-y-4 my-8">
+            <div className="flex items-center justify-between border-b border-gray-100 dark:border-dark-border pb-3">
+              <h3 className="text-lg font-extrabold text-gray-900 dark:text-white flex items-center gap-2">
+                <FiEdit className="text-emerald-500" /> Edit Order Items
+              </h3>
+              <button
+                onClick={() => setShowEditItemsModal(false)}
+                className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-white rounded-lg"
+              >
+                <FiX size={20} />
+              </button>
+            </div>
+
+            {/* List of items in draft */}
+            <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
+              {editItems.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="p-3.5 rounded-xl border border-gray-200 dark:border-dark-border bg-gray-50/50 dark:bg-gray-800/40 space-y-2"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-bold text-gray-400 uppercase">Item #{idx + 1}</span>
+                    {editItems.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveItemFromDraft(idx)}
+                        className="text-xs text-red-500 hover:text-red-600 font-bold flex items-center gap-1"
+                      >
+                        <FiTrash2 size={13} /> Remove
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 text-xs">
+                    {/* Item Name */}
+                    <div className="sm:col-span-6 space-y-1">
+                      <label className="text-[10px] font-bold text-gray-500 uppercase">Product Name</label>
+                      <input
+                        type="text"
+                        value={item.name}
+                        onChange={(e) => handleUpdateItemField(idx, 'name', e.target.value)}
+                        placeholder="Product Name"
+                        className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 font-semibold text-gray-900 dark:text-white"
+                      />
+                    </div>
+
+                    {/* Unit Price */}
+                    <div className="sm:col-span-3 space-y-1">
+                      <label className="text-[10px] font-bold text-gray-500 uppercase">Price (₹)</label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={item.unitPrice}
+                        onChange={(e) => handleUpdateItemField(idx, 'unitPrice', e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 font-bold text-gray-900 dark:text-white"
+                      />
+                    </div>
+
+                    {/* Quantity */}
+                    <div className="sm:col-span-3 space-y-1">
+                      <label className="text-[10px] font-bold text-gray-500 uppercase">Qty</label>
+                      <div className="flex items-center gap-1 bg-white dark:bg-gray-900 rounded-lg border border-gray-300 dark:border-gray-700 px-1 py-0.5">
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateItemField(idx, 'quantity', Math.max(1, (Number(item.quantity) || 1) - 1))}
+                          className="p-1 text-gray-500 hover:text-red-500"
+                        >
+                          <FiMinus size={12} />
+                        </button>
+                        <input
+                          type="number"
+                          min="1"
+                          value={item.quantity}
+                          onChange={(e) => handleUpdateItemField(idx, 'quantity', Math.max(1, Number(e.target.value) || 1))}
+                          className="w-full text-center font-extrabold text-xs bg-transparent focus:outline-none dark:text-white"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateItemField(idx, 'quantity', (Number(item.quantity) || 1) + 1)}
+                          className="p-1 text-gray-500 hover:text-emerald-500"
+                        >
+                          <FiPlus size={12} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-1 border-t border-gray-200/60 dark:border-gray-700/60 text-xs">
+                    <span className="text-gray-500">
+                      Line Total: <strong className="text-gray-900 dark:text-white">₹{item.total || ((Number(item.unitPrice) || 0) * (Number(item.quantity) || 1))}</strong>
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Add Product Button */}
+            <button
+              type="button"
+              onClick={handleAddItemToDraft}
+              className="w-full py-2.5 rounded-xl border-2 border-dashed border-emerald-500/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-xs font-bold flex items-center justify-center gap-2 transition-colors"
+            >
+              <FiPlus size={15} /> Add Another Product
+            </button>
+
+            {/* Subtotal Preview */}
+            <div className="bg-emerald-50 dark:bg-emerald-900/20 p-3 rounded-xl flex items-center justify-between text-xs font-extrabold text-emerald-800 dark:text-emerald-300">
+              <span>New Product Subtotal ({editItems.reduce((acc, i) => acc + (Number(i.quantity) || 1), 0)} items):</span>
+              <span className="text-sm font-black">
+                ₹{editItems.reduce((acc, i) => acc + (Number(i.total) || 0), 0).toLocaleString('en-IN')}
+              </span>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-100 dark:border-dark-border">
+              <button
+                type="button"
+                onClick={() => setShowEditItemsModal(false)}
+                className="px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 text-xs font-bold"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveItems}
+                disabled={updateOrderMutation.isPending}
+                className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow flex items-center gap-1.5 disabled:opacity-50"
+              >
+                <FiSave size={14} /> Save Items
               </button>
             </div>
           </div>
