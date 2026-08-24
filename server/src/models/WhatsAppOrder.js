@@ -106,11 +106,29 @@ const whatsappOrderSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Auto-generate order number (e.g. WA-1001, WA-1002, ...)
+// Auto-generate order number (e.g. WA-1001, WA-1002, ...) collision-proof
 whatsappOrderSchema.pre('save', async function (next) {
   if (!this.orderNumber) {
-    const count = await mongoose.model('WhatsAppOrder').countDocuments();
-    this.orderNumber = `WA-${1001 + count}`;
+    const model = mongoose.model('WhatsAppOrder');
+    const lastOrder = await model.findOne({}, { orderNumber: 1 }).sort({ createdAt: -1 }).lean();
+
+    let nextNum = 1001;
+    if (lastOrder && lastOrder.orderNumber) {
+      const match = lastOrder.orderNumber.match(/WA-(\d+)/);
+      if (match) {
+        nextNum = parseInt(match[1], 10) + 1;
+      }
+    }
+
+    let candidate = `WA-${nextNum}`;
+    let exists = await model.exists({ orderNumber: candidate });
+    while (exists) {
+      nextNum += 1;
+      candidate = `WA-${nextNum}`;
+      exists = await model.exists({ orderNumber: candidate });
+    }
+
+    this.orderNumber = candidate;
   }
   next();
 });
