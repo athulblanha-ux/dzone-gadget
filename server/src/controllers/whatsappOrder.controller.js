@@ -181,8 +181,6 @@ exports.createWhatsAppOrder = asyncHandler(async (req, res) => {
   // Add shipping address to customer's saved addresses if not existing
   const addressAlreadySaved = customer.addresses.some(
     (addr) =>
-      addr.pincode === shippingAddress  const addressAlreadySaved = customer.addresses.some(
-    (addr) =>
       addr.houseFlatBuilding?.toLowerCase() === (addrObj.houseFlatBuilding || '').toLowerCase()
   );
 
