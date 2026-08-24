@@ -376,7 +376,7 @@ exports.updateWhatsAppOrder = asyncHandler(async (req, res) => {
 
 // Update WhatsApp order status with audit log history
 exports.updateWhatsAppOrderStatus = asyncHandler(async (req, res) => {
-  const { status, paymentStatus, message } = req.body;
+  const { status, paymentStatus, message, shippingInfo } = req.body;
   const order = await WhatsAppOrder.findById(req.params.id);
 
   if (!order) {
@@ -401,6 +401,13 @@ exports.updateWhatsAppOrderStatus = asyncHandler(async (req, res) => {
 
   if (paymentStatus) {
     order.paymentDetails.status = paymentStatus;
+  }
+
+  if (shippingInfo) {
+    if (!order.shippingInfo) order.shippingInfo = {};
+    if (shippingInfo.courierCompany !== undefined) order.shippingInfo.courierCompany = shippingInfo.courierCompany;
+    if (shippingInfo.trackingNumber !== undefined) order.shippingInfo.trackingNumber = shippingInfo.trackingNumber;
+    if (shippingInfo.trackingUrl !== undefined) order.shippingInfo.trackingUrl = shippingInfo.trackingUrl;
   }
 
   await order.save();

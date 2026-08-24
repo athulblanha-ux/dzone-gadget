@@ -9,6 +9,10 @@ import {
   FiPlus,
   FiRefreshCw,
   FiPrinter,
+  FiTruck,
+  FiX,
+  FiSend,
+  FiCheck,
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import api from '../lib/api';
@@ -27,6 +31,12 @@ export default function WhatsAppOrders() {
   const [statusFilter, setStatusFilter] = useState('');
   const [paymentStatusFilter, setPaymentStatusFilter] = useState('');
   const [page, setPage] = useState(1);
+
+  // Shipped Courier & Tracking Modal State
+  const [shippedModalOrder, setShippedModalOrder] = useState(null);
+  const [courierName, setCourierName] = useState('');
+  const [trackingNumber, setTrackingNumber] = useState('');
+  const [trackingUrl, setTrackingUrl] = useState('');
 
   // Fetch WhatsApp Orders
   const { data, isLoading, refetch } = useQuery({
@@ -62,11 +72,12 @@ export default function WhatsAppOrders() {
 
   // Status Change Mutation (Instant Inline Change)
   const statusMutation = useMutation({
-    mutationFn: async ({ id, status, paymentStatus, message }) => {
+    mutationFn: async ({ id, status, paymentStatus, message, shippingInfo }) => {
       const res = await api.patch(`/whatsapp-orders/orders/${id}/status`, {
         status,
         paymentStatus,
         message: message || `Updated status to ${status}`,
+        shippingInfo,
       });
       return res.data;
     },
@@ -95,8 +106,17 @@ export default function WhatsAppOrders() {
 
   // Inline Status Handlers
   const handleInlineStatusChange = (ord, newStatus) => {
+    if (newStatus === 'shipped') {
+      // Trigger Courier & Tracking Modal for SHIPPED
+      setShippedModalOrder(ord);
+      setCourierName(ord.shippingInfo?.courierCompany || 'India Post');
+      setTrackingNumber(ord.shippingInfo?.trackingNumber || '');
+      setTrackingUrl(ord.shippingInfo?.trackingUrl || '');
+      return;
+    }
+
     let targetPaymentStatus = ord.paymentDetails?.status || 'pending';
-    if (newStatus === 'paid' || newStatus === 'shipped' || newStatus === 'delivered') {
+    if (newStatus === 'paid' || newStatus === 'delivered') {
       targetPaymentStatus = 'paid';
     }
 
@@ -107,6 +127,56 @@ export default function WhatsAppOrders() {
       message: `Status manually changed to ${newStatus.toUpperCase()}`,
     });
     toast.success(`Status updated to ${newStatus.toUpperCase()}`);
+  };
+
+  // Submit Shipped Modal Handler
+  const handleSaveShippedModal = (sendWhatsApp = false) => {
+    if (!shippedModalOrder) return;
+
+    const ord = shippedModalOrder;
+    const finalCourier = courierName.trim() || 'India Post';
+    const finalTracking = trackingNumber.trim() || 'N/A';
+    const finalUrl = trackingUrl.trim() || '';
+
+    // 1. Save Status & Courier Details
+    statusMutation.mutate(
+      {
+        id: ord._id,
+        status: 'shipped',
+        paymentStatus: 'paid',
+        shippingInfo: {
+          courierCompany: finalCourier,
+          trackingNumber: finalTracking,
+          trackingUrl: finalUrl,
+        },
+        message: `Order Shipped via ${finalCourier} (Tracking: ${finalTracking})`,
+      },
+      {
+        onSuccess: () => {
+          toast.success(`Order ${ord.orderNumber} marked as SHIPPED! 🚚`);
+          setShippedModalOrder(null);
+
+          // 2. Send to WhatsApp if requested
+          if (sendWhatsApp && ord.whatsappNumber) {
+            let cleanNumber = ord.whatsappNumber.replace(/\D/g, '');
+            if (cleanNumber.length === 10) cleanNumber = '91' + cleanNumber;
+
+            const cleanCustName = ord.customerName && ord.customerName.includes(',')
+              ? ord.customerName.split(',')[0].trim()
+              : ord.customerName || 'Customer';
+
+            let msg = `Hello ${cleanCustName}! 👋\n\nYour Order #${ord.orderNumber} has been SHIPPED! 🚚📦\n\n`;
+            if (finalCourier) msg += `Courier Partner: ${finalCourier}\n`;
+            if (finalTracking) msg += `Tracking Number: ${finalTracking}\n`;
+            if (finalUrl) msg += `Track Here: ${finalUrl}\n`;
+            msg += `\nThank you for shopping with DZONE GADGET! ✨`;
+
+            const encoded = encodeURIComponent(msg);
+            window.open(`https://wa.me/${cleanNumber}?text=${encoded}`, '_blank');
+          }
+        },
+      }
+    );
   };
 
   // Open WhatsApp direct chat
@@ -164,7 +234,7 @@ export default function WhatsAppOrders() {
             }`}
           >
             <p className="text-[10px] font-bold uppercase text-gray-400 truncate">{item.label}</p>
-            <p className={`text-base font-black ${item.color}`}>{item.count}</p>
+            <p className="text-base font-black text-white">{item.count}</p>
           </div>
         ))}
       </div>
@@ -244,14 +314,14 @@ export default function WhatsAppOrders() {
                     {/* Bottom Row: Status Dropdown + Action Icons */}
                     <div className="flex items-center justify-between pt-1.5 border-t border-gray-800/80">
                       <select
-                        value={ord.status || 'new'}
+                        value={ord.status || 'paid'}
                         onChange={(e) => handleInlineStatusChange(ord, e.target.value)}
                         className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase border cursor-pointer ${
-                          ord.status === 'delivered' || ord.status === 'paid'
+                          ord.status === 'delivered'
                             ? 'bg-emerald-900/40 text-emerald-300 border-emerald-500/50'
-                            : ord.status === 'cancelled'
-                            ? 'bg-red-900/40 text-red-300 border-red-500/50'
-                            : 'bg-blue-900/40 text-blue-300 border-blue-500/50'
+                            : ord.status === 'shipped'
+                            ? 'bg-cyan-900/40 text-cyan-300 border-cyan-500/50'
+                            : 'bg-emerald-900/40 text-emerald-300 border-emerald-500/50'
                         }`}
                       >
                         {ORDER_STATUS_LIST.map((s) => (
@@ -331,14 +401,14 @@ export default function WhatsAppOrders() {
                         {/* Status Dropdown */}
                         <td className="py-2.5 px-3">
                           <select
-                            value={ord.status || 'new'}
+                            value={ord.status || 'paid'}
                             onChange={(e) => handleInlineStatusChange(ord, e.target.value)}
                             className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase border cursor-pointer ${
-                              ord.status === 'delivered' || ord.status === 'paid'
+                              ord.status === 'delivered'
                                 ? 'bg-emerald-900/40 text-emerald-300 border-emerald-500/50'
-                                : ord.status === 'cancelled'
-                                ? 'bg-red-900/40 text-red-300 border-red-500/50'
-                                : 'bg-blue-900/40 text-blue-300 border-blue-500/50'
+                                : ord.status === 'shipped'
+                                ? 'bg-cyan-900/40 text-cyan-300 border-cyan-500/50'
+                                : 'bg-emerald-900/40 text-emerald-300 border-emerald-500/50'
                             }`}
                           >
                             {ORDER_STATUS_LIST.map((s) => (
@@ -378,6 +448,89 @@ export default function WhatsAppOrders() {
           </div>
         )}
       </div>
+
+      {/* SHIPPED COURIER & TRACKING MODAL */}
+      {shippedModalOrder && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#182030] max-w-md w-full rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-gray-800 pb-3">
+              <div className="flex items-center gap-2">
+                <FiTruck className="text-cyan-400" size={20} />
+                <div>
+                  <h3 className="text-base font-extrabold text-white">
+                    Shipment Details for #{shippedModalOrder.orderNumber}
+                  </h3>
+                  <p className="text-[11px] text-gray-400">
+                    Customer: {shippedModalOrder.customerName} ({shippedModalOrder.whatsappNumber})
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShippedModalOrder(null)}
+                className="p-1 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg"
+              >
+                <FiX size={18} />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div>
+                <label className="block font-bold text-gray-300 mb-1">Courier Partner *</label>
+                <input
+                  type="text"
+                  placeholder="e.g. India Post, BlueDart, Delhivery, DTDC"
+                  value={courierName}
+                  onChange={(e) => setCourierName(e.target.value)}
+                  className="w-full p-2.5 bg-gray-50 dark:bg-[#121824] border border-gray-200 dark:border-gray-700 rounded-xl text-white font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-gray-300 mb-1">Tracking / Docket Number *</label>
+                <input
+                  type="text"
+                  placeholder="e.g. XX123456789IN"
+                  value={trackingNumber}
+                  onChange={(e) => setTrackingNumber(e.target.value)}
+                  className="w-full p-2.5 bg-gray-50 dark:bg-[#121824] border border-gray-200 dark:border-gray-700 rounded-xl text-white font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-gray-300 mb-1">Tracking Link (Optional)</label>
+                <input
+                  type="text"
+                  placeholder="https://track.courier.com/..."
+                  value={trackingUrl}
+                  onChange={(e) => setTrackingUrl(e.target.value)}
+                  className="w-full p-2.5 bg-gray-50 dark:bg-[#121824] border border-gray-200 dark:border-gray-700 rounded-xl text-white"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => handleSaveShippedModal(true)}
+                disabled={statusMutation.isLoading}
+                className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-lg flex items-center justify-center gap-2"
+              >
+                <FiSend size={15} />
+                {statusMutation.isLoading ? 'Saving...' : 'Save & Send WhatsApp Tracking'}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSaveShippedModal(false)}
+                disabled={statusMutation.isLoading}
+                className="w-full py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl font-semibold text-xs flex items-center justify-center gap-1.5"
+              >
+                <FiCheck size={15} /> Save Only (No WhatsApp)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
