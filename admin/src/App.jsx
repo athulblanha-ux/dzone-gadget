@@ -11,6 +11,10 @@ const Products = React.lazy(() => import('./pages/Products'));
 const ArrangeProducts = React.lazy(() => import('./pages/ArrangeProducts'));
 const Categories = React.lazy(() => import('./pages/Categories'));
 const Orders = React.lazy(() => import('./pages/Orders'));
+const WhatsAppOrders = React.lazy(() => import('./pages/WhatsAppOrders'));
+const CreateWhatsAppOrder = React.lazy(() => import('./pages/CreateWhatsAppOrder'));
+const WhatsAppOrderDetail = React.lazy(() => import('./pages/WhatsAppOrderDetail'));
+const EditWhatsAppOrder = React.lazy(() => import('./pages/EditWhatsAppOrder'));
 const Customers = React.lazy(() => import('./pages/Customers'));
 const CMS = React.lazy(() => import('./pages/CMS'));
 const Settings = React.lazy(() => import('./pages/Settings'));
@@ -46,6 +50,10 @@ export default function App() {
               <Route path="arrange-products" element={<ArrangeProducts />} />
               <Route path="categories" element={<Categories />} />
               <Route path="orders" element={<Orders />} />
+              <Route path="whatsapp-orders" element={<WhatsAppOrders />} />
+              <Route path="whatsapp-orders/new" element={<CreateWhatsAppOrder />} />
+              <Route path="whatsapp-orders/:id" element={<WhatsAppOrderDetail />} />
+              <Route path="whatsapp-orders/:id/edit" element={<EditWhatsAppOrder />} />
               <Route path="customers" element={<Customers />} />
               <Route path="cms" element={<CMS />} />
               <Route path="marketing" element={<Marketing />} />

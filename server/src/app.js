@@ -35,8 +35,12 @@ const analyticsRoutes = require('./routes/analytics.routes');
 const instagramRoutes = require('./routes/instagram.routes');
 const testimonialRoutes = require('./routes/testimonial.routes');
 const shippingRoutes = require('./routes/shipping.routes');
+const whatsappOrderRoutes = require('./routes/whatsappOrder.routes');
 
 // Connect to database
+const Product = require('./models/Product');
+const Category = require('./models/Category');
+
 connectDB();
 
 const app = express();
@@ -96,7 +100,7 @@ app.use('/api', globalLimiter);
 // ─── Static Files ──────────────────────────────────────────────────────────────
 app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
 
-// ─── Robots.txt & Health Check ──────────────────────────────────────────────────
+// ─── Robots.txt & Dynamic Sitemap XML ───────────────────────────────────────────
 app.get('/robots.txt', (req, res) => {
   res.type('text/plain');
   res.send(`User-agent: *
@@ -112,6 +116,63 @@ Disallow: /api/orders
 Disallow: /api/auth
 Disallow: /api/analytics
 `);
+});
+
+app.get('/sitemap.xml', async (req, res) => {
+  try {
+    const baseUrl = (process.env.FRONTEND_URL || 'https://dzone-gadget-shop.vercel.app').replace(/\/$/, '');
+    const products = await Product.find({ isActive: true }).select('slug updatedAt').lean();
+    const categories = await Category.find({ isActive: true }).select('slug updatedAt').lean();
+
+    const staticPages = [
+      '',
+      '/shop',
+      '/about',
+      '/contact',
+      '/faq',
+      '/privacy',
+      '/terms',
+      '/shipping-policy',
+      '/return-policy',
+    ];
+
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+    xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+
+    staticPages.forEach((path) => {
+      xml += `  <url>\n`;
+      xml += `    <loc>${baseUrl}${path}</loc>\n`;
+      xml += `    <changefreq>${path === '' || path === '/shop' ? 'daily' : 'monthly'}</changefreq>\n`;
+      xml += `    <priority>${path === '' ? '1.0' : path === '/shop' ? '0.9' : '0.7'}</priority>\n`;
+      xml += `  </url>\n`;
+    });
+
+    categories.forEach((cat) => {
+      xml += `  <url>\n`;
+      xml += `    <loc>${baseUrl}/category/${cat.slug}</loc>\n`;
+      xml += `    <lastmod>${new Date(cat.updatedAt || Date.now()).toISOString().split('T')[0]}</lastmod>\n`;
+      xml += `    <changefreq>weekly</changefreq>\n`;
+      xml += `    <priority>0.8</priority>\n`;
+      xml += `  </url>\n`;
+    });
+
+    products.forEach((prod) => {
+      xml += `  <url>\n`;
+      xml += `    <loc>${baseUrl}/product/${prod.slug}</loc>\n`;
+      xml += `    <lastmod>${new Date(prod.updatedAt || Date.now()).toISOString().split('T')[0]}</lastmod>\n`;
+      xml += `    <changefreq>weekly</changefreq>\n`;
+      xml += `    <priority>0.8</priority>\n`;
+      xml += `  </url>\n`;
+    });
+
+    xml += `</urlset>`;
+
+    res.header('Content-Type', 'application/xml');
+    res.send(xml);
+  } catch (err) {
+    console.error('❌ Sitemap error:', err);
+    res.status(500).send('Error generating sitemap');
+  }
 });
 
 app.get('/health', (req, res) => {
@@ -145,6 +206,8 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/instagram', instagramRoutes);
 app.use('/api/testimonials', testimonialRoutes);
 app.use('/api/shipping', shippingRoutes);
+app.use('/api/whatsapp-orders', whatsappOrderRoutes);
+app.use('/api/whatsapp-customers', whatsappOrderRoutes);
 
 // ─── 404 Handler ───────────────────────────────────────────────────────────────
 app.use('*', (req, res) => {
