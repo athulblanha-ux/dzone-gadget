@@ -306,8 +306,35 @@ const generateShippingLabelPDF = (order) => {
         .fillColor('#10B981')
         .text(payStatus === 'PAID' ? 'PREPAID' : payStatus, 175, 24, { align: 'right', width: 95 });
 
-      // SHIP TO (Recipient)
-      doc.rect(10, 52, 268, 140).lineWidth(1).strokeColor('#000000').stroke();
+      // 1. SHIP FROM (Sender Address - FIRST)
+      doc.rect(10, 52, 268, 118).fill('#F8FAFC');
+      doc.rect(10, 52, 268, 118).lineWidth(1).strokeColor('#000000').stroke();
+
+      doc
+        .font('Helvetica-Bold')
+        .fontSize(8.5)
+        .fillColor('#555555')
+        .text('SHIP FROM / RETURN ADDRESS:', 18, 60);
+
+      doc
+        .font('Helvetica-Bold')
+        .fontSize(14)
+        .fillColor('#000000')
+        .text('DSTORE', 18, 73);
+
+      doc
+        .font('Helvetica')
+        .fontSize(9.5)
+        .fillColor('#111111')
+        .text('1st Floor, Nefna Complex, Near Abhilash Theatre', 18, 91, { width: 250 })
+        .text('Mukkam via Calicut, PIN: 673602', 18, 118)
+        .font('Helvetica-Bold')
+        .fontSize(10.5)
+        .fillColor('#000000')
+        .text('PH: 9495302826', 18, 142);
+
+      // 2. SHIP TO (Recipient Address - SECOND)
+      doc.rect(10, 170, 268, 145).lineWidth(1).strokeColor('#000000').stroke();
 
       const addr = order.shippingAddressSnapshot || {};
       const recipientName = addr.recipientName || order.customerName || 'Customer';
@@ -319,38 +346,38 @@ const generateShippingLabelPDF = (order) => {
         .font('Helvetica-Bold')
         .fontSize(8.5)
         .fillColor('#555555')
-        .text('SHIP TO / DELIVER TO:', 18, 62);
+        .text('SHIP TO / DELIVER TO:', 18, 178);
 
       doc
         .font('Helvetica-Bold')
-        .fontSize(13)
+        .fontSize(14)
         .fillColor('#000000')
-        .text(recipientName.toUpperCase(), 18, 76, { width: 250 });
+        .text(recipientName.toUpperCase(), 18, 192, { width: 250 });
 
       doc
         .font('Helvetica')
         .fontSize(10)
         .fillColor('#111111')
-        .text(addressLine, 18, 96, { width: 250, height: 42 })
-        .text(cityLine, 18, 142)
+        .text(addressLine, 18, 212, { width: 250, height: 42 })
+        .text(cityLine, 18, 260)
         .font('Helvetica-Bold')
         .fontSize(11)
-        .text(`PH: ${phone}`, 18, 164);
+        .text(`PH: ${phone}`, 18, 285);
 
-      // ITEMS / CONTENTS
-      doc.rect(10, 192, 268, 92).lineWidth(1).strokeColor('#000000').stroke();
+      // 3. PACKAGE CONTENTS (LAST)
+      doc.rect(10, 315, 268, 107).lineWidth(1).strokeColor('#000000').stroke();
       doc
         .font('Helvetica-Bold')
         .fontSize(8.5)
         .fillColor('#555555')
-        .text('PACKAGE CONTENTS:', 18, 200);
+        .text('PACKAGE CONTENTS:', 18, 323);
 
-      let itemY = 214;
+      let itemY = 337;
       const items = order.items || [];
       for (const item of items.slice(0, 3)) {
         doc
           .font('Helvetica-Bold')
-          .fontSize(9)
+          .fontSize(9.5)
           .fillColor('#000000')
           .text(`${item.quantity}x ${item.name}`, 18, itemY, { width: 250 });
         itemY += 15;
@@ -359,38 +386,9 @@ const generateShippingLabelPDF = (order) => {
       const totalVal = Number(order.paymentDetails?.grandTotal) || 0;
       doc
         .font('Helvetica-Bold')
-        .fontSize(9.5)
+        .fontSize(10)
         .fillColor('#000000')
-        .text(`VALUE: Rs. ${totalVal.toLocaleString('en-IN')}`, 18, 264);
-
-      // SHIP FROM (Sender Address)
-      doc.rect(10, 284, 268, 138).fill('#F8FAFC');
-      doc.rect(10, 284, 268, 138).lineWidth(1).strokeColor('#000000').stroke();
-
-      doc
-        .font('Helvetica-Bold')
-        .fontSize(8.5)
-        .fillColor('#555555')
-        .text('SHIP FROM / RETURN ADDRESS:', 18, 294);
-
-      doc
-        .font('Helvetica-Bold')
-        .fontSize(14)
-        .fillColor('#000000')
-        .text('DSTORE', 18, 308);
-
-      doc
-        .font('Helvetica')
-        .fontSize(9.5)
-        .fillColor('#111111')
-        .text('1st Floor, Nefna Complex', 18, 328)
-        .text('Near Abhilash Theatre', 18, 343)
-        .text('Mukkam via Calicut', 18, 358)
-        .text('PIN: 673602', 18, 373)
-        .font('Helvetica-Bold')
-        .fontSize(10.5)
-        .fillColor('#000000')
-        .text('PH: 9495302826', 18, 394);
+        .text(`VALUE: Rs. ${totalVal.toLocaleString('en-IN')}`, 18, 395);
 
       doc.end();
     } catch (err) {
