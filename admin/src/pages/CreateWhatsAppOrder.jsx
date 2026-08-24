@@ -143,13 +143,14 @@ export default function CreateWhatsAppOrder() {
       ],
       paymentDetails: {
         method: paymentMethod,
-        status: paymentStatus,
+        status: 'paid',
         productAmount: priceNum,
         discount: 0,
         shippingCharge: 0,
         otherCharges: 0,
         grandTotal: priceNum,
       },
+      status: 'paid',
       shippingInfo: {
         courierCompany,
         trackingNumber: '',

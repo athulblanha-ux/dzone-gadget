@@ -14,17 +14,9 @@ import toast from 'react-hot-toast';
 import api from '../lib/api';
 
 const ORDER_STATUS_LIST = [
-  { value: 'new', label: 'NEW' },
   { value: 'paid', label: 'PAID' },
-  { value: 'confirmed', label: 'CONFIRMED' },
-  { value: 'processing', label: 'PROCESSING' },
-  { value: 'packed', label: 'PACKED' },
   { value: 'shipped', label: 'SHIPPED' },
-  { value: 'in_transit', label: 'IN TRANSIT' },
-  { value: 'out_for_delivery', label: 'OUT FOR DELIVERY' },
   { value: 'delivered', label: 'DELIVERED' },
-  { value: 'cancelled', label: 'CANCELLED' },
-  { value: 'returned', label: 'RETURNED' },
 ];
 
 export default function WhatsAppOrders() {
@@ -58,6 +50,7 @@ export default function WhatsAppOrders() {
   const stats = data?.stats || {
     total: 0,
     new: 0,
+    paid: 0,
     confirmed: 0,
     processing: 0,
     shipped: 0,
@@ -103,7 +96,7 @@ export default function WhatsAppOrders() {
   // Inline Status Handlers
   const handleInlineStatusChange = (ord, newStatus) => {
     let targetPaymentStatus = ord.paymentDetails?.status || 'pending';
-    if (newStatus === 'paid') {
+    if (newStatus === 'paid' || newStatus === 'shipped' || newStatus === 'delivered') {
       targetPaymentStatus = 'paid';
     }
 
@@ -154,28 +147,24 @@ export default function WhatsAppOrders() {
       </div>
 
       {/* Compact Summary Cards Grid */}
-      <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
+      <div className="grid grid-cols-4 gap-2">
         {[
-          { key: '', label: 'Total', count: stats.total, color: 'text-white' },
-          { key: 'new', label: 'New', count: stats.new, color: 'text-yellow-400' },
-          { key: 'paid', label: 'Paid', count: stats.paid || 0, color: 'text-emerald-400' },
-          { key: 'confirmed', label: 'Confirmed', count: stats.confirmed, color: 'text-blue-400' },
-          { key: 'processing', label: 'Process', count: stats.processing, color: 'text-purple-400' },
-          { key: 'shipped', label: 'Shipped', count: stats.shipped, color: 'text-cyan-400' },
-          { key: 'delivered', label: 'Delivered', count: stats.delivered, color: 'text-emerald-400' },
-          { key: 'cancelled', label: 'Cancel', count: stats.cancelled, color: 'text-red-400' },
+          { key: '', label: 'Total Orders', count: stats.total, color: 'text-white' },
+          { key: 'paid', label: 'Paid', count: (stats.paid || 0) + (stats.new || 0) + (stats.confirmed || 0), color: 'text-emerald-400' },
+          { key: 'shipped', label: 'Shipped', count: stats.shipped || 0, color: 'text-cyan-400' },
+          { key: 'delivered', label: 'Delivered', count: stats.delivered || 0, color: 'text-emerald-400' },
         ].map((item) => (
           <div
             key={item.key}
             onClick={() => { setStatusFilter(item.key); setPage(1); }}
-            className={`cursor-pointer p-2 rounded-xl border text-center transition-all ${
+            className={`cursor-pointer p-2.5 rounded-xl border text-center transition-all ${
               statusFilter === item.key
                 ? 'bg-emerald-900/30 border-emerald-500 ring-1 ring-emerald-500'
                 : 'bg-white dark:bg-[#121824] border-gray-200 dark:border-gray-800'
             }`}
           >
-            <p className="text-[9px] font-bold uppercase text-gray-400 truncate">{item.label}</p>
-            <p className={`text-sm font-black ${item.color}`}>{item.count}</p>
+            <p className="text-[10px] font-bold uppercase text-gray-400 truncate">{item.label}</p>
+            <p className={`text-base font-black ${item.color}`}>{item.count}</p>
           </div>
         ))}
       </div>

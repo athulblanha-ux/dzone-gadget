@@ -266,7 +266,7 @@ exports.createWhatsAppOrder = asyncHandler(async (req, res) => {
     notes: shippingInfo?.notes || '',
   };
 
-  const initialStatus = 'new';
+  const initialStatus = req.body.status || 'paid';
   const statusHistory = [
     {
       previousStatus: '',
