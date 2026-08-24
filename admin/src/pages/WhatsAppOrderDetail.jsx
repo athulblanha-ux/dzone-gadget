@@ -138,25 +138,25 @@ export default function WhatsAppOrderDetail() {
     const isCod = (order.paymentDetails?.method || 'COD').toUpperCase() === 'COD';
     const codAmount = Number(order.paymentDetails?.grandTotal) || 0;
 
-    let text = `*DSTORE — Order Tracking Details* 📦\n\n`;
+    let text = `*DSTORE - Order Tracking Details*\n\n`;
     text += `Dear ${order.customerName || 'Customer'},\n`;
-    text += `Your order *${order.orderNumber}* status is: *${(order.status || 'SHIPPED').toUpperCase()}* 🚀\n\n`;
+    text += `Your order *${order.orderNumber}* status is: *${(order.status || 'SHIPPED').toUpperCase()}*\n\n`;
 
     if (trackingNo) {
-      text += `🚚 *Courier:* ${courier}\n`;
-      text += `📍 *Tracking No:* ${trackingNo}\n`;
+      text += `Courier Partner: ${courier}\n`;
+      text += `Tracking ID: ${trackingNo}\n`;
       if (trackingUrl) {
-        text += `🔗 *Track Link:* ${trackingUrl}\n`;
+        text += `Track Link: ${trackingUrl}\n`;
       }
     } else {
       text += `Your order is currently being processed and prepared for dispatch.\n`;
     }
 
     if (isCod && codAmount > 0) {
-      text += `\n💵 *COD Amount to Pay:* ₹${codAmount.toLocaleString('en-IN')}\n`;
+      text += `\nCOD Amount to Pay: ₹${codAmount.toLocaleString('en-IN')}\n`;
     }
 
-    text += `\nThank you for shopping with *DSTORE*! 🛍️`;
+    text += `\nThank you for shopping with *DSTORE*!`;
 
     const message = encodeURIComponent(text);
     window.open(`https://wa.me/${cleanNumber}?text=${message}`, '_blank');
