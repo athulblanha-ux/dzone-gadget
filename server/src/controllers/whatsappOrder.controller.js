@@ -376,6 +376,10 @@ exports.updateWhatsAppOrder = asyncHandler(async (req, res) => {
   if (paymentDetails) {
     if (paymentDetails.method) order.paymentDetails.method = paymentDetails.method;
     if (paymentDetails.status) order.paymentDetails.status = paymentDetails.status;
+    if (paymentDetails.grandTotal !== undefined) {
+      order.paymentDetails.grandTotal = Number(paymentDetails.grandTotal) || 0;
+      order.paymentDetails.productAmount = Number(paymentDetails.grandTotal) || 0;
+    }
   }
 
   if (shippingInfo) {

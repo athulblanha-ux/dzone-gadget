@@ -13,6 +13,8 @@ import {
   FiX,
   FiSend,
   FiCheck,
+  FiEdit,
+  FiDollarSign,
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import api from '../lib/api';
@@ -30,6 +32,31 @@ export default function WhatsAppOrders() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [paymentStatusFilter, setPaymentStatusFilter] = useState('');
+
+  // Quick Edit COD Price State
+  const [editPriceModalOrder, setEditPriceModalOrder] = useState(null);
+  const [editPriceValue, setEditPriceValue] = useState('');
+
+  const handleOpenEditPrice = (ord) => {
+    setEditPriceModalOrder(ord);
+    setEditPriceValue(ord.paymentDetails?.grandTotal || 0);
+  };
+
+  const handleSavePrice = async () => {
+    if (!editPriceModalOrder) return;
+    try {
+      await api.put(`/whatsapp-orders/orders/${editPriceModalOrder._id}`, {
+        paymentDetails: {
+          grandTotal: Number(editPriceValue) || 0,
+        },
+      });
+      toast.success(`COD Price updated for ${editPriceModalOrder.orderNumber}! 💰`);
+      queryClient.invalidateQueries(['admin-whatsapp-orders']);
+      setEditPriceModalOrder(null);
+    } catch (err) {
+      toast.error('Failed to update COD price');
+    }
+  };
   const [page, setPage] = useState(1);
 
   // Shipped Courier & Tracking Modal State
@@ -319,9 +346,17 @@ export default function WhatsAppOrders() {
                         <span className="text-[10px] text-gray-400">
                           {new Date(ord.createdAt).toLocaleDateString('en-GB')}
                         </span>
-                        <span className={`font-black text-sm ${isCod ? 'text-blue-400' : 'text-gray-500'}`}>
-                          {isCod ? `₹${grandTotal.toLocaleString('en-IN')}` : '₹0'}
-                        </span>
+                        {isCod ? (
+                          <button
+                            onClick={() => handleOpenEditPrice(ord)}
+                            className="font-black text-sm text-blue-400 hover:underline flex items-center gap-1"
+                            title="Click to edit COD Price"
+                          >
+                            ₹{grandTotal.toLocaleString('en-IN')} <FiEdit size={11} />
+                          </button>
+                        ) : (
+                          <span className="font-black text-sm text-gray-500">₹0</span>
+                        )}
                       </div>
                     </div>
 
@@ -417,7 +452,16 @@ export default function WhatsAppOrders() {
                         {/* Total Price */}
                         <td className="py-2.5 px-3 font-black text-xs">
                           {isCod ? (
-                            <span className="text-blue-400">₹{grandTotal.toLocaleString('en-IN')}</span>
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-blue-400">₹{grandTotal.toLocaleString('en-IN')}</span>
+                              <button
+                                onClick={() => handleOpenEditPrice(ord)}
+                                className="p-1 text-gray-400 hover:text-emerald-400 rounded transition-colors"
+                                title="Edit COD Price"
+                              >
+                                <FiEdit size={12} />
+                              </button>
+                            </div>
                           ) : (
                             <span className="text-gray-500 font-bold">₹0</span>
                           )}
@@ -551,6 +595,59 @@ export default function WhatsAppOrders() {
                 className="w-full py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl font-semibold text-xs flex items-center justify-center gap-1.5"
               >
                 <FiCheck size={15} /> Save Only (No WhatsApp)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Quick Edit COD Price Modal */}
+      {editPriceModalOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-gray-900 w-full max-w-sm rounded-2xl p-6 border border-gray-800 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-gray-800 pb-3">
+              <h3 className="text-base font-extrabold text-white flex items-center gap-2">
+                <FiDollarSign className="text-emerald-400" /> Edit COD Price: {editPriceModalOrder.orderNumber}
+              </h3>
+              <button
+                onClick={() => setEditPriceModalOrder(null)}
+                className="p-1 text-gray-400 hover:text-white rounded-lg"
+              >
+                <FiX size={18} />
+              </button>
+            </div>
+
+            <div className="space-y-2 text-xs">
+              <label className="block text-gray-400 font-bold uppercase">
+                COD Collectible Amount (₹)
+              </label>
+              <input
+                type="number"
+                min="0"
+                value={editPriceValue}
+                onChange={(e) => setEditPriceValue(e.target.value)}
+                placeholder="Enter COD Amount e.g. 8777"
+                className="w-full px-3 py-2.5 rounded-xl border border-gray-700 bg-gray-800 text-white font-black text-base focus:border-emerald-500 focus:outline-none"
+              />
+              <p className="text-[10px] text-gray-400">
+                This price will be displayed in the orders list and printed on the shipping label.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-800">
+              <button
+                type="button"
+                onClick={() => setEditPriceModalOrder(null)}
+                className="px-4 py-2 rounded-xl bg-gray-800 text-gray-300 hover:bg-gray-700 text-xs font-bold"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSavePrice}
+                className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow flex items-center gap-1.5"
+              >
+                <FiSend size={13} /> Save Price
               </button>
             </div>
           </div>
