@@ -9,7 +9,6 @@ import {
   FiPlus,
   FiRefreshCw,
   FiPrinter,
-  FiHome,
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import api from '../lib/api';
@@ -231,19 +230,12 @@ export default function WhatsAppOrders() {
                   <div key={ord._id} className="p-3 space-y-2">
                     {/* Top Row: Order # + Date + Total */}
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5">
-                        <Link
-                          to={`/whatsapp-orders/${ord._id}`}
-                          className="font-extrabold text-sm text-white font-mono tracking-tight"
-                        >
-                          {ord.orderNumber}
-                        </Link>
-                        {ord.shippingAddressSnapshot?.type && (
-                          <span className="px-1.5 py-0.5 rounded bg-purple-900/40 text-purple-300 text-[9px] font-bold">
-                            {ord.shippingAddressSnapshot.type}
-                          </span>
-                        )}
-                      </div>
+                      <Link
+                        to={`/whatsapp-orders/${ord._id}`}
+                        className="font-extrabold text-sm text-white font-mono tracking-tight"
+                      >
+                        {ord.orderNumber}
+                      </Link>
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] text-gray-400">
                           {new Date(ord.createdAt).toLocaleDateString('en-GB')}
@@ -324,16 +316,9 @@ export default function WhatsAppOrders() {
                       <tr key={ord._id} className="hover:bg-[#1a2334] transition-colors">
                         {/* Order ID */}
                         <td className="py-2.5 px-3">
-                          <div className="flex items-center gap-1.5">
-                            <Link to={`/whatsapp-orders/${ord._id}`} className="font-extrabold text-xs text-white hover:text-emerald-400 font-mono">
-                              {ord.orderNumber}
-                            </Link>
-                            {ord.shippingAddressSnapshot?.type && (
-                              <span className="px-1.5 py-0.5 rounded bg-purple-900/40 text-purple-300 border border-purple-500/30 text-[9px] font-bold">
-                                {ord.shippingAddressSnapshot.type}
-                              </span>
-                            )}
-                          </div>
+                          <Link to={`/whatsapp-orders/${ord._id}`} className="font-extrabold text-xs text-white hover:text-emerald-400 font-mono">
+                            {ord.orderNumber}
+                          </Link>
                         </td>
 
                         {/* Date */}
