@@ -162,7 +162,7 @@ export default function WhatsAppOrders() {
 
     const ord = shippedModalOrder;
     const finalCourier = courierName.trim() || 'India Post';
-    const finalTracking = trackingNumber.trim() || 'N/A';
+    const finalTracking = trackingNumber.trim() || '';
     const finalUrl = trackingUrl.trim() || '';
 
     // 1. Save Status & Courier Details
@@ -176,7 +176,7 @@ export default function WhatsAppOrders() {
           trackingNumber: finalTracking,
           trackingUrl: finalUrl,
         },
-        message: `Order Shipped via ${finalCourier} (Tracking: ${finalTracking})`,
+        message: `Order Shipped via ${finalCourier} (Tracking ID: ${finalTracking || 'N/A'})`,
       },
       {
         onSuccess: () => {
@@ -192,11 +192,21 @@ export default function WhatsAppOrders() {
               ? ord.customerName.split(',')[0].trim()
               : ord.customerName || 'Customer';
 
-            let msg = `Hello ${cleanCustName}!\n\nYour Order #${ord.orderNumber} has been SHIPPED!\n\n`;
-            if (finalCourier) msg += `Courier Partner: ${finalCourier}\n`;
-            if (finalTracking) msg += `Tracking Number: ${finalTracking}\n`;
-            if (finalUrl) msg += `Track Here: ${finalUrl}\n`;
-            msg += `\nThank you for shopping with DSTORE!`;
+            const isCod = (ord.paymentDetails?.method || 'COD').toUpperCase() === 'COD';
+            const codAmount = Number(ord.paymentDetails?.grandTotal) || 0;
+
+            let msg = `*DSTORE — Order Tracking Details* 📦\n\n`;
+            msg += `Dear ${cleanCustName},\n`;
+            msg += `Your order *${ord.orderNumber}* status is: *SHIPPED* 🚀\n\n`;
+            if (finalCourier) msg += `🚚 *Courier Partner:* ${finalCourier}\n`;
+            if (finalTracking) msg += `📍 *Tracking ID:* ${finalTracking}\n`;
+            if (finalUrl) msg += `🔗 *Track Link:* ${finalUrl}\n`;
+
+            if (isCod && codAmount > 0) {
+              msg += `\n💵 *COD Amount to Pay:* ₹${codAmount.toLocaleString('en-IN')}\n`;
+            }
+
+            msg += `\nThank you for shopping with *DSTORE*! 🛍️`;
 
             const encoded = encodeURIComponent(msg);
             window.open(`https://wa.me/${cleanNumber}?text=${encoded}`, '_blank');
@@ -228,11 +238,23 @@ export default function WhatsAppOrders() {
   // Open WhatsApp direct chat with Tracking details
   const handleOpenWhatsApp = (ord) => {
     if (!ord?.whatsappNumber) return;
+
+    const courier = ord.shippingInfo?.courierCompany || '';
+    const trackingNo = ord.shippingInfo?.trackingNumber || '';
+
+    // If tracking number or courier is missing, open modal to enter tracking ID first!
+    if (!trackingNo || trackingNo === 'N/A' || !courier) {
+      setShippedModalOrder(ord);
+      setCourierName(courier || 'India Post');
+      setTrackingNumber(trackingNo && trackingNo !== 'N/A' ? trackingNo : '');
+      setTrackingUrl(ord.shippingInfo?.trackingUrl || '');
+      toast('Please enter the Tracking ID to send on WhatsApp', { icon: '📦' });
+      return;
+    }
+
     let cleanNumber = ord.whatsappNumber.replace(/\D/g, '');
     if (cleanNumber.length === 10) cleanNumber = '91' + cleanNumber;
 
-    const courier = ord.shippingInfo?.courierCompany || 'Courier';
-    const trackingNo = ord.shippingInfo?.trackingNumber || '';
     const trackingUrl = ord.shippingInfo?.trackingUrl || '';
     const isCod = (ord.paymentDetails?.method || 'COD').toUpperCase() === 'COD';
     const codAmount = Number(ord.paymentDetails?.grandTotal) || 0;
@@ -240,15 +262,10 @@ export default function WhatsAppOrders() {
     let text = `*DSTORE — Order Tracking Details* 📦\n\n`;
     text += `Dear ${ord.customerName || 'Customer'},\n`;
     text += `Your order *${ord.orderNumber}* status is: *${(ord.status || 'SHIPPED').toUpperCase()}* 🚀\n\n`;
-
-    if (trackingNo) {
-      text += `🚚 *Courier:* ${courier}\n`;
-      text += `📍 *Tracking No:* ${trackingNo}\n`;
-      if (trackingUrl) {
-        text += `🔗 *Track Link:* ${trackingUrl}\n`;
-      }
-    } else {
-      text += `Your order is being processed and prepared for dispatch.\n`;
+    text += `🚚 *Courier:* ${courier}\n`;
+    text += `📍 *Tracking ID:* ${trackingNo}\n`;
+    if (trackingUrl) {
+      text += `🔗 *Track Link:* ${trackingUrl}\n`;
     }
 
     if (isCod && codAmount > 0) {
