@@ -175,9 +175,9 @@ export default function WhatsAppOrderDetail() {
     const addrObj = order.shippingAddressSnapshot || {};
     setEditRecipientName(addrObj.recipientName || order.customerName || '');
     setEditHouseFlat(addrObj.houseFlatBuilding || '');
-    setEditCity(addrObj.city || 'Kochi');
-    setEditState(addrObj.state || 'Kerala');
-    setEditPincode(addrObj.pincode || '682030');
+    setEditCity(addrObj.city && addrObj.city !== 'Kochi' && addrObj.city !== 'N/A' ? addrObj.city : '');
+    setEditState(addrObj.state && addrObj.state !== 'Kerala' && addrObj.state !== 'N/A' ? addrObj.state : '');
+    setEditPincode(addrObj.pincode && addrObj.pincode !== '682030' && addrObj.pincode !== '000000' ? addrObj.pincode : '');
     setShowEditAddressModal(true);
   };
 
@@ -189,9 +189,9 @@ export default function WhatsAppOrderDetail() {
         ...addrObj,
         recipientName: editRecipientName.trim() || editCustomerName || order.customerName,
         houseFlatBuilding: editHouseFlat.trim() || 'Address details',
-        city: editCity.trim() || 'Kochi',
-        state: editState.trim() || 'Kerala',
-        pincode: editPincode.trim() || '682030',
+        city: editCity.trim(),
+        state: editState.trim(),
+        pincode: editPincode.trim(),
         phone: editWhatsappNumber || order.whatsappNumber,
       },
     });
@@ -348,10 +348,11 @@ export default function WhatsAppOrderDetail() {
                 {addr.houseFlatBuilding}{addr.streetLocality && addr.streetLocality !== 'N/A' ? `, ${addr.streetLocality}` : ''}
               </p>
               {addr.landmark && <p className="text-xs text-gray-500">Landmark: {addr.landmark}</p>}
-              <p className="text-xs text-gray-700 dark:text-gray-300 font-semibold">
-                {addr.city}, {addr.state} - {addr.pincode}
-              </p>
-              <p className="text-xs text-gray-500">Country: {addr.country || 'India'}</p>
+              {addr.city && addr.city !== 'Kochi' && addr.city !== 'N/A' && (
+                <p className="text-xs text-gray-700 dark:text-gray-300 font-semibold">
+                  {addr.city}{addr.state && addr.state !== 'Kerala' && addr.state !== 'N/A' ? `, ${addr.state}` : ''}{addr.pincode && addr.pincode !== '682030' && addr.pincode !== '000000' ? ` - ${addr.pincode}` : ''}
+                </p>
+              )}
             </div>
           </div>
 

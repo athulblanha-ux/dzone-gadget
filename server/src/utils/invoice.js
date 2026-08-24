@@ -166,8 +166,17 @@ const generateWhatsAppInvoicePDF = (order) => {
       // Bill To
       const addr = order.shippingAddressSnapshot || {};
       const fullName = addr.recipientName || order.customerName || 'Customer';
-      const addressLine = [addr.houseFlatBuilding, addr.streetLocality !== 'N/A' ? addr.streetLocality : ''].filter(Boolean).join(', ') || 'N/A';
-      const cityLine = `${addr.city || 'Kochi'}, ${addr.state || 'Kerala'} - ${addr.pincode || '682030'}`;
+
+      const rawParts = [
+        addr.houseFlatBuilding,
+        addr.streetLocality,
+        addr.landmark,
+        addr.city,
+        addr.state,
+        addr.pincode,
+      ].filter((p) => p && p !== 'N/A' && p !== '000000' && p !== 'Kochi' && p !== 'Kerala' && p !== '682030');
+
+      const fullAddrText = rawParts.join(', ') || addr.houseFlatBuilding || 'Address details';
       const phone = addr.phone || order.whatsappNumber;
 
       doc
@@ -178,9 +187,8 @@ const generateWhatsAppInvoicePDF = (order) => {
         .font('Helvetica')
         .fillColor('#444')
         .text(fullName, 50, 152)
-        .text(addressLine.substring(0, 50), 50, 167)
-        .text(cityLine, 50, 182)
-        .text(`WhatsApp: ${phone}`, 50, 197);
+        .text(fullAddrText.substring(0, 60), 50, 167)
+        .text(`WhatsApp: ${phone}`, 50, 184);
 
       // Order Info
       const payStatus = order.paymentDetails?.status || 'paid';
@@ -338,8 +346,18 @@ const generateShippingLabelPDF = (order) => {
 
       const addr = order.shippingAddressSnapshot || {};
       const recipientName = addr.recipientName || order.customerName || 'Customer';
-      const addressLine = [addr.houseFlatBuilding, addr.streetLocality !== 'N/A' ? addr.streetLocality : ''].filter(Boolean).join(', ') || 'N/A';
-      const cityLine = `${addr.city || 'Kochi'}, ${addr.state || 'Kerala'} - ${addr.pincode || '682030'}`;
+
+      // Build clean address text without hardcoded Kochi/Kerala/682030 fallbacks
+      const rawAddressParts = [
+        addr.houseFlatBuilding,
+        addr.streetLocality,
+        addr.landmark,
+        addr.city,
+        addr.state,
+        addr.pincode,
+      ].filter((p) => p && p !== 'N/A' && p !== '000000' && p !== 'Kochi' && p !== 'Kerala' && p !== '682030');
+
+      const fullAddressText = rawAddressParts.join(', ') || addr.houseFlatBuilding || 'Address details';
       const phone = addr.phone || order.whatsappNumber;
 
       doc
@@ -358,8 +376,7 @@ const generateShippingLabelPDF = (order) => {
         .font('Helvetica')
         .fontSize(10)
         .fillColor('#111111')
-        .text(addressLine, 18, 212, { width: 250, height: 42 })
-        .text(cityLine, 18, 260)
+        .text(fullAddressText, 18, 212, { width: 250, height: 65 })
         .font('Helvetica-Bold')
         .fontSize(11)
         .text(`PH: ${phone}`, 18, 285);
