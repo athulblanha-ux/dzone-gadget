@@ -13,12 +13,15 @@ import {
   FiMapPin,
   FiCreditCard,
   FiCheckCircle,
+  FiX,
+  FiSave,
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import api from '../lib/api';
 
 const STATUS_BADGES = {
   new: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+  paid: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400',
   confirmed: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
   processing: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
   packed: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400',
@@ -39,6 +42,20 @@ export default function WhatsAppOrderDetail() {
   const [newStatus, setNewStatus] = useState('');
   const [newPaymentStatus, setNewPaymentStatus] = useState('');
   const [statusMessage, setStatusMessage] = useState('');
+
+  // Edit Customer Modal State
+  const [showEditCustomerModal, setShowEditCustomerModal] = useState(false);
+  const [editCustomerName, setEditCustomerName] = useState('');
+  const [editWhatsappNumber, setEditWhatsappNumber] = useState('');
+  const [editEmail, setEditEmail] = useState('');
+
+  // Edit Address Modal State
+  const [showEditAddressModal, setShowEditAddressModal] = useState(false);
+  const [editRecipientName, setEditRecipientName] = useState('');
+  const [editHouseFlat, setEditHouseFlat] = useState('');
+  const [editCity, setEditCity] = useState('');
+  const [editState, setEditState] = useState('');
+  const [editPincode, setEditPincode] = useState('');
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-whatsapp-order', id],
@@ -63,10 +80,29 @@ export default function WhatsAppOrderDetail() {
     onSuccess: () => {
       toast.success('Order status updated!');
       queryClient.invalidateQueries(['admin-whatsapp-order', id]);
+      queryClient.invalidateQueries(['admin-whatsapp-orders']);
       setShowStatusModal(false);
     },
     onError: (err) => {
       toast.error(err.response?.data?.message || 'Failed to update status');
+    },
+  });
+
+  // Update Order Payload Mutation
+  const updateOrderMutation = useMutation({
+    mutationFn: async (payload) => {
+      const res = await api.put(`/whatsapp-orders/orders/${id}`, payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      toast.success('Updated successfully! 🎉');
+      queryClient.invalidateQueries(['admin-whatsapp-order', id]);
+      queryClient.invalidateQueries(['admin-whatsapp-orders']);
+      setShowEditCustomerModal(false);
+      setShowEditAddressModal(false);
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.message || 'Failed to update details');
     },
   });
 
@@ -99,6 +135,54 @@ export default function WhatsAppOrderDetail() {
     window.print();
   };
 
+  // Open Edit Customer Modal
+  const handleOpenEditCustomer = () => {
+    setEditCustomerName(order.customerName || '');
+    setEditWhatsappNumber(order.whatsappNumber || '');
+    setEditEmail(order.email || '');
+    setShowEditCustomerModal(true);
+  };
+
+  // Save Customer Modal
+  const handleSaveCustomer = () => {
+    if (!editCustomerName.trim() || !editWhatsappNumber.trim()) {
+      toast.error('Customer Name and WhatsApp Number are required');
+      return;
+    }
+    updateOrderMutation.mutate({
+      customerName: editCustomerName.trim(),
+      whatsappNumber: editWhatsappNumber.trim(),
+      email: editEmail.trim(),
+    });
+  };
+
+  // Open Edit Address Modal
+  const handleOpenEditAddress = () => {
+    const addrObj = order.shippingAddressSnapshot || {};
+    setEditRecipientName(addrObj.recipientName || order.customerName || '');
+    setEditHouseFlat(addrObj.houseFlatBuilding || '');
+    setEditCity(addrObj.city || 'Kochi');
+    setEditState(addrObj.state || 'Kerala');
+    setEditPincode(addrObj.pincode || '682030');
+    setShowEditAddressModal(true);
+  };
+
+  // Save Address Modal
+  const handleSaveAddress = () => {
+    const addrObj = order.shippingAddressSnapshot || {};
+    updateOrderMutation.mutate({
+      shippingAddressSnapshot: {
+        ...addrObj,
+        recipientName: editRecipientName.trim() || editCustomerName || order.customerName,
+        houseFlatBuilding: editHouseFlat.trim() || 'Address details',
+        city: editCity.trim() || 'Kochi',
+        state: editState.trim() || 'Kerala',
+        pincode: editPincode.trim() || '682030',
+        phone: editWhatsappNumber || order.whatsappNumber,
+      },
+    });
+  };
+
   if (isLoading) {
     return (
       <div className="p-12 text-center text-gray-500 dark:text-gray-400 font-medium">
@@ -121,7 +205,7 @@ export default function WhatsAppOrderDetail() {
   const addr = order.shippingAddressSnapshot || {};
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto pb-12 print:p-0 print:max-w-none">
+    <div className="space-y-6 max-w-5xl mx-auto pb-12 print:p-0 print:max-w-none text-xs sm:text-sm">
       {/* Top Navigation & Action Buttons */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 print:hidden">
         <div className="flex items-center gap-3">
@@ -152,13 +236,6 @@ export default function WhatsAppOrderDetail() {
 
         {/* Action Buttons */}
         <div className="flex flex-wrap items-center gap-2">
-          <Link
-            to={`/whatsapp-orders/${order._id}/edit`}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gray-100 dark:bg-dark-border text-gray-700 dark:text-gray-200 hover:bg-gray-200 text-xs font-bold"
-          >
-            <FiEdit /> Edit Order
-          </Link>
-
           <button
             onClick={() => {
               setNewStatus(order.status);
@@ -213,13 +290,22 @@ export default function WhatsAppOrderDetail() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Left Col (2 Cols): Customer & Address Snapshot & Products */}
         <div className="md:col-span-2 space-y-6">
-          {/* Customer & Shipping Address Snapshot */}
+          {/* Customer & Shipping Address Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Customer Box */}
-            <div className="bg-white dark:bg-dark-card p-5 rounded-2xl border border-gray-200 dark:border-dark-border shadow-sm space-y-2">
-              <h3 className="text-xs font-bold uppercase text-gray-500 tracking-wider flex items-center gap-1.5">
-                <FiUser className="text-emerald-500" /> Customer Information
-              </h3>
+            {/* Customer Box with EDIT BUTTON */}
+            <div className="bg-white dark:bg-dark-card p-5 rounded-2xl border border-gray-200 dark:border-dark-border shadow-sm space-y-2 relative group">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-bold uppercase text-gray-500 tracking-wider flex items-center gap-1.5">
+                  <FiUser className="text-emerald-500" /> Customer Information
+                </h3>
+                <button
+                  onClick={handleOpenEditCustomer}
+                  className="px-2 py-1 rounded bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400 text-xs font-bold hover:bg-emerald-100 flex items-center gap-1"
+                >
+                  <FiEdit size={12} /> Edit
+                </button>
+              </div>
+
               <p className="text-base font-bold text-gray-900 dark:text-white">{order.customerName}</p>
               <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                 <FiMessageSquare size={16} /> {order.whatsappNumber}
@@ -227,21 +313,25 @@ export default function WhatsAppOrderDetail() {
               {order.email && <p className="text-xs text-gray-500">{order.email}</p>}
             </div>
 
-            {/* Address Snapshot Box */}
-            <div className="bg-white dark:bg-dark-card p-5 rounded-2xl border border-gray-200 dark:border-dark-border shadow-sm space-y-2">
+            {/* Address Box with EDIT BUTTON */}
+            <div className="bg-white dark:bg-dark-card p-5 rounded-2xl border border-gray-200 dark:border-dark-border shadow-sm space-y-2 relative group">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-bold uppercase text-gray-500 tracking-wider flex items-center gap-1.5">
                   <FiMapPin className="text-emerald-500" /> Shipping Address
                 </h3>
-                <span className="px-2 py-0.5 rounded bg-gray-100 dark:bg-dark-border text-[10px] font-bold text-gray-600 dark:text-gray-300">
-                  {addr.type || 'Snapshot'}
-                </span>
+                <button
+                  onClick={handleOpenEditAddress}
+                  className="px-2 py-1 rounded bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400 text-xs font-bold hover:bg-emerald-100 flex items-center gap-1"
+                >
+                  <FiEdit size={12} /> Edit
+                </button>
               </div>
+
               <p className="text-sm font-bold text-gray-900 dark:text-white">
                 {addr.recipientName || order.customerName}
               </p>
               <p className="text-xs text-gray-700 dark:text-gray-300">
-                {addr.houseFlatBuilding}{addr.streetLocality ? `, ${addr.streetLocality}` : ''}
+                {addr.houseFlatBuilding}{addr.streetLocality && addr.streetLocality !== 'N/A' ? `, ${addr.streetLocality}` : ''}
               </p>
               {addr.landmark && <p className="text-xs text-gray-500">Landmark: {addr.landmark}</p>}
               <p className="text-xs text-gray-700 dark:text-gray-300 font-semibold">
@@ -326,7 +416,7 @@ export default function WhatsAppOrderDetail() {
           </div>
         </div>
 
-        {/* Right Col (1 Col): Payment Info, Shipping & Tracking, Timeline */}
+        {/* Right Col (1 Col): Payment Info & Courier Tracking */}
         <div className="space-y-6">
           {/* Payment Card */}
           <div className="bg-white dark:bg-dark-card p-5 rounded-2xl border border-gray-200 dark:border-dark-border shadow-sm space-y-3">
@@ -373,7 +463,185 @@ export default function WhatsAppOrderDetail() {
         </div>
       </div>
 
-      {/* Change Status Modal */}
+      {/* EDIT CUSTOMER MODAL */}
+      {showEditCustomerModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-dark-card max-w-md w-full rounded-2xl p-6 border border-gray-200 dark:border-dark-border shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-gray-100 dark:border-dark-border pb-3">
+              <h3 className="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <FiUser className="text-emerald-500" /> Edit Customer Details
+              </h3>
+              <button
+                onClick={() => setShowEditCustomerModal(false)}
+                className="p-1 text-gray-500 hover:bg-gray-100 dark:hover:bg-dark-bg rounded-lg"
+              >
+                <FiX size={18} />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div>
+                <label className="block font-semibold mb-1 text-gray-700 dark:text-gray-300">
+                  Customer Name *
+                </label>
+                <input
+                  type="text"
+                  value={editCustomerName}
+                  onChange={(e) => setEditCustomerName(e.target.value)}
+                  className="w-full p-2.5 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border rounded-xl text-gray-900 dark:text-white font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold mb-1 text-gray-700 dark:text-gray-300">
+                  WhatsApp Number *
+                </label>
+                <input
+                  type="text"
+                  value={editWhatsappNumber}
+                  onChange={(e) => setEditWhatsappNumber(e.target.value)}
+                  className="w-full p-2.5 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border rounded-xl text-gray-900 dark:text-white font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold mb-1 text-gray-700 dark:text-gray-300">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  value={editEmail}
+                  onChange={(e) => setEditEmail(e.target.value)}
+                  className="w-full p-2.5 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border rounded-xl text-gray-900 dark:text-white"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowEditCustomerModal(false)}
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-bg"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveCustomer}
+                disabled={updateOrderMutation.isLoading}
+                className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow flex items-center gap-1.5"
+              >
+                <FiSave size={14} />
+                {updateOrderMutation.isLoading ? 'Saving...' : 'Save Customer Details'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* EDIT SHIPPING ADDRESS MODAL */}
+      {showEditAddressModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-dark-card max-w-lg w-full rounded-2xl p-6 border border-gray-200 dark:border-dark-border shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-gray-100 dark:border-dark-border pb-3">
+              <h3 className="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <FiMapPin className="text-emerald-500" /> Edit Shipping Address
+              </h3>
+              <button
+                onClick={() => setShowEditAddressModal(false)}
+                className="p-1 text-gray-500 hover:bg-gray-100 dark:hover:bg-dark-bg rounded-lg"
+              >
+                <FiX size={18} />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div>
+                <label className="block font-semibold mb-1 text-gray-700 dark:text-gray-300">
+                  Recipient Name *
+                </label>
+                <input
+                  type="text"
+                  value={editRecipientName}
+                  onChange={(e) => setEditRecipientName(e.target.value)}
+                  className="w-full p-2.5 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border rounded-xl text-gray-900 dark:text-white font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold mb-1 text-gray-700 dark:text-gray-300">
+                  Full Address / House, Building, Street *
+                </label>
+                <textarea
+                  rows={3}
+                  value={editHouseFlat}
+                  onChange={(e) => setEditHouseFlat(e.target.value)}
+                  className="w-full p-2.5 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border rounded-xl text-gray-900 dark:text-white"
+                />
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <label className="block font-semibold mb-1 text-gray-700 dark:text-gray-300">
+                    City
+                  </label>
+                  <input
+                    type="text"
+                    value={editCity}
+                    onChange={(e) => setEditCity(e.target.value)}
+                    className="w-full p-2 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border rounded-xl text-gray-900 dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-semibold mb-1 text-gray-700 dark:text-gray-300">
+                    State
+                  </label>
+                  <input
+                    type="text"
+                    value={editState}
+                    onChange={(e) => setEditState(e.target.value)}
+                    className="w-full p-2 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border rounded-xl text-gray-900 dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-semibold mb-1 text-gray-700 dark:text-gray-300">
+                    PIN Code
+                  </label>
+                  <input
+                    type="text"
+                    value={editPincode}
+                    onChange={(e) => setEditPincode(e.target.value)}
+                    className="w-full p-2 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border rounded-xl text-gray-900 dark:text-white font-mono"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowEditAddressModal(false)}
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-bg"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveAddress}
+                disabled={updateOrderMutation.isLoading}
+                className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow flex items-center gap-1.5"
+              >
+                <FiSave size={14} />
+                {updateOrderMutation.isLoading ? 'Saving...' : 'Save Shipping Address'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CHANGE STATUS MODAL */}
       {showStatusModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-dark-card max-w-md w-full rounded-2xl p-6 border border-gray-200 dark:border-dark-border shadow-2xl space-y-4">
@@ -387,18 +655,11 @@ export default function WhatsAppOrderDetail() {
                 <select
                   value={newStatus}
                   onChange={(e) => setNewStatus(e.target.value)}
-                  className="w-full p-2.5 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border rounded-xl dark:text-white"
+                  className="w-full p-2.5 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border rounded-xl dark:text-white font-bold"
                 >
-                  <option value="new">New</option>
-                  <option value="confirmed">Confirmed</option>
-                  <option value="processing">Processing</option>
-                  <option value="packed">Packed</option>
-                  <option value="shipped">Shipped</option>
-                  <option value="in_transit">In Transit</option>
-                  <option value="out_for_delivery">Out for Delivery</option>
-                  <option value="delivered">Delivered</option>
-                  <option value="cancelled">Cancelled</option>
-                  <option value="returned">Returned</option>
+                  <option value="paid">PAID</option>
+                  <option value="shipped">SHIPPED</option>
+                  <option value="delivered">DELIVERED</option>
                 </select>
               </div>
 
@@ -407,12 +668,12 @@ export default function WhatsAppOrderDetail() {
                 <select
                   value={newPaymentStatus}
                   onChange={(e) => setNewPaymentStatus(e.target.value)}
-                  className="w-full p-2.5 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border rounded-xl dark:text-white"
+                  className="w-full p-2.5 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border rounded-xl dark:text-white font-bold"
                 >
-                  <option value="pending">Pending</option>
-                  <option value="paid">Paid</option>
-                  <option value="failed">Failed</option>
-                  <option value="refunded">Refunded</option>
+                  <option value="paid">PAID</option>
+                  <option value="pending">PENDING</option>
+                  <option value="failed">FAILED</option>
+                  <option value="refunded">REFUNDED</option>
                 </select>
               </div>
 

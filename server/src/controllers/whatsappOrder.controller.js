@@ -311,7 +311,32 @@ exports.updateWhatsAppOrder = asyncHandler(async (req, res) => {
     return res.status(404).json({ success: false, message: 'WhatsApp order not found.' });
   }
 
-  const { items, paymentDetails, shippingInfo, notes } = req.body;
+  const { customerName, whatsappNumber, email, shippingAddressSnapshot, shippingAddress, items, paymentDetails, shippingInfo, notes } = req.body;
+
+  if (customerName) {
+    order.customerName = customerName.trim();
+  }
+  if (whatsappNumber) {
+    order.whatsappNumber = whatsappNumber.trim();
+  }
+  if (email !== undefined) {
+    order.email = email.trim();
+  }
+
+  const addrObj = shippingAddressSnapshot || shippingAddress;
+  if (addrObj) {
+    if (!order.shippingAddressSnapshot) order.shippingAddressSnapshot = {};
+    if (addrObj.recipientName !== undefined) order.shippingAddressSnapshot.recipientName = addrObj.recipientName;
+    if (addrObj.houseFlatBuilding !== undefined) order.shippingAddressSnapshot.houseFlatBuilding = addrObj.houseFlatBuilding;
+    if (addrObj.streetLocality !== undefined) order.shippingAddressSnapshot.streetLocality = addrObj.streetLocality;
+    if (addrObj.landmark !== undefined) order.shippingAddressSnapshot.landmark = addrObj.landmark;
+    if (addrObj.city !== undefined) order.shippingAddressSnapshot.city = addrObj.city;
+    if (addrObj.district !== undefined) order.shippingAddressSnapshot.district = addrObj.district;
+    if (addrObj.state !== undefined) order.shippingAddressSnapshot.state = addrObj.state;
+    if (addrObj.pincode !== undefined) order.shippingAddressSnapshot.pincode = addrObj.pincode;
+    if (addrObj.country !== undefined) order.shippingAddressSnapshot.country = addrObj.country;
+    if (addrObj.phone !== undefined) order.shippingAddressSnapshot.phone = addrObj.phone;
+  }
 
   if (items && Array.isArray(items)) {
     let productAmount = 0;
