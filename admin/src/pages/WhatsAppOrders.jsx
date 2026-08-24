@@ -366,9 +366,14 @@ export default function WhatsAppOrders() {
                       </td>
 
                       {/* Customer Name & Subtitle */}
-                      <td className="py-4 px-4">
-                        <p className="font-bold text-sm text-gray-900 dark:text-white">
-                          {ord.customerName}
+                      <td className="py-4 px-4 max-w-[200px]">
+                        <p
+                          className="font-bold text-sm text-gray-900 dark:text-white truncate"
+                          title={ord.customerName}
+                        >
+                          {ord.customerName && ord.customerName.includes(',')
+                            ? ord.customerName.split(',')[0].trim()
+                            : ord.customerName}
                         </p>
                         <p className="text-[11px] text-gray-400 font-medium">
                           {ord.whatsappNumber} • Guest

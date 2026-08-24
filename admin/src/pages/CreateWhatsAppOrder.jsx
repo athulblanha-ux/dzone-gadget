@@ -45,29 +45,34 @@ export default function CreateWhatsAppOrder() {
     }
 
     // Extract Name
+    let foundName = '';
     lines.forEach((line) => {
       const lower = line.toLowerCase();
       if (lower.startsWith('name:') || lower.startsWith('customer:')) {
-        const extracted = line.split(/:(.+)/)[1]?.trim();
-        if (extracted) setCustomerName(extracted);
+        foundName = line.split(/:(.+)/)[1]?.trim() || '';
       }
-      if (lower.includes('upi') || lower.includes('gpay') || lower.includes('phonepe')) {
-        setPaymentMethod('UPI');
-      } else if (lower.includes('bank') || lower.includes('neft')) {
-        setPaymentMethod('Bank Transfer');
-      }
-      if (lower.includes('india post')) setCourierCompany('India Post');
-      if (lower.includes('bluedart')) setCourierCompany('BlueDart');
-      if (lower.includes('delhivery')) setCourierCompany('Delhivery');
     });
 
-    // Name fallback from first non-number line
-    if (!customerName && lines.length > 0) {
-      const firstLine = lines[0];
-      if (!firstLine.match(/\d{10}/) && !firstLine.includes(':')) {
-        setCustomerName(firstLine);
+    // Name fallback: pick short non-address line or first 30 chars before comma
+    if (!foundName && lines.length > 0) {
+      const shortCandidate = lines.find(
+        (l) =>
+          l.length < 35 &&
+          !l.includes(',') &&
+          !l.match(/\d{5}/) &&
+          !l.toLowerCase().includes('road') &&
+          !l.toLowerCase().includes('nagar') &&
+          !l.toLowerCase().includes('kerala') &&
+          !l.toLowerCase().includes('india')
+      );
+      if (shortCandidate) {
+        foundName = shortCandidate;
+      } else {
+        foundName = lines[0].split(',')[0].trim().slice(0, 30);
       }
     }
+
+    if (foundName) setCustomerName(foundName);
 
     // Extract Amount (e.g. ₹1999 or Rs 1999 or 1999)
     const priceMatch = val.match(/(?:₹|rs\.?|inr)?\s*(\d{2,6})\b/i);
@@ -96,7 +101,10 @@ export default function CreateWhatsAppOrder() {
   });
 
   const handleSubmitOrder = () => {
-    const finalName = customerName.trim() || 'WhatsApp Customer';
+    let finalName = customerName.trim() || 'WhatsApp Customer';
+    if (finalName.includes(',')) finalName = finalName.split(',')[0].trim();
+    if (finalName.length > 35) finalName = finalName.slice(0, 35).trim();
+
     const finalPhone = whatsappNumber.trim() || '9876543210';
 
     if (!rawText.trim() && !finalName) {
