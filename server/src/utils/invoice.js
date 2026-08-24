@@ -327,36 +327,36 @@ const generateShippingLabelPDF = (order) => {
         .text(payStatus === 'PAID' ? 'PREPAID' : payStatus, 175, 24, { align: 'right', width: 95 });
 
       // 1. SHIP FROM (Sender Address - FIRST)
-      doc.rect(10, 52, 268, 114).fill('#F8FAFC');
-      doc.rect(10, 52, 268, 114).lineWidth(1).strokeColor('#000000').stroke();
+      doc.rect(10, 50, 268, 105).fill('#F8FAFC');
+      doc.rect(10, 50, 268, 105).lineWidth(1).strokeColor('#000000').stroke();
 
       doc
         .font('Helvetica-Bold')
         .fontSize(8.5)
         .fillColor('#555555')
-        .text('SHIP FROM / RETURN ADDRESS:', 18, 59);
+        .text('SHIP FROM / RETURN ADDRESS:', 18, 57);
 
       doc
         .font('Helvetica-Bold')
         .fontSize(13.5)
         .fillColor('#000000')
-        .text('DSTORE', 18, 71);
+        .text('DSTORE', 18, 69);
 
       doc
         .font('Helvetica')
         .fontSize(9.5)
         .fillColor('#111111')
-        .text('1st Floor, Nefna Complex', 18, 88)
-        .text('Near Abhilash Theatre', 18, 101)
-        .text('Mukkam via Calicut', 18, 114)
-        .text('PIN: 673602', 18, 127)
+        .text('1st Floor Nefna Complex', 18, 86)
+        .text('Near Abhilash Theatre', 18, 99)
+        .text('Mukkam via Calicut', 18, 112)
+        .text('PIN: 673602', 18, 125)
         .font('Helvetica-Bold')
         .fontSize(10)
         .fillColor('#000000')
-        .text('PH: 9495302826', 18, 147);
+        .text('PH: 9495302826', 18, 140);
 
       // 2. SHIP TO (Recipient Address - SECOND)
-      doc.rect(10, 166, 268, 146).lineWidth(1).strokeColor('#000000').stroke();
+      doc.rect(10, 155, 268, 150).lineWidth(1).strokeColor('#000000').stroke();
 
       const addr = order.shippingAddressSnapshot || {};
       const recipientName = (addr.recipientName || order.customerName || 'Customer').trim();
@@ -412,22 +412,22 @@ const generateShippingLabelPDF = (order) => {
         .font('Helvetica-Bold')
         .fontSize(8.5)
         .fillColor('#555555')
-        .text('SHIP TO / DELIVER TO:', 18, 173);
+        .text('SHIP TO / DELIVER TO:', 18, 163);
 
       doc
         .font('Helvetica-Bold')
         .fontSize(13.5)
         .fillColor('#000000')
-        .text(recipientName.toUpperCase(), 18, 186, { width: 252 });
+        .text(recipientName.toUpperCase(), 18, 176, { width: 252 });
 
       doc
         .font('Helvetica')
         .fontSize(9.5)
         .fillColor('#111111')
-        .text(addressBlockText, 18, 204, { width: 252, lineGap: 3 });
+        .text(addressBlockText, 18, 194, { width: 252, lineGap: 3 });
 
-      // Position phone number dynamically 8pt below address block or minimum y=280
-      const phoneY = Math.max(doc.y + 8, 280);
+      // Position phone number directly 6pt below address block (NO huge blank gap!)
+      const phoneY = Math.min(doc.y + 6, 288);
 
       doc
         .font('Helvetica-Bold')
