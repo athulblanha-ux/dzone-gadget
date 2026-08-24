@@ -270,4 +270,133 @@ const generateWhatsAppInvoicePDF = (order) => {
   });
 };
 
-module.exports = { generateInvoicePDF, generateWhatsAppInvoicePDF };
+/**
+ * Generate a 4x6 Shipping Label PDF for a WhatsApp Order
+ * @param {object} order - WhatsAppOrder document
+ * @returns {Promise<Buffer>} PDF buffer
+ */
+const generateShippingLabelPDF = (order) => {
+  return new Promise((resolve, reject) => {
+    try {
+      // 4 x 6 inches in points: 288 x 432 pt
+      const doc = new PDFDocument({
+        size: [288, 432],
+        margin: 10,
+      });
+
+      const buffers = [];
+      doc.on('data', (chunk) => buffers.push(chunk));
+      doc.on('end', () => resolve(Buffer.concat(buffers)));
+      doc.on('error', reject);
+
+      // Outer Border
+      doc.rect(10, 10, 268, 412).lineWidth(1.5).strokeColor('#000000').stroke();
+
+      // Top Header Bar
+      doc.rect(10, 10, 268, 42).fill('#182030');
+      doc
+        .font('Helvetica-Bold')
+        .fontSize(15)
+        .fillColor('#FFFFFF')
+        .text(`ORDER #${order.orderNumber}`, 18, 23);
+
+      const payStatus = (order.paymentDetails?.status || 'PAID').toUpperCase();
+      doc
+        .fontSize(11)
+        .fillColor('#10B981')
+        .text(payStatus === 'PAID' ? 'PREPAID' : payStatus, 175, 24, { align: 'right', width: 95 });
+
+      // SHIP TO (Recipient)
+      doc.rect(10, 52, 268, 140).lineWidth(1).strokeColor('#000000').stroke();
+
+      const addr = order.shippingAddressSnapshot || {};
+      const recipientName = addr.recipientName || order.customerName || 'Customer';
+      const addressLine = [addr.houseFlatBuilding, addr.streetLocality !== 'N/A' ? addr.streetLocality : ''].filter(Boolean).join(', ') || 'N/A';
+      const cityLine = `${addr.city || 'Kochi'}, ${addr.state || 'Kerala'} - ${addr.pincode || '682030'}`;
+      const phone = addr.phone || order.whatsappNumber;
+
+      doc
+        .font('Helvetica-Bold')
+        .fontSize(8.5)
+        .fillColor('#555555')
+        .text('SHIP TO / DELIVER TO:', 18, 62);
+
+      doc
+        .font('Helvetica-Bold')
+        .fontSize(13)
+        .fillColor('#000000')
+        .text(recipientName.toUpperCase(), 18, 76, { width: 250 });
+
+      doc
+        .font('Helvetica')
+        .fontSize(10)
+        .fillColor('#111111')
+        .text(addressLine, 18, 96, { width: 250, height: 42 })
+        .text(cityLine, 18, 142)
+        .font('Helvetica-Bold')
+        .fontSize(11)
+        .text(`PH: ${phone}`, 18, 164);
+
+      // ITEMS / CONTENTS
+      doc.rect(10, 192, 268, 92).lineWidth(1).strokeColor('#000000').stroke();
+      doc
+        .font('Helvetica-Bold')
+        .fontSize(8.5)
+        .fillColor('#555555')
+        .text('PACKAGE CONTENTS:', 18, 200);
+
+      let itemY = 214;
+      const items = order.items || [];
+      for (const item of items.slice(0, 3)) {
+        doc
+          .font('Helvetica-Bold')
+          .fontSize(9)
+          .fillColor('#000000')
+          .text(`${item.quantity}x ${item.name}`, 18, itemY, { width: 250 });
+        itemY += 15;
+      }
+
+      const totalVal = Number(order.paymentDetails?.grandTotal) || 0;
+      doc
+        .font('Helvetica-Bold')
+        .fontSize(9.5)
+        .fillColor('#000000')
+        .text(`VALUE: Rs. ${totalVal.toLocaleString('en-IN')}`, 18, 264);
+
+      // SHIP FROM (Sender Address)
+      doc.rect(10, 284, 268, 138).fill('#F8FAFC');
+      doc.rect(10, 284, 268, 138).lineWidth(1).strokeColor('#000000').stroke();
+
+      doc
+        .font('Helvetica-Bold')
+        .fontSize(8.5)
+        .fillColor('#555555')
+        .text('SHIP FROM / RETURN ADDRESS:', 18, 294);
+
+      doc
+        .font('Helvetica-Bold')
+        .fontSize(14)
+        .fillColor('#000000')
+        .text('DSTORE', 18, 308);
+
+      doc
+        .font('Helvetica')
+        .fontSize(9.5)
+        .fillColor('#111111')
+        .text('1st Floor, Nefna Complex', 18, 328)
+        .text('Near Abhilash Theatre', 18, 343)
+        .text('Mukkam via Calicut', 18, 358)
+        .text('PIN: 673602', 18, 373)
+        .font('Helvetica-Bold')
+        .fontSize(10.5)
+        .fillColor('#000000')
+        .text('PH: 9495302826', 18, 394);
+
+      doc.end();
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+module.exports = { generateInvoicePDF, generateWhatsAppInvoicePDF, generateShippingLabelPDF };

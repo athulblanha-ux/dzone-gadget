@@ -133,19 +133,19 @@ export default function WhatsAppOrderDetail() {
 
   const handlePrint = async () => {
     try {
-      const res = await api.get(`/whatsapp-orders/orders/${id}/invoice`, {
+      const res = await api.get(`/whatsapp-orders/orders/${id}/shipping-label`, {
         responseType: 'blob',
       });
       const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `invoice-${order.orderNumber}.pdf`);
+      link.setAttribute('download', `shipping-label-${order.orderNumber}.pdf`);
       document.body.appendChild(link);
       link.click();
       link.remove();
-      toast.success(`Invoice ${order.orderNumber} downloaded!`);
+      toast.success(`Shipping Label ${order.orderNumber} downloaded! 📦`);
     } catch (err) {
-      toast.error('Failed to download invoice PDF');
+      toast.error('Failed to download shipping label PDF');
     }
   };
 
@@ -282,9 +282,9 @@ export default function WhatsAppOrderDetail() {
 
           <button
             onClick={handlePrint}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gray-800 text-white hover:bg-gray-900 text-xs font-bold shadow"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow"
           >
-            <FiPrinter /> Print Invoice
+            <FiPrinter /> Print Shipping Label
           </button>
 
           <button

@@ -586,7 +586,7 @@ exports.getCustomerWhatsAppStats = asyncHandler(async (req, res) => {
     recent  });
 });
 
-const { generateWhatsAppInvoicePDF } = require('../utils/invoice');
+const { generateWhatsAppInvoicePDF, generateShippingLabelPDF } = require('../utils/invoice');
 
 // Download PDF Invoice for WhatsApp Order
 exports.getWhatsAppOrderInvoice = asyncHandler(async (req, res) => {
@@ -601,6 +601,24 @@ exports.getWhatsAppOrderInvoice = asyncHandler(async (req, res) => {
   res.set({
     'Content-Type': 'application/pdf',
     'Content-Disposition': `attachment; filename=invoice-${order.orderNumber}.pdf`,
+  });
+
+  res.send(pdfBuffer);
+});
+
+// Download 4x6 Shipping Label PDF for WhatsApp Order
+exports.getWhatsAppOrderShippingLabel = asyncHandler(async (req, res) => {
+  const order = await WhatsAppOrder.findById(req.params.id);
+
+  if (!order) {
+    return res.status(404).json({ success: false, message: 'WhatsApp Order not found.' });
+  }
+
+  const pdfBuffer = await generateShippingLabelPDF(order);
+
+  res.set({
+    'Content-Type': 'application/pdf',
+    'Content-Disposition': `attachment; filename=shipping-label-${order.orderNumber}.pdf`,
   });
 
   res.send(pdfBuffer);

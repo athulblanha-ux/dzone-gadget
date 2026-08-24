@@ -179,22 +179,22 @@ export default function WhatsAppOrders() {
     );
   };
 
-  // Download PDF Invoice
-  const handleDownloadInvoice = async (orderId, orderNumber) => {
+  // Download 4x6 Shipping Label PDF
+  const handleDownloadShippingLabel = async (orderId, orderNumber) => {
     try {
-      const res = await api.get(`/whatsapp-orders/orders/${orderId}/invoice`, {
+      const res = await api.get(`/whatsapp-orders/orders/${orderId}/shipping-label`, {
         responseType: 'blob',
       });
       const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `invoice-${orderNumber}.pdf`);
+      link.setAttribute('download', `shipping-label-${orderNumber}.pdf`);
       document.body.appendChild(link);
       link.click();
       link.remove();
-      toast.success(`Invoice for ${orderNumber} downloaded!`);
+      toast.success(`Shipping Label for ${orderNumber} downloaded! 📦`);
     } catch (err) {
-      toast.error('Failed to download invoice PDF');
+      toast.error('Failed to download shipping label PDF');
     }
   };
 
@@ -357,7 +357,7 @@ export default function WhatsAppOrders() {
                         <button onClick={() => handleOpenWhatsApp(ord.whatsappNumber, ord.orderNumber)} className="p-1 text-emerald-400 hover:bg-emerald-500/10 rounded">
                           <FiMessageSquare size={15} />
                         </button>
-                        <button onClick={() => handleDownloadInvoice(ord._id, ord.orderNumber)} className="p-1 text-purple-400 hover:bg-purple-500/10 rounded" title="Download PDF Invoice">
+                        <button onClick={() => handleDownloadShippingLabel(ord._id, ord.orderNumber)} className="p-1 text-purple-400 hover:bg-purple-500/10 rounded" title="Download Shipping Label">
                           <FiPrinter size={15} />
                         </button>
                         <button onClick={() => { if (window.confirm(`Delete ${ord.orderNumber}?`)) deleteMutation.mutate(ord._id); }} className="p-1 text-red-400 hover:bg-red-500/10 rounded">
@@ -443,7 +443,7 @@ export default function WhatsAppOrders() {
                           <div className="flex items-center justify-end gap-1.5">
                             <Link to={`/whatsapp-orders/${ord._id}`} className="p-1 text-blue-400 hover:bg-blue-500/10 rounded"><FiEye size={14} /></Link>
                             <button onClick={() => handleOpenWhatsApp(ord.whatsappNumber, ord.orderNumber)} className="p-1 text-emerald-400 hover:bg-emerald-500/10 rounded"><FiMessageSquare size={14} /></button>
-                            <button onClick={() => handleDownloadInvoice(ord._id, ord.orderNumber)} className="p-1 text-purple-400 hover:bg-purple-500/10 rounded" title="Download PDF Invoice"><FiPrinter size={14} /></button>
+                            <button onClick={() => handleDownloadShippingLabel(ord._id, ord.orderNumber)} className="p-1 text-purple-400 hover:bg-purple-500/10 rounded" title="Download Shipping Label"><FiPrinter size={14} /></button>
                             <button onClick={() => { if (window.confirm(`Delete ${ord.orderNumber}?`)) deleteMutation.mutate(ord._id); }} className="p-1 text-red-400 hover:bg-red-500/10 rounded"><FiTrash2 size={14} /></button>
                           </div>
                         </td>
