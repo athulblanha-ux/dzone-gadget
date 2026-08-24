@@ -225,12 +225,39 @@ export default function WhatsAppOrders() {
     }
   };
 
-  // Open WhatsApp direct chat
-  const handleOpenWhatsApp = (whatsappNumber, orderNumber) => {
-    if (!whatsappNumber) return;
-    let cleanNumber = whatsappNumber.replace(/\D/g, '');
+  // Open WhatsApp direct chat with Tracking details
+  const handleOpenWhatsApp = (ord) => {
+    if (!ord?.whatsappNumber) return;
+    let cleanNumber = ord.whatsappNumber.replace(/\D/g, '');
     if (cleanNumber.length === 10) cleanNumber = '91' + cleanNumber;
-    const msg = encodeURIComponent(`Hello! Regarding your WhatsApp Order ${orderNumber} on DSTORE:`);
+
+    const courier = ord.shippingInfo?.courierCompany || 'Courier';
+    const trackingNo = ord.shippingInfo?.trackingNumber || '';
+    const trackingUrl = ord.shippingInfo?.trackingUrl || '';
+    const isCod = (ord.paymentDetails?.method || 'COD').toUpperCase() === 'COD';
+    const codAmount = Number(ord.paymentDetails?.grandTotal) || 0;
+
+    let text = `*DSTORE — Order Tracking Details* 📦\n\n`;
+    text += `Dear ${ord.customerName || 'Customer'},\n`;
+    text += `Your order *${ord.orderNumber}* status is: *${(ord.status || 'SHIPPED').toUpperCase()}* 🚀\n\n`;
+
+    if (trackingNo) {
+      text += `🚚 *Courier:* ${courier}\n`;
+      text += `📍 *Tracking No:* ${trackingNo}\n`;
+      if (trackingUrl) {
+        text += `🔗 *Track Link:* ${trackingUrl}\n`;
+      }
+    } else {
+      text += `Your order is being processed and prepared for dispatch.\n`;
+    }
+
+    if (isCod && codAmount > 0) {
+      text += `\n💵 *COD Amount to Pay:* ₹${codAmount.toLocaleString('en-IN')}\n`;
+    }
+
+    text += `\nThank you for shopping with *DSTORE*! 🛍️`;
+
+    const msg = encodeURIComponent(text);
     window.open(`https://wa.me/${cleanNumber}?text=${msg}`, '_blank');
   };
 
@@ -390,7 +417,7 @@ export default function WhatsAppOrders() {
                         <Link to={`/whatsapp-orders/${ord._id}`} className="p-1 text-blue-400 hover:bg-blue-500/10 rounded">
                           <FiEye size={15} />
                         </Link>
-                        <button onClick={() => handleOpenWhatsApp(ord.whatsappNumber, ord.orderNumber)} className="p-1 text-emerald-400 hover:bg-emerald-500/10 rounded">
+                        <button onClick={() => handleOpenWhatsApp(ord)} className="p-1 text-emerald-400 hover:bg-emerald-500/10 rounded" title="Send Tracking via WhatsApp">
                           <FiMessageSquare size={15} />
                         </button>
                         <button onClick={() => handleDownloadShippingLabel(ord._id, ord.orderNumber)} className="p-1 text-purple-400 hover:bg-purple-500/10 rounded" title="Download Shipping Label">
@@ -492,7 +519,7 @@ export default function WhatsAppOrders() {
                         <td className="py-2.5 px-3 text-right">
                           <div className="flex items-center justify-end gap-1.5">
                             <Link to={`/whatsapp-orders/${ord._id}`} className="p-1 text-blue-400 hover:bg-blue-500/10 rounded"><FiEye size={14} /></Link>
-                            <button onClick={() => handleOpenWhatsApp(ord.whatsappNumber, ord.orderNumber)} className="p-1 text-emerald-400 hover:bg-emerald-500/10 rounded"><FiMessageSquare size={14} /></button>
+                            <button onClick={() => handleOpenWhatsApp(ord)} className="p-1 text-emerald-400 hover:bg-emerald-500/10 rounded" title="Send Tracking via WhatsApp"><FiMessageSquare size={14} /></button>
                             <button onClick={() => handleDownloadShippingLabel(ord._id, ord.orderNumber)} className="p-1 text-purple-400 hover:bg-purple-500/10 rounded" title="Download Shipping Label"><FiPrinter size={14} /></button>
                             <button onClick={() => { if (window.confirm(`Delete ${ord.orderNumber}?`)) deleteMutation.mutate(ord._id); }} className="p-1 text-red-400 hover:bg-red-500/10 rounded"><FiTrash2 size={14} /></button>
                           </div>
