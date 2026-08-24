@@ -300,6 +300,7 @@ export default function WhatsAppOrders() {
             <div className="block sm:hidden divide-y divide-gray-100 dark:divide-gray-800">
               {orders.map((ord) => {
                 const grandTotal = ord.paymentDetails?.grandTotal || 0;
+                const isCod = (ord.paymentDetails?.method || '').toUpperCase() === 'COD';
                 const cleanName = ord.customerName && ord.customerName.includes(',')
                   ? ord.customerName.split(',')[0].trim()
                   : ord.customerName;
@@ -318,8 +319,8 @@ export default function WhatsAppOrders() {
                         <span className="text-[10px] text-gray-400">
                           {new Date(ord.createdAt).toLocaleDateString('en-GB')}
                         </span>
-                        <span className="font-black text-sm text-blue-400">
-                          ₹{grandTotal.toLocaleString('en-IN')}
+                        <span className={`font-black text-sm ${isCod ? 'text-blue-400' : 'text-gray-500'}`}>
+                          {isCod ? `₹${grandTotal.toLocaleString('en-IN')}` : '₹0'}
                         </span>
                       </div>
                     </div>
@@ -386,6 +387,7 @@ export default function WhatsAppOrders() {
                 <tbody className="divide-y divide-gray-800/70 text-xs">
                   {orders.map((ord) => {
                     const grandTotal = ord.paymentDetails?.grandTotal || 0;
+                    const isCod = (ord.paymentDetails?.method || '').toUpperCase() === 'COD';
                     const cleanName = ord.customerName && ord.customerName.includes(',')
                       ? ord.customerName.split(',')[0].trim()
                       : ord.customerName;
@@ -413,8 +415,12 @@ export default function WhatsAppOrders() {
                         </td>
 
                         {/* Total Price */}
-                        <td className="py-2.5 px-3 font-black text-xs text-blue-400">
-                          ₹{grandTotal.toLocaleString('en-IN')}
+                        <td className="py-2.5 px-3 font-black text-xs">
+                          {isCod ? (
+                            <span className="text-blue-400">₹{grandTotal.toLocaleString('en-IN')}</span>
+                          ) : (
+                            <span className="text-gray-500 font-bold">₹0</span>
+                          )}
                         </td>
 
                         {/* Status Dropdown */}

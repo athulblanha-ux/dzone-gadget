@@ -452,12 +452,15 @@ const generateShippingLabelPDF = (order) => {
         itemY += 15;
       }
 
+      const isCod = (order.paymentDetails?.method || '').toUpperCase() === 'COD';
       const totalVal = Number(order.paymentDetails?.grandTotal) || 0;
+      const displayValue = isCod ? `VALUE: Rs. ${totalVal.toLocaleString('en-IN')}` : `VALUE: Rs. 0 (PREPAID)`;
+
       doc
         .font('Helvetica-Bold')
         .fontSize(10)
         .fillColor('#000000')
-        .text(`VALUE: Rs. ${totalVal.toLocaleString('en-IN')}`, 18, 396);
+        .text(displayValue, 18, 396);
 
       doc.end();
     } catch (err) {
