@@ -146,9 +146,9 @@ exports.createWhatsAppOrder = asyncHandler(async (req, res) => {
     return res.status(400).json({ success: false, message: 'Customer name and WhatsApp number are required.' });
   }
 
-  if (!shippingAddress || !shippingAddress.houseFlatBuilding || !shippingAddress.city || !shippingAddress.state || !shippingAddress.pincode) {
-    return res.status(400).json({ success: false, message: 'Complete shipping address is required.' });
-  }
+  const addrObj = typeof shippingAddress === 'string'
+    ? { houseFlatBuilding: shippingAddress }
+    : (shippingAddress || { houseFlatBuilding: 'N/A' });
 
   if (!items || !Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ success: false, message: 'At least one order item is required.' });
@@ -181,42 +181,43 @@ exports.createWhatsAppOrder = asyncHandler(async (req, res) => {
   // Add shipping address to customer's saved addresses if not existing
   const addressAlreadySaved = customer.addresses.some(
     (addr) =>
-      addr.pincode === shippingAddress.pincode &&
-      addr.houseFlatBuilding?.toLowerCase() === shippingAddress.houseFlatBuilding?.toLowerCase()
+      addr.pincode === shippingAddress  const addressAlreadySaved = customer.addresses.some(
+    (addr) =>
+      addr.houseFlatBuilding?.toLowerCase() === (addrObj.houseFlatBuilding || '').toLowerCase()
   );
 
-  if (!addressAlreadySaved) {
+  if (!addressAlreadySaved && addrObj.houseFlatBuilding) {
     customer.addresses.push({
-      type: shippingAddress.type || 'Home',
-      recipientName: shippingAddress.recipientName || customerName,
-      houseFlatBuilding: shippingAddress.houseFlatBuilding,
-      streetLocality: shippingAddress.streetLocality || '',
-      landmark: shippingAddress.landmark || '',
-      city: shippingAddress.city,
-      district: shippingAddress.district || '',
-      state: shippingAddress.state,
-      pincode: shippingAddress.pincode,
-      country: shippingAddress.country || 'India',
-      phone: shippingAddress.phone || whatsappNumber,
-      addressNotes: shippingAddress.addressNotes || '',
+      type: addrObj.type || 'Home',
+      recipientName: addrObj.recipientName || customerName,
+      houseFlatBuilding: addrObj.houseFlatBuilding || 'N/A',
+      streetLocality: addrObj.streetLocality || '',
+      landmark: addrObj.landmark || '',
+      city: addrObj.city || '',
+      district: addrObj.district || '',
+      state: addrObj.state || '',
+      pincode: addrObj.pincode || '',
+      country: addrObj.country || 'India',
+      phone: addrObj.phone || whatsappNumber,
+      addressNotes: addrObj.addressNotes || '',
     });
   }
   await customer.save();
 
-  // 2. Save Address Snapshot (VERY IMPORTANT REQUIREMENT #5)
+  // 2. Save Address Snapshot
   const shippingAddressSnapshot = {
-    type: shippingAddress.type || 'Home',
-    recipientName: shippingAddress.recipientName || customerName,
-    houseFlatBuilding: shippingAddress.houseFlatBuilding,
-    streetLocality: shippingAddress.streetLocality || '',
-    landmark: shippingAddress.landmark || '',
-    city: shippingAddress.city,
-    district: shippingAddress.district || '',
-    state: shippingAddress.state,
-    pincode: shippingAddress.pincode,
-    country: shippingAddress.country || 'India',
-    phone: shippingAddress.phone || whatsappNumber,
-    addressNotes: shippingAddress.addressNotes || '',
+    type: addrObj.type || 'Home',
+    recipientName: addrObj.recipientName || customerName,
+    houseFlatBuilding: addrObj.houseFlatBuilding || 'N/A',
+    streetLocality: addrObj.streetLocality || '',
+    landmark: addrObj.landmark || '',
+    city: addrObj.city || '',
+    district: addrObj.district || '',
+    state: addrObj.state || '',
+    pincode: addrObj.pincode || '',
+    country: addrObj.country || 'India',
+    phone: addrObj.phone || whatsappNumber,
+    addressNotes: addrObj.addressNotes || '',
   };
 
   // 3. Process items & calculate totals
