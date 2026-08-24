@@ -15,12 +15,17 @@ import {
   FiCreditCard,
   FiTruck,
   FiEdit,
+  FiZap,
+  FiFileText,
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import api from '../lib/api';
 
 export default function CreateWhatsAppOrder() {
   const navigate = useNavigate();
+
+  // SINGLE BIG TEXT BOX STATE (For entering all information in one place)
+  const [singleBoxText, setSingleBoxText] = useState('');
 
   // Customer State
   const [whatsappNumber, setWhatsappNumber] = useState('');
@@ -69,6 +74,113 @@ export default function CreateWhatsAppOrder() {
   const [trackingUrl, setTrackingUrl] = useState('');
   const [shippingNotes, setShippingNotes] = useState('');
   const [notes, setNotes] = useState('');
+
+  // Single Big Box Smart Parser Function
+  const handleParseSingleBox = () => {
+    if (!singleBoxText || !singleBoxText.trim()) {
+      toast.error('Please paste or enter the customer message in the big box');
+      return;
+    }
+
+    const text = singleBoxText.trim();
+    const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
+
+    let parsedName = '';
+    let parsedPhone = '';
+    let parsedEmail = '';
+    let parsedPincode = '';
+    let parsedCity = '';
+    let parsedState = '';
+    let parsedHouse = '';
+
+    // Extract 10-digit Indian phone number
+    const phoneMatch = text.match(/(?:\+91[\s-]?)?([6-9]\d{9})\b/);
+    if (phoneMatch) parsedPhone = phoneMatch[1];
+
+    // Extract Email
+    const emailMatch = text.match(/[\w.-]+@[\w.-]+\.\w+/);
+    if (emailMatch) parsedEmail = emailMatch[0];
+
+    // Extract 6-digit PIN code
+    const pinMatch = text.match(/\b([1-9]\d{5})\b/);
+    if (pinMatch) parsedPincode = pinMatch[1];
+
+    // Extract Name & Address line by line
+    lines.forEach((line) => {
+      const lower = line.toLowerCase();
+      if (lower.startsWith('name:') || lower.startsWith('customer:')) {
+        parsedName = line.split(/:(.+)/)[1]?.trim() || parsedName;
+      }
+      if (lower.startsWith('address:') || lower.startsWith('addr:')) {
+        parsedHouse = line.split(/:(.+)/)[1]?.trim() || parsedHouse;
+      }
+      if (lower.includes('kerala') || lower.includes('kl')) parsedState = 'Kerala';
+      if (lower.includes('kochi') || lower.includes('ernakulam')) parsedCity = 'Kochi';
+      if (lower.includes('trivandrum') || lower.includes('thiruvananthapuram')) parsedCity = 'Thiruvananthapuram';
+      if (lower.includes('calicut') || lower.includes('kozhikode')) parsedCity = 'Kozhikode';
+    });
+
+    // Name fallback
+    if (!parsedName && lines.length > 0) {
+      const firstLine = lines[0];
+      if (!firstLine.match(/\d{10}/) && !firstLine.includes(':')) {
+        parsedName = firstLine;
+      }
+    }
+
+    // Address fallback
+    if (!parsedHouse && lines.length >= 2) {
+      const addrLines = lines.filter(
+        (l) => !l.match(/(?:\+91[\s-]?)?([6-9]\d{9})\b/) && !l.includes('@')
+      );
+      parsedHouse = addrLines.join(', ');
+    }
+
+    // Populate Form States
+    if (parsedName) setCustomerName(parsedName);
+    if (parsedPhone) setWhatsappNumber(parsedPhone);
+    if (parsedEmail) setEmail(parsedEmail);
+
+    // Create & Select Shipping Address Snapshot
+    const autoAddress = {
+      _id: `auto_${Date.now()}`,
+      type: 'Home',
+      recipientName: parsedName || customerName || 'Customer',
+      houseFlatBuilding: parsedHouse || text.slice(0, 120),
+      streetLocality: '',
+      city: parsedCity || 'Kochi',
+      district: '',
+      state: parsedState || 'Kerala',
+      pincode: parsedPincode || '682030',
+      country: 'India',
+      phone: parsedPhone || whatsappNumber || '9876543210',
+      addressNotes: 'Pasted from single box',
+    };
+
+    setSelectedAddress(autoAddress);
+    setSavedAddresses([autoAddress]);
+    setNotes(text);
+
+    // Auto add a default item if no item added yet
+    if (orderItems.length === 0) {
+      setOrderItems([
+        {
+          product: null,
+          name: 'WhatsApp Order Item',
+          sku: 'WA-ITEM',
+          variant: '',
+          size: '',
+          color: '',
+          quantity: 1,
+          unitPrice: 0,
+          discount: 0,
+          total: 0,
+        },
+      ]);
+    }
+
+    toast.success('✨ Extracted information from box! All details auto-filled.');
+  };
 
   // 1. Search Customer by Phone
   const handleSearchCustomer = async () => {
@@ -291,7 +403,7 @@ export default function CreateWhatsAppOrder() {
         trackingUrl,
         notes: shippingNotes,
       },
-      notes,
+      notes: notes || singleBoxText,
     };
 
     createMutation.mutate(payload);
@@ -310,7 +422,7 @@ export default function CreateWhatsAppOrder() {
           </Link>
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Create WhatsApp Order</h1>
-            <p className="text-xs text-gray-500">Manually generate an order received via WhatsApp</p>
+            <p className="text-xs text-gray-500">Paste customer message in one single box or fill form below</p>
           </div>
         </div>
 
@@ -321,6 +433,51 @@ export default function CreateWhatsAppOrder() {
         >
           {createMutation.isLoading ? 'Creating Order...' : 'Save & Place Order'}
         </button>
+      </div>
+
+      {/* SINGLE BIG TEXT BOX SECTION (REQ: "just one single big box is needed for entering all information") */}
+      <div className="bg-gradient-to-r from-emerald-900/30 via-dark-card to-dark-card p-6 rounded-2xl border-2 border-emerald-500/50 shadow-xl space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-extrabold text-white flex items-center gap-2">
+            <FiZap className="text-emerald-400" />
+            Paste WhatsApp Message (Single Big Box Entry)
+          </h2>
+          <span className="text-xs text-emerald-400 font-semibold px-3 py-1 rounded-full bg-emerald-500/20">
+            ⚡ Quick Entry Mode
+          </span>
+        </div>
+
+        <p className="text-xs text-gray-300">
+          Paste the raw WhatsApp message containing Customer Name, Phone, Address, Items, and Payment in this single box:
+        </p>
+
+        <textarea
+          rows={5}
+          placeholder="Paste full WhatsApp message here...&#10;e.g.&#10;Rahul Kumar&#10;9876543210&#10;Flat 204, ABC Apartments, Kakkanad, Kochi, Kerala - 682030&#10;Item: AMG Drift Car (₹1999)&#10;Payment: COD"
+          value={singleBoxText}
+          onChange={(e) => setSingleBoxText(e.target.value)}
+          className="w-full p-4 bg-dark-bg border border-emerald-500/40 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
+        />
+
+        <div className="flex items-center justify-between pt-1">
+          <button
+            type="button"
+            onClick={handleParseSingleBox}
+            className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-black font-extrabold px-5 py-2.5 rounded-xl shadow-lg transition-all text-sm"
+          >
+            <FiZap /> Auto-Fill All Form Fields From Box
+          </button>
+
+          {singleBoxText && (
+            <button
+              type="button"
+              onClick={() => setSingleBoxText('')}
+              className="text-xs text-gray-400 hover:text-white"
+            >
+              Clear Box
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
