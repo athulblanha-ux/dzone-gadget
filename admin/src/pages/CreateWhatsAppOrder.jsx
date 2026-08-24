@@ -114,7 +114,7 @@ export default function CreateWhatsAppOrder() {
         type: 'Home',
         recipientName: finalName,
         houseFlatBuilding: rawText.trim() || 'WhatsApp Order Address',
-        streetLocality: '',
+        streetLocality: 'N/A',
         landmark: '',
         city: 'Kochi',
         district: '',
